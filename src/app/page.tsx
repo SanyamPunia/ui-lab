@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LabSearch } from "@/components/lab-search";
 import { ScrollMemory } from "@/components/scroll-memory";
 import { SiteHeader } from "@/components/site-header";
 import { SourceLink } from "@/components/source-link";
@@ -11,11 +12,9 @@ export default function Home() {
       <SiteHeader />
       <ScrollMemory />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-10 pb-16 sm:px-6">
-        <p className="text-sm text-muted">
-          {lab.length} {lab.length === 1 ? "component" : "components"}
-        </p>
-
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+        <LabSearch
+          entries={lab.map(({ name, description }) => ({ name, description }))}
+        >
           {lab.map(({ slug, name, description, previewScale }) => {
             const Preview = previews[slug];
             return (
@@ -70,7 +69,7 @@ export default function Home() {
               </li>
             );
           })}
-        </ul>
+        </LabSearch>
       </main>
     </>
   );
