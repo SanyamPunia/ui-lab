@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Lab conventions
 
-Each component lives in `src/lab/components/<slug>.tsx`, exports the component by name, and default-exports a demo. Create new ones with `bun run new <slug>` rather than by hand, so the entry in `src/lab/registry.ts` is added too. Never remove the `// new-component:` markers in the registry.
+Each component lives in `src/lab/components/<slug>.tsx`, exports the component by name, and default-exports a demo. Create new ones with `bun run new <slug>` rather than by hand: it registers the component in three places, `src/lab/registry.ts` (metadata only), `src/lab/demos.tsx` (a code-split loader for single lab pages) and `src/lab/previews.ts` (one static bundle for the index). Never remove the `// new-component:` markers in those files. Keep `registry.ts` free of component imports, or every page will ship every demo.
 
 Use the color tokens from `src/app/globals.css` (`bg-surface`, `text-muted`, `border-border`) instead of raw Tailwind palette colors, merge class names with `cn()` from `@/lib/cn`, and use `motion/react` for animation that CSS transitions can't express. Use `bun`, never npm or yarn.
 

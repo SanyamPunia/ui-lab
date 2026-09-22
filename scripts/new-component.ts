@@ -30,26 +30,41 @@ export default function ${pascal}Demo() {
 `,
 );
 
-// The markers in registry.ts are anchors for this script; keep them in place.
-const source = await Bun.file(registry).text();
-await Bun.write(
-  registry,
-  source
-    .replace(
-      "// new-component:imports",
-      `import ${pascal}Demo from "./components/${slug}";\n// new-component:imports`,
-    )
-    .replace(
-      "  // new-component:entries",
-      `  {
+// The `new-component:` markers in these files are anchors for this script;
+// keep them in place. A missing marker stops here instead of silently
+// leaving the component half registered.
+async function insert(path: string, edits: [marker: string, text: string][]) {
+  let source = await Bun.file(path).text();
+  for (const [marker, text] of edits) {
+    if (!source.includes(marker)) {
+      console.error(`${path} is missing the "${marker.trim()}" marker`);
+      process.exit(1);
+    }
+    source = source.replace(marker, `${text}\n${marker}`);
+  }
+  await Bun.write(path, source);
+}
+
+await insert(registry, [
+  [
+    "  // new-component:entries",
+    `  {
     slug: "${slug}",
     name: "${name}",
     description: "",
-    Demo: ${pascal}Demo,
-  },
-  // new-component:entries`,
-    ),
-);
+  },`,
+  ],
+]);
+await insert(join(root, "src/lab/demos.tsx"), [
+  [
+    "  // new-component:entries",
+    `  "${slug}": dynamic(() => import("./components/${slug}")),`,
+  ],
+]);
+await insert(join(root, "src/lab/previews.ts"), [
+  ["// new-component:imports", `import ${pascal}Demo from "./components/${slug}";`],
+  ["  // new-component:entries", `  "${slug}": ${pascal}Demo,`],
+]);
 
 console.log(`created src/lab/components/${slug}.tsx`);
 console.log(`open http://localhost:3000/lab/${slug}`);
