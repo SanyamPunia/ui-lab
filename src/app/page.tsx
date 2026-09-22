@@ -13,7 +13,7 @@ export default function Home() {
         </p>
 
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {lab.map(({ slug, name, description, Demo }) => (
+          {lab.map(({ slug, name, description, Demo, previewScale }) => (
             <li key={slug} className="group/card relative">
               <Link
                 href={`/lab/${slug}`}
@@ -21,9 +21,11 @@ export default function Home() {
               >
                 <div
                   inert
-                  className="flex h-56 items-center justify-center rounded-xl bg-surface transition-[background-color] duration-150 ease-out group-hover:bg-background"
+                  className="flex h-56 items-center justify-center overflow-hidden rounded-xl bg-surface transition-[background-color] duration-150 ease-out group-hover:bg-background"
                 >
-                  <Demo />
+                  <div style={{ scale: previewScale && String(previewScale) }}>
+                    <Demo />
+                  </div>
                 </div>
                 <div className="px-2 pt-3 pb-1">
                   <p className="text-sm font-medium">{name}</p>

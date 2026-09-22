@@ -9,6 +9,7 @@ import ToastStackDemo from "./components/toast-stack";
 import ElasticSliderDemo from "./components/elastic-slider";
 import MagneticButtonDemo from "./components/magnetic-button";
 import TextScrambleDemo from "./components/text-scramble";
+import SwipeDeckDemo from "./components/swipe-deck";
 // new-component:imports
 
 export type LabEntry = {
@@ -16,6 +17,8 @@ export type LabEntry = {
   name: string;
   description: string;
   Demo: ComponentType;
+  // Shrinks the demo on the index cards only, for ones taller than a preview.
+  previewScale?: number;
 };
 
 export const lab: LabEntry[] = [
@@ -81,6 +84,13 @@ export const lab: LabEntry[] = [
     name: "Text scramble",
     description: "Hover a word and it decodes itself, one letter at a time.",
     Demo: TextScrambleDemo,
+  },
+  {
+    slug: "swipe-deck",
+    name: "Swipe deck",
+    description: "Fling a card away and the rest of the deck steps forward.",
+    Demo: SwipeDeckDemo,
+    previewScale: 0.55,
   },
   // new-component:entries
 ];

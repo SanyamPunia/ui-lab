@@ -23,7 +23,9 @@ export default async function LabPage({ params }: PageProps<"/lab/[slug]">) {
     <>
       <SiteHeader title={entry.name} />
       <main className="flex flex-1 flex-col">
-        <div className="flex flex-1 items-center justify-center p-4">
+        {/* Clipped sideways so thrown or dragged demos can't widen the page.
+            `clip` rather than `hidden`, which would make this a scroll box. */}
+        <div className="flex flex-1 items-center justify-center overflow-x-clip p-4">
           <Demo />
         </div>
         <div className="mx-auto flex w-full max-w-3xl items-baseline justify-between gap-4 px-4 sm:px-6">
