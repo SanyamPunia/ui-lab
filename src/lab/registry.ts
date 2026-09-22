@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import OdometerDemo from "./components/odometer";
+import HoldToDeleteDemo from "./components/hold-to-delete";
 // new-component:imports
 
 export type LabEntry = {
@@ -16,6 +17,13 @@ export const lab: LabEntry[] = [
     description:
       "Rolls forward like a mechanical counter and wraps from 999 back to 000.",
     Demo: OdometerDemo,
+  },
+  {
+    slug: "hold-to-delete",
+    name: "Hold to delete",
+    description:
+      "Fills slowly while you commit to it, snaps back the moment you let go.",
+    Demo: HoldToDeleteDemo,
   },
   // new-component:entries
 ];
