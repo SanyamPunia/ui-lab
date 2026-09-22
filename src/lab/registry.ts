@@ -18,6 +18,14 @@ import ExpandingCardDemo from "./components/expanding-card";
 import OtpInputDemo from "./components/otp-input";
 import ToggleSwitchDemo from "./components/toggle-switch";
 import CommandPaletteDemo from "./components/command-palette";
+import MarqueeDemo from "./components/marquee";
+import ReorderListDemo from "./components/reorder-list";
+import CompareSliderDemo from "./components/compare-slider";
+import MultiStepFormDemo from "./components/multi-step-form";
+import UploadButtonDemo from "./components/upload-button";
+import TooltipGroupDemo from "./components/tooltip-group";
+import DropdownMenuDemo from "./components/dropdown-menu";
+import DynamicIslandDemo from "./components/dynamic-island";
 // new-component:imports
 
 export type LabEntry = {
@@ -152,6 +160,56 @@ export const lab: LabEntry[] = [
     name: "Command palette",
     description: "Opens on ⌘K and filters commands as you type.",
     Demo: CommandPaletteDemo,
+  },
+  {
+    slug: "marquee",
+    name: "Marquee",
+    description: "Drifts endlessly, and brakes gently when you hover.",
+    Demo: MarqueeDemo,
+  },
+  {
+    slug: "reorder-list",
+    name: "Reorder list",
+    description: "Picks rows up by the handle and slides the rest out of the way.",
+    previewScale: 0.9,
+    Demo: ReorderListDemo,
+  },
+  {
+    slug: "compare-slider",
+    name: "Compare slider",
+    description: "Drag the line to see what polish actually changes.",
+    Demo: CompareSliderDemo,
+  },
+  {
+    slug: "multi-step-form",
+    name: "Multi-step form",
+    description: "Slides between steps while the card grows around each one.",
+    previewScale: 0.6,
+    Demo: MultiStepFormDemo,
+  },
+  {
+    slug: "upload-button",
+    name: "Upload button",
+    description: "Shrinks into a progress ring, fills, then checks off.",
+    Demo: UploadButtonDemo,
+  },
+  {
+    slug: "tooltip-group",
+    name: "Tooltip group",
+    description: "Waits before the first tooltip, then shows each neighbor instantly as you scan.",
+    Demo: TooltipGroupDemo,
+  },
+  {
+    slug: "dropdown-menu",
+    name: "Dropdown menu",
+    description: "Grows out of its trigger, and press, drag, release picks an item like a native menu.",
+    Demo: DropdownMenuDemo,
+  },
+  {
+    slug: "dynamic-island",
+    name: "Dynamic island",
+    description: "Morphs between live states with a springy, Apple-style bounce.",
+    Demo: DynamicIslandDemo,
   },
   // new-component:entries
 ];
