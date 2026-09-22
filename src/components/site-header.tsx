@@ -7,6 +7,9 @@ export function SiteHeader({ title }: { title?: string }) {
       <nav className="flex items-center gap-2 text-sm">
         <Link
           href="/"
+          // The index restores its own scroll position, so Next shouldn't
+          // jump to the top first.
+          scroll={false}
           className={
             title
               ? "text-muted transition-[color] duration-150 ease-out hover:text-foreground"

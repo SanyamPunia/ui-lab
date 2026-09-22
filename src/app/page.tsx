@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ScrollMemory } from "@/components/scroll-memory";
 import { SiteHeader } from "@/components/site-header";
 import { SourceLink } from "@/components/source-link";
 import { previews } from "@/lab/previews";
@@ -8,6 +9,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
+      <ScrollMemory />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-10 pb-16 sm:px-6">
         <p className="text-sm text-muted">
           {lab.length} {lab.length === 1 ? "component" : "components"}

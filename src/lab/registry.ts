@@ -155,6 +155,134 @@ export const lab: LabEntry[] = [
     name: "Dynamic island",
     description: "Morphs between live states with a springy, Apple-style bounce.",
   },
+  {
+    slug: "scrub-input",
+    name: "Scrub input",
+    description: "Drag the label to scrub the value, or just type.",
+  },
+  {
+    slug: "star-rating",
+    name: "Star rating",
+    description: "Hover to preview, click to commit with a little pop.",
+  },
+  {
+    slug: "like-button",
+    name: "Like button",
+    description: "Pops, bursts and rolls the count when you like.",
+  },
+  {
+    slug: "sliding-tabs",
+    name: "Sliding tabs",
+    description: "An underline glides to the tab you pick while a soft pill follows your pointer.",
+  },
+  {
+    slug: "page-dots",
+    name: "Page dots",
+    description: "A pill that inches between pages like a worm and counts down to the next.",
+  },
+  {
+    slug: "collapsible-sidebar",
+    name: "Collapsible sidebar",
+    description: "Folds down to an icon rail, with labels that step aside before it closes.",
+  },
+  {
+    slug: "snap-carousel",
+    name: "Snap carousel",
+    description: "Snaps cards to center, grows them as they arrive, and drags with the mouse.",
+  },
+  {
+    slug: "skeleton-loader",
+    name: "Skeleton loader",
+    description: "Holds the exact shape of what is coming, so nothing jumps.",
+    previewScale: 0.9,
+  },
+  {
+    slug: "context-menu",
+    name: "Context menu",
+    description: "Opens at your cursor and grows from it.",
+  },
+  {
+    slug: "notification-bell",
+    name: "Notification bell",
+    description: "Rings when something new arrives, and the badge rolls up with each one.",
+    anchor: "top",
+  },
+  {
+    slug: "avatar-stack",
+    name: "Avatar stack",
+    description: "Fans open when you reach for it, with a name above each face.",
+  },
+  {
+    slug: "morphing-button",
+    name: "Morphing button",
+    description: "Shrinks into a spinner while it saves, then answers with a check or a shake.",
+  },
+  {
+    slug: "kanban-board",
+    name: "Kanban board",
+    description: "Lift a card and the others slide aside to make room for it.",
+    previewScale: 0.95,
+  },
+  {
+    slug: "color-swatches",
+    name: "Color swatches",
+    description: "The ring glides to the color you pick and the preview follows it.",
+  },
+  {
+    slug: "mini-calendar",
+    name: "Mini calendar",
+    description: "Months slide past in the direction you travel.",
+    previewScale: 0.75,
+  },
+  {
+    slug: "floating-label",
+    name: "Floating label",
+    description: "Rises into the corner as you type, and never covers what you wrote.",
+    anchor: "top",
+  },
+  {
+    slug: "password-field",
+    name: "Password field",
+    description: "Fills its meter as the password gets stronger.",
+  },
+  {
+    slug: "filter-list",
+    name: "Filter list",
+    description: "Rows fade out of the way while the rest slide up to close the gap.",
+    previewScale: 0.8,
+  },
+  {
+    slug: "gauge",
+    name: "Gauge",
+    description: "Fills its arc and counts up to the value on the same spring.",
+  },
+  {
+    slug: "sparkline",
+    name: "Sparkline",
+    description: "Draws itself in, then scrubs to the nearest point under your cursor.",
+  },
+  {
+    slug: "bar-chart",
+    name: "Bar chart",
+    description: "Grows its bars from the baseline and springs them between two weeks.",
+  },
+  {
+    slug: "stacked-drawer",
+    name: "Stacked drawer",
+    description: "Stacks iOS sheets that push the page back and drag down to dismiss.",
+    previewScale: 0.6,
+  },
+  {
+    slug: "confetti-button",
+    name: "Confetti button",
+    description: "Bursts theme-colored confetti from the button.",
+  },
+  {
+    slug: "typewriter",
+    name: "Typewriter",
+    description: "Types, pauses and rewrites the last word with a human rhythm.",
+    previewScale: 0.9,
+  },
   // new-component:entries
 ];
 

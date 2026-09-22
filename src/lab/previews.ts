@@ -26,6 +26,30 @@ import UploadButtonDemo from "./components/upload-button";
 import TooltipGroupDemo from "./components/tooltip-group";
 import DropdownMenuDemo from "./components/dropdown-menu";
 import DynamicIslandDemo from "./components/dynamic-island";
+import ScrubInputDemo from "./components/scrub-input";
+import StarRatingDemo from "./components/star-rating";
+import LikeButtonDemo from "./components/like-button";
+import SlidingTabsDemo from "./components/sliding-tabs";
+import PageDotsDemo from "./components/page-dots";
+import CollapsibleSidebarDemo from "./components/collapsible-sidebar";
+import SnapCarouselDemo from "./components/snap-carousel";
+import SkeletonLoaderDemo from "./components/skeleton-loader";
+import ContextMenuDemo from "./components/context-menu";
+import NotificationBellDemo from "./components/notification-bell";
+import AvatarStackDemo from "./components/avatar-stack";
+import MorphingButtonDemo from "./components/morphing-button";
+import KanbanBoardDemo from "./components/kanban-board";
+import ColorSwatchesDemo from "./components/color-swatches";
+import MiniCalendarDemo from "./components/mini-calendar";
+import FloatingLabelDemo from "./components/floating-label";
+import PasswordFieldDemo from "./components/password-field";
+import FilterListDemo from "./components/filter-list";
+import GaugeDemo from "./components/gauge";
+import SparklineDemo from "./components/sparkline";
+import BarChartDemo from "./components/bar-chart";
+import StackedDrawerDemo from "./components/stacked-drawer";
+import ConfettiButtonDemo from "./components/confetti-button";
+import TypewriterDemo from "./components/typewriter";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -58,5 +82,29 @@ export const previews: Record<string, ComponentType> = {
   "tooltip-group": TooltipGroupDemo,
   "dropdown-menu": DropdownMenuDemo,
   "dynamic-island": DynamicIslandDemo,
+  "scrub-input": ScrubInputDemo,
+  "star-rating": StarRatingDemo,
+  "like-button": LikeButtonDemo,
+  "sliding-tabs": SlidingTabsDemo,
+  "page-dots": PageDotsDemo,
+  "collapsible-sidebar": CollapsibleSidebarDemo,
+  "snap-carousel": SnapCarouselDemo,
+  "skeleton-loader": SkeletonLoaderDemo,
+  "context-menu": ContextMenuDemo,
+  "notification-bell": NotificationBellDemo,
+  "avatar-stack": AvatarStackDemo,
+  "morphing-button": MorphingButtonDemo,
+  "kanban-board": KanbanBoardDemo,
+  "color-swatches": ColorSwatchesDemo,
+  "mini-calendar": MiniCalendarDemo,
+  "floating-label": FloatingLabelDemo,
+  "password-field": PasswordFieldDemo,
+  "filter-list": FilterListDemo,
+  "gauge": GaugeDemo,
+  "sparkline": SparklineDemo,
+  "bar-chart": BarChartDemo,
+  "stacked-drawer": StackedDrawerDemo,
+  "confetti-button": ConfettiButtonDemo,
+  "typewriter": TypewriterDemo,
   // new-component:entries
 };
