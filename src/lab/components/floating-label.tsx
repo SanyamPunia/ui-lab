@@ -80,9 +80,11 @@ export function FloatingLabel({
             if (check(value)) setLive(true);
           }}
           className={cn(
-            // 20px of top padding clears the floated label (6px down, 11.2px
-            // tall), so typed text and label never share a pixel.
-            "peer h-12 w-full rounded-xl border bg-background pt-5 pr-9 pb-1.5 pl-3 text-sm text-foreground outline-none transition-[border-color] duration-150 ease-out",
+            // 22px of top padding (23px with the border) clears the floated
+            // label (7px down, 12px text in a 16px line box, so done by 23px),
+            // so typed text and label never share a pixel. A fixed 20px line
+            // height keeps that math independent of the page's leading.
+            "peer h-13 w-full rounded-xl border bg-background pt-[22px] pr-10 pb-2 pl-3.5 text-[15px]/5 text-foreground outline-none transition-[border-color] duration-150 ease-out",
             "focus-visible:outline-2 focus-visible:-outline-offset-1",
             invalid
               ? "border-danger focus-visible:outline-danger"
@@ -94,11 +96,12 @@ export function FloatingLabel({
         <label
           htmlFor={id}
           className={cn(
-            "pointer-events-none absolute top-3.5 left-3 origin-top-left text-sm whitespace-nowrap select-none",
+            "pointer-events-none absolute top-4 left-3.5 origin-top-left text-[15px]/5 whitespace-nowrap select-none",
             "transition-[translate,scale,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[color]",
-            // 14px up to 6px from the top, at 80% (11.2px) of the text size.
-            "peer-focus:-translate-y-2 peer-focus:scale-[0.8] peer-focus:duration-200",
-            "peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:scale-[0.8] peer-[:not(:placeholder-shown)]:duration-200",
+            // Centered at 16px from the top, it rises 9px to sit 7px from the
+            // top, at 80% (12px) of the text size.
+            "peer-focus:-translate-y-[9px] peer-focus:scale-[0.8] peer-focus:duration-200",
+            "peer-[:not(:placeholder-shown)]:-translate-y-[9px] peer-[:not(:placeholder-shown)]:scale-[0.8] peer-[:not(:placeholder-shown)]:duration-200",
             invalid ? "text-danger" : "text-muted peer-focus:text-foreground",
           )}
         >
@@ -112,7 +115,7 @@ export function FloatingLabel({
           strokeWidth={1.5}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="pointer-events-none absolute top-4 right-3 size-4 text-foreground"
+          className="pointer-events-none absolute top-4 right-3.5 size-5 text-foreground"
           initial={false}
           animate={
             status === "valid"
@@ -142,7 +145,7 @@ export function FloatingLabel({
             id={errorId}
             aria-hidden={!invalid}
             className={cn(
-              "pt-1.5 pl-3 text-xs text-danger transition-[opacity,translate] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[opacity]",
+              "pt-2 pl-3.5 text-sm text-danger transition-[opacity,translate] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[opacity]",
               invalid
                 ? "translate-y-0 opacity-100 duration-200"
                 : "-translate-y-1 opacity-0 duration-150 motion-reduce:translate-y-0",
@@ -172,7 +175,7 @@ function validateEmail(value: string) {
 export default function FloatingLabelDemo() {
   return (
     <form
-      className="flex w-72 flex-col gap-3"
+      className="flex w-[380px] max-w-full flex-col gap-4"
       noValidate
       onSubmit={(e) => e.preventDefault()}
     >

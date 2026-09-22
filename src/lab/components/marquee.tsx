@@ -13,7 +13,7 @@ const RESUME_MS = 450;
 export function Marquee({
   items,
   // px per second, so a longer list scrolls at the same pace, not faster.
-  speed = 32,
+  speed = 40,
   direction = "left",
   label,
   className,
@@ -114,9 +114,11 @@ export function Marquee({
       {items.map((item) => (
         <li key={item} className="flex items-center whitespace-nowrap">
           {item}
+          {/* Sized in em so the dot and gap scale with whatever text size
+              the row is given. */}
           <span
             aria-hidden
-            className="mx-3 size-1 shrink-0 rounded-full bg-current opacity-30"
+            className="mx-[0.85em] size-[0.28em] shrink-0 rounded-full bg-current opacity-30"
           />
         </li>
       ))}
@@ -132,7 +134,7 @@ export function Marquee({
         if (e.pointerType !== "touch") rampTo(1);
       }}
       className={cn(
-        "overflow-hidden py-1.5 select-none",
+        "overflow-hidden py-2 select-none",
         // Fades 12% of each edge so items drift in and out instead of being
         // cut by a hard wall.
         "[mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]",
@@ -153,10 +155,10 @@ export function Marquee({
 
 export default function MarqueeDemo() {
   return (
-    <div className="flex w-80 flex-col gap-1 text-sm font-medium">
+    <div className="flex w-[520px] max-w-full flex-col gap-2 font-medium">
       <Marquee
         label="Topics"
-        className="text-foreground"
+        className="text-lg text-foreground"
         items={[
           "Motion",
           "Springs",
@@ -173,8 +175,8 @@ export default function MarqueeDemo() {
       <Marquee
         label="Techniques"
         direction="right"
-        speed={22}
-        className="text-muted"
+        speed={24}
+        className="text-[15px] text-muted"
         items={[
           "Stagger",
           "Clip path",

@@ -5,7 +5,7 @@ import { useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 
 // Short thumbs are hard to grab, so it never shrinks below this.
-const MIN_THUMB = 24;
+const MIN_THUMB = 32;
 
 // Each word lights up over this share of the scroll, so several are always
 // mid-fade and the edge between read and unread text stays soft.
@@ -100,26 +100,26 @@ export function ScrollReveal({
     // fades only the text, not the box or its outline.
     <div
       className={cn(
-        "relative h-64 w-80 rounded-2xl bg-surface shadow-raised has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
+        "relative h-[360px] w-[480px] max-w-full rounded-3xl bg-surface shadow-raised has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
         className,
       )}
     >
       <style href="scroll-reveal" precedence="default">
         {CSS}
       </style>
-      {/* 32px fades hint that the text continues past each edge. */}
+      {/* 44px fades hint that the text continues past each edge. */}
       <div
         ref={scrollerRef}
         onScroll={sync}
         tabIndex={0}
         role="region"
         aria-label={label}
-        className="scroll-reveal h-full overflow-y-auto overscroll-contain rounded-2xl outline-none [mask-image:linear-gradient(to_bottom,transparent,black_32px,black_calc(100%-32px),transparent)] [scrollbar-width:none]"
+        className="scroll-reveal h-full overflow-y-auto overscroll-contain rounded-3xl outline-none [mask-image:linear-gradient(to_bottom,transparent,black_44px,black_calc(100%-44px),transparent)] [scrollbar-width:none]"
       >
-        {/* The padding adds up to the box height (96 + 160 = 256), so the
+        {/* The padding adds up to the box height (136 + 224 = 360), so the
             reveal edge holds still about 40% down while the text moves
             through it, from the first line to the last. */}
-        <p className="px-6 pt-24 pb-40 text-lg leading-7 font-medium tracking-tight text-pretty text-foreground">
+        <p className="px-9 pt-[136px] pb-[224px] text-2xl leading-8 font-medium tracking-tight text-pretty text-foreground">
           {words.map((word, i) => {
             const start = (i / last) * (1 - WINDOW);
             return (
@@ -145,7 +145,7 @@ export function ScrollReveal({
       <div
         ref={trackRef}
         aria-hidden
-        className="group/bar absolute top-4 right-1.5 bottom-4 flex w-2.5 cursor-pointer touch-none justify-center"
+        className="group/bar absolute top-5 right-2 bottom-5 flex w-3.5 cursor-pointer touch-none justify-center"
         onPointerDown={(e) => {
           const scroller = scrollerRef.current;
           const thumb = thumbRef.current;
@@ -178,7 +178,7 @@ export function ScrollReveal({
       >
         <div
           ref={thumbRef}
-          className="w-1 rounded-full bg-foreground/20 transition-[width,background-color] duration-150 ease-out group-hover/bar:w-1.5 group-hover/bar:bg-foreground/35 group-active/bar:bg-foreground/50"
+          className="w-1.5 rounded-full bg-foreground/20 transition-[width,background-color] duration-150 ease-out group-hover/bar:w-2 group-hover/bar:bg-foreground/35 group-active/bar:bg-foreground/50"
         />
       </div>
     </div>

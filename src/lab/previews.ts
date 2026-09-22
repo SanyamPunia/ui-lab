@@ -50,6 +50,26 @@ import BarChartDemo from "./components/bar-chart";
 import StackedDrawerDemo from "./components/stacked-drawer";
 import ConfettiButtonDemo from "./components/confetti-button";
 import TypewriterDemo from "./components/typewriter";
+import TagInputDemo from "./components/tag-input";
+import RangeSliderDemo from "./components/range-slider";
+import NumberStepperDemo from "./components/number-stepper";
+import SelectMenuDemo from "./components/select-menu";
+import UndoToastDemo from "./components/undo-toast";
+import FileDropzoneDemo from "./components/file-dropzone";
+import ChatThreadDemo from "./components/chat-thread";
+import LoaderSetDemo from "./components/loader-set";
+import WheelPickerDemo from "./components/wheel-picker";
+import SlideToConfirmDemo from "./components/slide-to-confirm";
+import PullToRefreshDemo from "./components/pull-to-refresh";
+import HoverCardDemo from "./components/hover-card";
+import TreeViewDemo from "./components/tree-view";
+import PricingToggleDemo from "./components/pricing-toggle";
+import ReadingProgressDemo from "./components/reading-progress";
+import CodeBlockDemo from "./components/code-block";
+import WaveTextDemo from "./components/wave-text";
+import DotGridDemo from "./components/dot-grid";
+import SpotlightCardDemo from "./components/spotlight-card";
+import StoryProgressDemo from "./components/story-progress";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -106,5 +126,25 @@ export const previews: Record<string, ComponentType> = {
   "stacked-drawer": StackedDrawerDemo,
   "confetti-button": ConfettiButtonDemo,
   "typewriter": TypewriterDemo,
+  "tag-input": TagInputDemo,
+  "range-slider": RangeSliderDemo,
+  "number-stepper": NumberStepperDemo,
+  "select-menu": SelectMenuDemo,
+  "undo-toast": UndoToastDemo,
+  "file-dropzone": FileDropzoneDemo,
+  "chat-thread": ChatThreadDemo,
+  "loader-set": LoaderSetDemo,
+  "wheel-picker": WheelPickerDemo,
+  "slide-to-confirm": SlideToConfirmDemo,
+  "pull-to-refresh": PullToRefreshDemo,
+  "hover-card": HoverCardDemo,
+  "tree-view": TreeViewDemo,
+  "pricing-toggle": PricingToggleDemo,
+  "reading-progress": ReadingProgressDemo,
+  "code-block": CodeBlockDemo,
+  "wave-text": WaveTextDemo,
+  "dot-grid": DotGridDemo,
+  "spotlight-card": SpotlightCardDemo,
+  "story-progress": StoryProgressDemo,
   // new-component:entries
 };

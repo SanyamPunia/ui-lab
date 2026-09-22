@@ -15,10 +15,10 @@ import { cn } from "@/lib/cn";
 
 type Datum = { label: string; value: number };
 
-const PLOT_H = 120;
-// The 4px rounded cap rides on top of a square body. Scaling one rounded
+const PLOT_H = 190;
+// The 6px rounded cap rides on top of a square body. Scaling one rounded
 // rect would squash its corners, so only the body scales.
-const CAP = 4;
+const CAP = 6;
 // Mount: a quick cascade reads as one gesture across the week.
 const STAGGER = 0.04;
 // No bounce: an overshooting bar briefly claims a value that isn't true.
@@ -58,11 +58,11 @@ export function BarChart({
   };
 
   return (
-    <div className={cn("flex w-[300px]", className)}>
+    <div className={cn("flex w-[520px] max-w-full", className)}>
       {/* Tick labels sit in their own gutter so gridlines can span the plot. */}
       <div
         aria-hidden
-        className="relative mr-2 w-5 shrink-0 text-right text-[11px] text-muted tabular-nums"
+        className="relative mr-3 w-6 shrink-0 text-right text-xs text-muted tabular-nums"
         style={{ height: PLOT_H }}
       >
         {ticks.map((t) => (
@@ -132,12 +132,12 @@ export function BarChart({
             />
           ))}
         </div>
-        <div aria-hidden className="mt-2 flex">
+        <div aria-hidden className="mt-3 flex">
           {data.map((d, i) => (
             <span
               key={d.label}
               className={cn(
-                "flex-1 text-center text-xs transition-colors duration-150 ease-out",
+                "flex-1 text-center text-sm transition-colors duration-150 ease-out",
                 active === i ? "text-foreground" : "text-muted",
               )}
             >
@@ -211,7 +211,7 @@ function Bar({
       role="img"
       tabIndex={tabIndex}
       aria-label={`${datum.label}, ${datum.value} ${unit}`}
-      // The whole column is the hit target, not just the 24px bar.
+      // The whole column is the hit target, not just the 40px bar.
       className="relative flex-1 rounded-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
       onPointerEnter={(e) => {
         if (e.pointerType !== "touch") onActivate();
@@ -242,7 +242,7 @@ function BarShape({ height, dimmed }: { height: MotionValue<number>; dimmed: boo
     <div
       aria-hidden
       className={cn(
-        "absolute bottom-0 left-1/2 w-6 -translate-x-1/2 transition-opacity duration-150 ease-out",
+        "absolute bottom-0 left-1/2 w-10 -translate-x-1/2 transition-opacity duration-150 ease-out",
         dimmed ? "opacity-40" : "opacity-100",
       )}
       style={{ height: PLOT_H }}
@@ -252,7 +252,7 @@ function BarShape({ height, dimmed }: { height: MotionValue<number>; dimmed: boo
         style={{ height: PLOT_H - CAP, transform: body }}
       />
       <motion.div
-        className="absolute inset-x-0 bottom-0 rounded-t-[4px] bg-foreground"
+        className="absolute inset-x-0 bottom-0 rounded-t-[6px] bg-foreground"
         style={{ height: CAP + 1, transform: cap, opacity: capOpacity }}
       />
     </div>
@@ -268,15 +268,15 @@ function Tooltip({
   visible: boolean;
   children: React.ReactNode;
 }) {
-  // Rides 6px above the bar's top, following it while the bar animates.
-  const transform = useTransform(height, (h) => `translate(-50%, ${-h - 6}px)`);
+  // Rides 8px above the bar's top, following it while the bar animates.
+  const transform = useTransform(height, (h) => `translate(-50%, ${-h - 8}px)`);
 
   return (
     <div aria-hidden className="pointer-events-none absolute bottom-0 left-1/2">
       <motion.div style={{ transform }}>
         <div
           className={cn(
-            "rounded-full bg-foreground px-2 py-1 text-xs whitespace-nowrap text-background transition-[opacity,translate] ease-out motion-reduce:transition-opacity",
+            "rounded-full bg-foreground px-3 py-1.5 text-sm whitespace-nowrap text-background transition-[opacity,translate] ease-out motion-reduce:transition-opacity",
             visible
               ? "translate-y-0 opacity-100 duration-100"
               : "translate-y-1 opacity-0 duration-75 motion-reduce:translate-y-0",
@@ -304,11 +304,11 @@ export default function BarChartDemo() {
   const total = values.reduce((a, b) => a + b, 0);
 
   return (
-    <div className="flex w-[300px] flex-col gap-4">
+    <div className="flex w-[520px] max-w-full flex-col gap-6">
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-sm text-muted">Focus hours</p>
-          <p className="text-lg font-semibold tracking-tight text-foreground">
+          <p className="text-[15px] text-muted">Focus hours</p>
+          <p className="text-3xl font-semibold tracking-tight text-foreground tabular-nums">
             {total.toFixed(1)} h
           </p>
         </div>
@@ -318,7 +318,7 @@ export default function BarChartDemo() {
           <span
             aria-hidden
             className={cn(
-              "absolute top-1 bottom-1 left-1 w-[76px] rounded-full bg-background shadow-raised transition-transform duration-200 motion-reduce:transition-none",
+              "absolute top-1 bottom-1 left-1 w-[96px] rounded-full bg-background shadow-raised transition-transform duration-200 motion-reduce:transition-none",
               EASE,
               week === WEEKS[1] && "translate-x-full",
             )}
@@ -330,7 +330,7 @@ export default function BarChartDemo() {
               aria-pressed={week === w}
               onClick={() => setWeek(w)}
               className={cn(
-                "relative h-7 w-[76px] touch-manipulation rounded-full text-xs font-medium outline-none transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+                "relative h-9 w-[96px] touch-manipulation rounded-full text-sm font-medium outline-none transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
                 week === w ? "text-foreground" : "text-muted hover:text-foreground",
               )}
             >

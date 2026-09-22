@@ -108,7 +108,7 @@ export function PasswordField({
     <div className={cn("flex flex-col", className)}>
       <label
         htmlFor={id}
-        className="mb-1.5 text-sm font-medium text-foreground select-none"
+        className="mb-2 text-[15px] font-medium text-foreground select-none"
       >
         {label}
       </label>
@@ -127,7 +127,7 @@ export function PasswordField({
             setValue(e.target.value);
             onValueChange?.(e.target.value);
           }}
-          className="h-10 w-full rounded-xl border border-border bg-background pr-10 pl-3 text-sm text-foreground outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground"
+          className="h-11 w-full rounded-xl border border-border bg-background pr-12 pl-3.5 text-[15px] text-foreground outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground"
         />
         {/* 8px radius inside the 12px field with 4px of inset: concentric. */}
         <button
@@ -142,7 +142,7 @@ export function PasswordField({
           }}
           onClick={toggle}
           className={cn(
-            "absolute top-1 right-1 flex size-8 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+            "absolute top-1 right-1 flex size-9 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
             revealed && "text-foreground",
           )}
         >
@@ -158,8 +158,8 @@ export function PasswordField({
         </button>
       </div>
 
-      <div className="mt-2.5 flex items-center gap-3" aria-hidden>
-        <div className="flex flex-1 gap-1">
+      <div className="mt-3 flex items-center gap-3" aria-hidden>
+        <div className="flex flex-1 gap-1.5">
           {[1, 2, 3, 4].map((segment) => {
             const filled = segment <= score;
             const step =
@@ -172,7 +172,7 @@ export function PasswordField({
             return (
               <span
                 key={segment}
-                className="h-1 flex-1 overflow-hidden rounded-full bg-border"
+                className="h-1.5 flex-1 overflow-hidden rounded-full bg-border"
               >
                 <span
                   style={{
@@ -191,7 +191,7 @@ export function PasswordField({
         </div>
         {/* All words share one grid cell, so the row keeps the width of the
             longest and never jumps; they crossfade through a 4px blur. */}
-        <span className="grid w-12 text-right text-xs font-medium">
+        <span className="grid w-14 text-right text-sm font-medium">
           {VERDICTS.map((w) => (
             <span
               key={w}
@@ -209,14 +209,14 @@ export function PasswordField({
         </span>
       </div>
 
-      <ul id={rulesId} className="mt-3 flex flex-col gap-1.5">
+      <ul id={rulesId} className="mt-3.5 flex flex-col gap-2">
         {RULES.map((rule) => {
           const met = rule.test(value);
           return (
             <li
               key={rule.label}
               className={cn(
-                "flex items-center gap-2 text-xs transition-[color] duration-150 ease-out",
+                "flex items-center gap-2 text-sm transition-[color] duration-150 ease-out",
                 met ? "text-foreground" : "text-muted",
               )}
             >
@@ -260,7 +260,7 @@ function Icon({
   return (
     <motion.svg
       viewBox="0 0 16 16"
-      className={cn("col-start-1 row-start-1", small ? "size-3.5" : "size-4")}
+      className={cn("col-start-1 row-start-1", small ? "size-4" : "size-5")}
       fill="none"
       stroke="currentColor"
       strokeWidth={1.5}
@@ -276,5 +276,5 @@ function Icon({
 }
 
 export default function PasswordFieldDemo() {
-  return <PasswordField name="password" className="w-72" />;
+  return <PasswordField name="password" className="w-[380px] max-w-full" />;
 }

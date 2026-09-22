@@ -20,7 +20,7 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 // No bounce: a card edge that overshoots reads as the layout being unsure.
 const HEIGHT = { type: "spring", duration: 0.3, bounce: 0 } as const;
 // Far enough to read as direction, short enough to stay a nudge, not a pan.
-const SHIFT = 28;
+const SHIFT = 36;
 const ICON_SWAP = { type: "spring", duration: 0.3, bounce: 0 } as const;
 
 // The old step leaves faster and travels less than the new one arrives, so
@@ -159,7 +159,7 @@ export function MultiStepForm({
     // The card grows up from a fixed bottom, so Back and Continue never move
     // under the cursor. An invisible copy holding every step at once reserves
     // the tallest height, which keeps the outer box a constant size.
-    <div className={cn("grid w-80", className)}>
+    <div className={cn("grid w-[420px] max-w-full", className)}>
       <div
         aria-hidden
         inert
@@ -168,7 +168,7 @@ export function MultiStepForm({
         <Header stepIndex={stepIndex} />
         <div className="grid">
           {([0, 1, 2, "done"] as const).map((p) => (
-            <div key={p} className="col-start-1 row-start-1 p-5">
+            <div key={p} className="col-start-1 row-start-1 p-6">
               {content(p, `${uid}-ghost`)}
             </div>
           ))}
@@ -179,7 +179,7 @@ export function MultiStepForm({
       <form
         noValidate
         aria-label="Create a workspace"
-        className="col-start-1 row-start-1 flex flex-col self-end overflow-hidden rounded-2xl bg-surface shadow-raised"
+        className="col-start-1 row-start-1 flex flex-col self-end overflow-hidden rounded-[20px] bg-surface shadow-raised"
         onSubmit={(e) => {
           e.preventDefault();
           advance();
@@ -209,7 +209,7 @@ export function MultiStepForm({
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="p-5"
+                className="p-6"
               >
                 {content(panel, uid)}
               </motion.div>
@@ -234,15 +234,15 @@ export function MultiStepForm({
 
 function Header({ stepIndex }: { stepIndex: number }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-5 pt-5">
-      <span className="text-xs text-muted tabular-nums">
+    <div className="flex items-center justify-between gap-4 px-6 pt-6">
+      <span className="text-sm text-muted tabular-nums">
         {stepIndex < 3 ? `Step ${stepIndex + 1} of 3` : "Complete"}
       </span>
-      <div aria-hidden className="flex gap-1">
+      <div aria-hidden className="flex gap-1.5">
         {STEPS.map((step, i) => (
           <span
             key={step}
-            className="h-1 w-6 overflow-hidden rounded-full bg-foreground/15"
+            className="h-1.5 w-8 overflow-hidden rounded-full bg-foreground/15"
           >
             {/* Fills left to right when reached and drains right to left when
                 you step back, so the bar always points the way you moved. */}
@@ -273,14 +273,14 @@ function Footer({
   onBack: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between border-t border-border p-3">
+    <div className="flex items-center justify-between border-t border-border p-4">
       {/* Always rendered, so Continue keeps its place when Back is hidden. */}
       <button
         type="button"
         onClick={onBack}
         disabled={!canGoBack}
         className={cn(
-          "h-9 touch-manipulation rounded-full px-3 text-sm font-medium text-muted outline-none transition-[scale,opacity,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+          "h-11 touch-manipulation rounded-full px-4 text-[15px] font-medium text-muted outline-none transition-[scale,opacity,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
           !canGoBack && "pointer-events-none opacity-0",
         )}
       >
@@ -289,7 +289,7 @@ function Footer({
       <button
         type="submit"
         disabled={!valid}
-        className="h-9 touch-manipulation rounded-full bg-foreground px-4 text-sm font-medium text-background outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-11 touch-manipulation rounded-full bg-foreground px-5 text-[15px] font-medium text-background outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {/* Every label shares one grid cell, so the button holds the width of
             the longest and never resizes as the label changes. */}
@@ -335,7 +335,7 @@ function PanelContent({
 }) {
   if (panel === 0) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <Heading title="Name your workspace" note="You can change this later." />
         <label htmlFor={`${prefix}-name`} className="sr-only">
           Workspace name
@@ -347,7 +347,7 @@ function PanelContent({
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Acme Inc"
           autoComplete="organization"
-          className="h-10 rounded-lg bg-background px-3 text-sm text-foreground shadow-raised outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground"
+          className="h-11 rounded-xl bg-background px-3.5 text-[15px] text-foreground shadow-raised outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground"
         />
       </div>
     );
@@ -355,16 +355,16 @@ function PanelContent({
 
   if (panel === 1) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <Heading title="Choose a plan" note="Switch any time from settings." />
-        <div role="radiogroup" aria-label="Plan" className="flex flex-col gap-1.5">
+        <div role="radiogroup" aria-label="Plan" className="flex flex-col gap-2">
           {plans.map((p, i) => {
             const checked = p.id === planId;
             return (
               <label
                 key={p.id}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-lg bg-background px-3 py-2.5 shadow-raised transition-[scale,box-shadow] duration-150 ease-out select-none active:scale-[0.98] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-foreground",
+                  "flex cursor-pointer items-center gap-3.5 rounded-xl bg-background px-4 py-3 shadow-raised transition-[scale,box-shadow] duration-150 ease-out select-none active:scale-[0.98] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-foreground",
                   checked && "shadow-[0_0_0_1.5px_var(--foreground)]",
                 )}
               >
@@ -382,22 +382,22 @@ function PanelContent({
                 <span
                   aria-hidden
                   className={cn(
-                    "flex size-4 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1.5px_var(--border)] transition-[box-shadow] duration-150 ease-out",
+                    "flex size-5 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1.5px_var(--border)] transition-[box-shadow] duration-150 ease-out",
                     checked && "shadow-[inset_0_0_0_1.5px_var(--foreground)]",
                   )}
                 >
                   <span
                     className={cn(
-                      "size-2 rounded-full bg-foreground transition-[scale,opacity] duration-150 ease-out",
+                      "size-2.5 rounded-full bg-foreground transition-[scale,opacity] duration-150 ease-out",
                       checked ? "scale-100 opacity-100" : "scale-[0.25] opacity-0",
                     )}
                   />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="text-sm font-medium text-foreground">{p.name}</span>
-                  <span className="truncate text-xs text-muted">{p.note}</span>
+                  <span className="text-[15px] font-medium text-foreground">{p.name}</span>
+                  <span className="truncate text-sm text-muted">{p.note}</span>
                 </span>
-                <span className="text-xs text-muted tabular-nums">{p.price}</span>
+                <span className="text-sm text-muted tabular-nums">{p.price}</span>
               </label>
             );
           })}
@@ -408,9 +408,9 @@ function PanelContent({
 
   if (panel === 2) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <Heading title="Review" note="Check the details, then create." focusable />
-        <dl className="flex flex-col gap-2 rounded-lg bg-background px-3 py-2.5 text-sm shadow-raised">
+        <dl className="flex flex-col gap-2.5 rounded-xl bg-background px-4 py-3 text-[15px] shadow-raised">
           <Row term="Name" value={name.trim() || "Untitled"} />
           <Row term="Plan" value={plan?.name ?? "None"} />
           <Row term="Billed" value={plan?.price ?? "Free"} />
@@ -420,10 +420,10 @@ function PanelContent({
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 py-2 text-center">
+    <div className="flex flex-col items-center gap-4 py-3 text-center">
       <motion.svg
         viewBox="0 0 16 16"
-        className="size-5 text-foreground"
+        className="size-6 text-foreground"
         fill="none"
         stroke="currentColor"
         strokeWidth={1.5}
@@ -441,17 +441,17 @@ function PanelContent({
       >
         <path d="m3.5 8.5 3 3 6-7" />
       </motion.svg>
-      <div className="flex w-full min-w-0 flex-col gap-1">
+      <div className="flex w-full min-w-0 flex-col gap-1.5">
         <h3
           tabIndex={-1}
           data-autofocus
-          className="text-sm font-medium text-foreground outline-none"
+          className="text-[20px] font-medium text-foreground outline-none"
         >
           Workspace created
         </h3>
         {/* Truncated here and in the review, so a long name can never make
             the reserved height grow. */}
-        <p className="truncate text-sm text-muted">
+        <p className="truncate text-[15px] text-muted">
           {name.trim() || "Untitled"} is ready on {plan?.name ?? "Hobby"}.
         </p>
       </div>
@@ -469,15 +469,15 @@ function Heading({
   focusable?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
       <h3
         tabIndex={focusable ? -1 : undefined}
         data-autofocus={focusable ? "" : undefined}
-        className="text-sm font-medium text-foreground outline-none"
+        className="text-[20px] font-medium text-foreground outline-none"
       >
         {title}
       </h3>
-      <p className="text-sm text-muted">{note}</p>
+      <p className="text-[15px] text-muted">{note}</p>
     </div>
   );
 }

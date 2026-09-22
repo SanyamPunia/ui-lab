@@ -133,7 +133,7 @@ export function ContextMenuArea({
       onPointerUp={cancelPress}
       onPointerCancel={cancelPress}
       className={cn(
-        "relative flex h-[180px] w-[300px] touch-manipulation flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-border outline-none select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative flex h-[320px] w-[min(520px,100%)] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-3xl px-6 text-center border border-dashed border-border outline-none select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
         className,
       )}
     >
@@ -269,14 +269,14 @@ function Menu({
       }}
       exit={{ opacity: 0, transition: { duration: 0.1, ease: "easeOut" } }}
       className={cn(
-        "fixed top-0 left-0 z-50 w-48 rounded-[10px] bg-background p-1 shadow-raised outline-none",
+        "fixed top-0 left-0 z-50 w-55 rounded-[14px] bg-background p-1.5 shadow-raised outline-none",
         !isPresent && "pointer-events-none",
       )}
     >
       {items.map((item) => (
         <div key={item.label}>
           {item.separated && (
-            <div role="separator" className="mx-2 my-1 h-px bg-border" />
+            <div role="separator" className="mx-2.5 my-1.5 h-px bg-border" />
           )}
           <button
             type="button"
@@ -296,10 +296,10 @@ function Menu({
                 e.currentTarget.focus({ preventScroll: true });
               }
             }}
-            // 6px items inside 4px padding keep the corners concentric with
-            // the menu's 10px.
+            // 8px items inside 6px padding keep the corners concentric with
+            // the menu's 14px.
             className={cn(
-              "flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-sm outline-none select-none",
+              "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-sm outline-none select-none",
               item.disabled
                 ? "cursor-default text-muted opacity-60 focus:bg-foreground/[0.04]"
                 : item.destructive
@@ -389,15 +389,15 @@ export default function ContextMenuDemo() {
         }))
       }
     >
-      <p className="text-sm font-medium text-foreground">
+      <p className="text-base font-medium text-foreground">
         Right-click anywhere
       </p>
-      <p className="text-xs text-muted">
+      <p className="text-sm text-pretty text-muted">
         Long-press on touch, Shift F10 from the keyboard
       </p>
       {/* A reserved line, so the hint above never moves when a result
           appears. Keyed per choice so each one fades in fresh. */}
-      <p aria-live="polite" className="mt-2 h-5 text-sm leading-5 text-muted">
+      <p aria-live="polite" className="mt-3 h-6 text-sm leading-6 text-muted">
         {chosen && (
           <span
             key={chosen.n}

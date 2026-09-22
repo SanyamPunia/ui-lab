@@ -17,13 +17,16 @@ const SHAPES: Record<
   IslandState,
   { width: number; height: number; radius: number }
 > = {
-  idle: { width: 120, height: 32, radius: 16 },
-  timer: { width: 200, height: 36, radius: 18 },
-  ring: { width: 168, height: 36, radius: 18 },
-  music: { width: 300, height: 76, radius: 28 },
+  idle: { width: 156, height: 42, radius: 21 },
+  timer: { width: 260, height: 46, radius: 23 },
+  ring: { width: 220, height: 46, radius: 23 },
+  music: { width: 390, height: 100, radius: 36 },
 };
 
 const MAX_HEIGHT = Math.max(...Object.values(SHAPES).map((s) => s.height));
+// The widest shape is wider than a phone's content column; this caps the
+// island and its content at the viewport minus the page gutters instead.
+const MAX_WIDTH = "calc(100vw - 2rem)";
 
 // The island is the playful exception: a bounce of 0.25 gives it the
 // elastic settle Apple uses. It runs past the 300ms norm because the
@@ -118,19 +121,20 @@ export function DynamicIsland({
           borderRadius: shape.radius,
         }}
         transition={reduceMotion ? MORPH_REDUCED : MORPH}
+        style={{ maxWidth: MAX_WIDTH }}
         className="relative overflow-hidden bg-foreground text-background"
       >
         <AnimatePresence initial={false}>
           <Content key={state} state={state} reduceMotion={reduceMotion}>
             {state === "idle" && (
               // A faint lens, like the camera sitting in the real cutout.
-              <span className="ml-auto size-2.5 rounded-full bg-background/15" />
+              <span className="ml-auto size-3 rounded-full bg-background/15" />
             )}
             {state === "timer" && (
               <>
                 <svg
                   viewBox="0 0 16 16"
-                  className="size-4 shrink-0"
+                  className="size-5 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
@@ -141,7 +145,7 @@ export function DynamicIsland({
                   <circle cx="8" cy="9" r="5.25" />
                   <path d="M8 6.5V9l1.5 1.25M6.5 1.75h3" />
                 </svg>
-                <span className="ml-auto text-sm font-semibold tabular-nums">
+                <span className="ml-auto text-[15px] font-semibold tabular-nums">
                   {formatElapsed(elapsed)}
                 </span>
               </>
@@ -150,7 +154,7 @@ export function DynamicIsland({
               <>
                 <motion.svg
                   viewBox="0 0 16 16"
-                  className="size-4 shrink-0"
+                  className="size-5 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={1.5}
@@ -169,28 +173,28 @@ export function DynamicIsland({
                   <path d="M4 11.25V7.5a4 4 0 0 1 8 0v3.75l1 1H3Z" />
                   <path d="M6.75 13.75a1.25 1.25 0 0 0 2.5 0" />
                 </motion.svg>
-                <span className="ml-auto text-xs font-medium">Ringer on</span>
+                <span className="ml-auto text-sm font-medium">Ringer on</span>
               </>
             )}
             {state === "music" && (
               <>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-sm font-semibold">
+                  <span className="truncate text-[15px] font-semibold">
                     {title}
                   </span>
-                  <span className="truncate text-xs text-background/60">
+                  <span className="truncate text-sm text-background/60">
                     {artist}
                   </span>
                 </div>
                 <span
                   aria-hidden
                   data-playing={playing}
-                  className="dynamic-island-eq flex h-4 items-end gap-[3px]"
+                  className="dynamic-island-eq flex h-5 items-end gap-1"
                 >
                   {BARS.map((bar, i) => (
                     <span
                       key={i}
-                      className="h-full w-[3px] rounded-full bg-background"
+                      className="h-full w-1 rounded-full bg-background"
                       style={{
                         scale: `1 ${bar.rest}`,
                         animationDuration: `${bar.duration}ms`,
@@ -203,7 +207,7 @@ export function DynamicIsland({
                   type="button"
                   aria-label={playing ? "Pause" : "Play"}
                   onClick={() => onPlayingChange?.(!playing)}
-                  className="-mr-1 grid size-9 shrink-0 touch-manipulation place-items-center rounded-full outline-none transition-[scale,background-color] duration-150 ease-out hover:bg-background/10 focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
+                  className="-mr-1.5 grid size-11 shrink-0 touch-manipulation place-items-center rounded-full outline-none transition-[scale,background-color] duration-150 ease-out hover:bg-background/10 focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
                 >
                   <SwapIcon visible={!playing} reduceMotion={reduceMotion}>
                     {/* Starts right of center so the triangle's mass, not its
@@ -253,12 +257,12 @@ function Content({
       }}
       transition={{ duration: 0.25, delay: 0.08, ease: EASE_OUT }}
       className={cn(
-        "absolute inset-x-0 top-0 mx-auto flex items-center gap-3",
-        state === "music" ? "px-5" : "px-3.5",
+        "absolute inset-x-0 top-0 mx-auto flex items-center gap-4",
+        state === "music" ? "px-6" : "px-[18px]",
         // Leaving content must never catch a click meant for the new state.
         !present && "pointer-events-none",
       )}
-      style={{ width: shape.width, height: shape.height }}
+      style={{ width: shape.width, height: shape.height, maxWidth: MAX_WIDTH }}
     >
       {children}
     </motion.div>
@@ -280,7 +284,7 @@ function SwapIcon({
   return (
     <motion.svg
       viewBox="0 0 16 16"
-      className="col-start-1 row-start-1 size-4"
+      className="col-start-1 row-start-1 size-5"
       fill="none"
       stroke="currentColor"
       strokeWidth={2}
@@ -332,7 +336,7 @@ export default function DynamicIslandDemo() {
   };
 
   return (
-    <div className="flex w-80 flex-col items-center gap-6">
+    <div className="flex w-[420px] max-w-full flex-col items-center gap-8">
       <DynamicIsland
         state={state}
         elapsed={elapsed}
@@ -347,7 +351,7 @@ export default function DynamicIslandDemo() {
       <div
         role="radiogroup"
         aria-label="Island state"
-        className="flex gap-1 rounded-full bg-surface p-1 shadow-raised"
+        className="flex gap-1 rounded-full bg-surface p-1.5 shadow-raised"
         onKeyDown={(e) => {
           const index = OPTIONS.findIndex((o) => o.value === state);
           const target = {
@@ -381,7 +385,7 @@ export default function DynamicIslandDemo() {
               tabIndex={checked ? 0 : -1}
               onClick={() => select(option.value)}
               className={cn(
-                "h-7 touch-manipulation rounded-full px-3 text-xs font-medium outline-none transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                "h-9 touch-manipulation rounded-full px-4 text-sm font-medium outline-none transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                 checked
                   ? "bg-background text-foreground shadow-raised"
                   : "text-muted hover:text-foreground",

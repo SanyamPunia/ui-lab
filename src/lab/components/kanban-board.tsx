@@ -41,8 +41,8 @@ const TILT_SPEED = 1000;
 const TILT = 2;
 // Movement before a press becomes a drag, so a click still just focuses.
 const DRAG_SLOP = 4;
-// Matches gap-1 between cards.
-const GAP = 4;
+// Matches gap-2 between cards.
+const GAP = 8;
 // Layered and transparent, so it darkens whatever is below. The 1px ring
 // keeps the lifted edge visible in dark mode, where shadows barely show.
 const LIFTED_SHADOW = [
@@ -220,10 +220,11 @@ export function KanbanBoard({
     const homeTop = box.top + slot.offsetTop;
     const w = slot.offsetWidth;
     const h = slot.offsetHeight;
-    // 2px in from the edge leaves room for the lifted scale, so the card
-    // never pokes past the board and widens a narrow page.
-    const left = clamp(s.lastX - s.grabX, box.left + 2, box.right - w - 2);
-    const top = clamp(s.lastY - s.grabY, box.top + 2, box.bottom - h - 2);
+    // 3px in from the edge leaves room for the lifted scale (1.5% of a
+    // ~180px card per side), so the card never pokes past the board and
+    // widens a narrow page.
+    const left = clamp(s.lastX - s.grabX, box.left + 3, box.right - w - 3);
+    const top = clamp(s.lastY - s.grabY, box.top + 3, box.bottom - h - 3);
     const v = valuesFor(s.id);
     v.x.jump(left - homeLeft);
     v.y.jump(top - homeTop);
@@ -479,7 +480,7 @@ export function KanbanBoard({
           role="group"
           aria-label={label}
           className={cn(
-            "relative grid h-[220px] w-[340px] grid-cols-3 gap-2",
+            "relative grid h-[380px] w-[600px] max-w-full grid-cols-3 gap-3",
             pointerDragging && "cursor-grabbing select-none [&_*]:cursor-grabbing",
             className,
           )}
@@ -487,12 +488,12 @@ export function KanbanBoard({
           {columns.map((column, c) => (
             <div
               key={column.id}
-              // Concentric with the cards: 12 = 6 radius + 6 padding.
-              className="flex min-w-0 flex-col rounded-[12px] bg-surface p-1.5"
+              // Concentric with the cards: 18 = 10 radius + 8 padding.
+              className="flex min-w-0 flex-col rounded-[18px] bg-surface p-2"
             >
               <div
                 aria-hidden
-                className="flex h-6 shrink-0 items-center justify-between px-1.5 text-[11px] font-medium text-muted"
+                className="flex h-9 shrink-0 items-center justify-between px-2 text-sm font-medium text-muted"
               >
                 <span>{column.title}</span>
                 <Count value={column.cards.length} />
@@ -502,7 +503,7 @@ export function KanbanBoard({
                   lists.current[c] = node;
                 }}
                 aria-label={column.title}
-                className="flex flex-1 flex-col gap-1"
+                className="flex flex-1 flex-col gap-2"
               >
                 {column.cards.map((card) => (
                   <Card
@@ -580,7 +581,7 @@ function Card({
       layoutId={byPointer ? undefined : card.id}
       transition={LAYOUT}
       className={cn(
-        "h-[26px] shrink-0 rounded-[6px]",
+        "h-11 shrink-0 rounded-[10px]",
         // The drop placeholder: the slot shows through once the card leaves it.
         held &&
           "bg-foreground/[0.03] outline-1 -outline-offset-1 outline-foreground/20 outline-dashed",
@@ -604,7 +605,7 @@ function Card({
         onFocus={onFocus}
         onBlur={onBlur}
         className={cn(
-          "relative flex size-full cursor-grab touch-none items-center rounded-[6px] bg-background px-2 text-left text-xs text-foreground shadow-raised outline-none select-none",
+          "relative flex size-full cursor-grab touch-none items-center rounded-[10px] bg-background px-3 text-left text-sm text-foreground shadow-raised outline-none select-none",
           "transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none",
           "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-foreground",
           // Lifted already reads as pressed; don't shrink under the lift.
@@ -647,7 +648,7 @@ function Count({ value }: { value: number }) {
     setShown({ value, dir: value > shown.value ? 1 : -1 });
   }
   return (
-    <span className="relative inline-flex h-4 min-w-2 justify-end overflow-hidden tabular-nums">
+    <span className="relative inline-flex h-4 min-w-2 justify-end overflow-hidden text-xs tabular-nums">
       <AnimatePresence mode="popLayout" initial={false} custom={shown.dir}>
         <motion.span
           key={value}

@@ -6,11 +6,13 @@ import { cn } from "@/lib/cn";
 
 type Point = { label: string; value: number };
 
-const W = 300;
-const H = 100;
-// Room for the 10px scrub dot and its ring at the extremes.
-const PAD_X = 6;
-const PAD_Y = 8;
+// The plot's size at full width. On a narrower screen the whole chart
+// scales down with its width, so the overlay is positioned in percentages.
+const W = 520;
+const H = 160;
+// Room for the 12px scrub dot and its 2px ring at the extremes.
+const PAD_X = 8;
+const PAD_Y = 10;
 // Long for a UI animation on purpose: the draw is the chart introducing its
 // shape once, and a line that races in under 300ms reads as a flicker.
 const DRAW = { duration: 0.7, ease: [0.23, 1, 0.32, 1] } as const;
@@ -61,19 +63,20 @@ export function Sparkline({
   const point = data[index];
   const x = xAt(index);
   const y = yAt(point.value);
-  // Keeps the tooltip inside the chart near either edge.
-  const tipX = Math.min(Math.max(x, 52), W - 52);
+  // Keeps the ~130px tooltip inside the chart near either edge.
+  const tipX = Math.min(Math.max(x, 72), W - 72);
+  const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
   return (
-    <div className={cn("w-[300px]", className)}>
+    <div className={cn("w-[520px] max-w-full", className)}>
       <div className="flex items-baseline justify-between">
         <div>
-          <p className="text-sm text-muted">{title}</p>
-          <p className="text-2xl font-semibold tracking-tight text-foreground">
+          <p className="text-[15px] text-muted">{title}</p>
+          <p className="text-3xl font-semibold tracking-tight text-foreground tabular-nums">
             {format(last.value)}
           </p>
         </div>
-        <p className="text-sm text-muted">
+        <p className="text-[15px] text-muted">
           <span className="font-medium text-foreground tabular-nums">
             {delta > 0 ? "+" : delta < 0 ? "-" : ""}
             {format(Math.abs(delta))}
@@ -90,7 +93,7 @@ export function Sparkline({
         aria-label={`${title}, ${data.length} points. Use arrow keys to read values.`}
         // pan-y leaves vertical scrolling to the page and hands sideways
         // drags to the scrubber.
-        className="relative mt-8 h-[100px] w-[300px] touch-pan-y rounded-sm outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+        className="relative mt-12 aspect-[520/160] w-full touch-pan-y rounded-sm outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
         onPointerDown={(e) => {
           if (e.pointerType !== "touch") return;
           setIndex(nearest(e.clientX));
@@ -130,9 +133,7 @@ export function Sparkline({
       >
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          width={W}
-          height={H}
-          className="block overflow-visible"
+          className="block h-auto w-full overflow-visible"
           aria-hidden
         >
           <motion.path
@@ -146,7 +147,7 @@ export function Sparkline({
             d={line}
             fill="none"
             className="stroke-foreground"
-            strokeWidth={2}
+            strokeWidth={2.5}
             strokeLinecap="round"
             strokeLinejoin="round"
             // Opacity hides the round cap's dot before the draw starts.
@@ -172,16 +173,16 @@ export function Sparkline({
           )}
         >
           <div
-            className="absolute top-0 left-0 h-full w-px bg-muted/40"
-            style={{ transform: `translateX(${x - 0.5}px)` }}
+            className="absolute top-0 h-full w-px -translate-x-1/2 bg-muted/40"
+            style={{ left: pct(x, W) }}
           />
           <div
-            className="absolute top-0 left-0 size-2.5 rounded-full bg-foreground ring-2 ring-background"
-            style={{ transform: `translate(${x - 5}px, ${y - 5}px)` }}
+            className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground ring-2 ring-background"
+            style={{ left: pct(x, W), top: pct(y, H) }}
           />
           <div
-            className="absolute bottom-full left-0 mb-2 flex items-baseline gap-1.5 rounded-full bg-foreground px-2 py-1 text-xs whitespace-nowrap text-background"
-            style={{ transform: `translateX(${tipX}px) translateX(-50%)` }}
+            className="absolute bottom-full mb-2.5 flex -translate-x-1/2 items-baseline gap-2 rounded-full bg-foreground px-3 py-1.5 text-sm whitespace-nowrap text-background"
+            style={{ left: pct(tipX, W) }}
           >
             <span className="font-semibold tabular-nums">{format(point.value)}</span>
             <span className="opacity-70">{point.label}</span>

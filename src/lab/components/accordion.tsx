@@ -33,7 +33,7 @@ export function Accordion({
   };
 
   return (
-    <div className={cn("w-80 divide-y divide-border", className)}>
+    <div className={cn("w-[480px] max-w-full divide-y divide-border", className)}>
       {items.map((item, i) => {
         const isOpen = open.has(i);
         const headerId = `${baseId}-header-${i}`;
@@ -62,14 +62,14 @@ export function Accordion({
                   e.preventDefault();
                   focusHeader(target);
                 }}
-                className="group flex h-12 w-full items-center justify-between gap-4 rounded-md text-left text-sm font-medium text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                className="group flex h-14 w-full items-center justify-between gap-5 rounded-md text-left text-[15px] font-medium text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
                 {item.question}
                 <svg
                   viewBox="0 0 16 16"
                   aria-hidden
                   className={cn(
-                    "size-4 shrink-0 text-muted transition-[rotate,color] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:text-foreground motion-reduce:transition-[color]",
+                    "size-[18px] shrink-0 text-muted transition-[rotate,color] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:text-foreground motion-reduce:transition-[color]",
                     isOpen && "rotate-180 text-foreground",
                   )}
                   fill="none"
@@ -104,7 +104,7 @@ export function Accordion({
                     so the text is gone before the row finishes shutting. */}
                 <p
                   className={cn(
-                    "pr-8 pb-4 text-sm leading-relaxed text-pretty text-muted ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
+                    "pr-10 pb-5 text-[15px] leading-relaxed text-pretty text-muted ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
                     isOpen
                       ? "translate-y-0 opacity-100 transition-[opacity,translate] delay-60 duration-200"
                       : "-translate-y-1 opacity-0 transition-[opacity,translate] duration-120",

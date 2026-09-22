@@ -67,7 +67,7 @@ export function FilterList({
   };
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex flex-col gap-3", className)}>
       <div className="relative">
         <svg
           viewBox="0 0 16 16"
@@ -77,7 +77,7 @@ export function FilterList({
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden
-          className="pointer-events-none absolute top-3 left-3 size-4 text-muted"
+          className="pointer-events-none absolute top-[15px] left-3.5 size-[18px] text-muted"
         >
           <circle cx="7" cy="7" r="4.25" />
           <path d="m10.25 10.25 3 3" />
@@ -100,9 +100,9 @@ export function FilterList({
             e.preventDefault();
             setQuery("");
           }}
-          className="h-10 w-full rounded-xl border border-border bg-background pr-10 pl-9 text-sm text-foreground outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
+          className="h-12 w-full rounded-[14px] border border-border bg-background pr-12 pl-11 text-[15px] text-foreground outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
         />
-        {/* 8px radius inside the 12px field with 4px of inset: concentric.
+        {/* 10px radius inside the 14px field with 4px of inset: concentric.
             Kept mounted so it swaps with the icon recipe both ways. */}
         <button
           type="button"
@@ -111,7 +111,7 @@ export function FilterList({
           aria-hidden={query === "" || undefined}
           onClick={clear}
           className={cn(
-            "absolute top-1 right-1 flex size-8 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+            "absolute top-1 right-1 flex size-10 touch-manipulation items-center justify-center rounded-[10px] text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
             query === "" && "pointer-events-none",
           )}
         >
@@ -122,7 +122,7 @@ export function FilterList({
             strokeWidth={1.5}
             strokeLinecap="round"
             aria-hidden
-            className="size-4"
+            className="size-[18px]"
             initial={false}
             animate={
               query !== ""
@@ -152,7 +152,7 @@ export function FilterList({
               aria-pressed={active}
               onClick={() => setCategory(c)}
               className={cn(
-                "relative h-7 flex-1 touch-manipulation rounded-full text-xs font-medium outline-none transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+                "relative h-8 flex-1 touch-manipulation rounded-full text-sm font-medium outline-none transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
                 active ? "text-foreground" : "text-muted hover:text-foreground",
               )}
             >
@@ -175,7 +175,7 @@ export function FilterList({
           correctly after the list has been scrolled. */}
       <motion.div
         layoutScroll
-        className="relative h-44 overflow-y-auto overscroll-contain rounded-xl border border-border p-1 [scrollbar-width:thin]"
+        className="relative h-72 overflow-y-auto overscroll-contain rounded-2xl border border-border p-1.5 [scrollbar-width:thin]"
       >
         <ul id={`${id}-list`} aria-label="Results" className="relative">
           <AnimatePresence mode="popLayout" initial={false}>
@@ -201,12 +201,12 @@ export function FilterList({
                     ? { ...ENTER, layout: INSTANT }
                     : { ...ENTER, layout: SLIDE }
                 }
-                className="flex h-9 items-center justify-between gap-3 rounded-lg px-3"
+                className="flex h-11 items-center justify-between gap-4 rounded-[10px] px-3.5"
               >
-                <span className="truncate text-sm text-foreground">
+                <span className="truncate text-[15px] text-foreground">
                   <Highlight text={item.name} needle={needle} />
                 </span>
-                <span className="shrink-0 text-xs text-muted">
+                <span className="shrink-0 text-[13px] text-muted">
                   {item.category}
                 </span>
               </motion.li>
@@ -225,10 +225,10 @@ export function FilterList({
                 transition: EMPTY_IN,
               }}
               exit={{ opacity: 0, transition: INSTANT }}
-              className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 px-6 text-center text-sm text-muted"
+              className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 px-6 text-center text-[15px] text-muted"
             >
               <span className="text-foreground">No matches</span>
-              <span className="text-xs">Try another word or category.</span>
+              <span className="text-[13px]">Try another word or category.</span>
             </motion.p>
           )}
         </AnimatePresence>
@@ -247,7 +247,7 @@ function Highlight({ text, needle }: { text: string; needle: string }) {
   return (
     <>
       {text.slice(0, at)}
-      <mark className="rounded-[3px] bg-foreground/10 text-foreground">
+      <mark className="rounded-[4px] bg-foreground/10 text-foreground">
         {text.slice(at, at + needle.length)}
       </mark>
       {text.slice(at + needle.length)}
@@ -276,7 +276,7 @@ export default function FilterListDemo() {
       categories={["Motion", "Input", "Layout"]}
       label="Search components"
       placeholder="Search components"
-      className="w-72"
+      className="w-[400px] max-w-full"
     />
   );
 }

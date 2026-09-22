@@ -10,16 +10,16 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/cn";
 
-// Track is 44x24 with 2px padding, so the knob moves inside 40px.
-const INNER = 40;
-const KNOB = 20;
-// Pressed, the knob leans 6px into the direction it will travel.
-const STRETCHED = 26;
+// Track is 48x28 with 2px padding, so the knob moves inside 44px.
+const INNER = 44;
+const KNOB = 24;
+// Pressed, the knob leans 7px into the direction it will travel.
+const STRETCHED = 31;
 // Movement below this is still a tap, so a shaky finger doesn't drag.
 const DRAG_SLOP = 3;
 // Landing past the end squashes the knob against the wall instead of
 // poking out of the track. Capped so a hard flick can't flatten it.
-const MAX_SQUASH = 4;
+const MAX_SQUASH = 5;
 // The playful case: a little bounce sells the knob as a physical thing.
 // 0.3s is the visual settle; the overshoot tail runs slightly past it.
 const TRAVEL = { type: "spring", visualDuration: 0.3, bounce: 0.25 } as const;
@@ -104,7 +104,7 @@ export function ToggleSwitch({
     >
       <label
         htmlFor={id}
-        className="cursor-pointer text-sm text-foreground select-none"
+        className="cursor-pointer text-[15px] text-foreground select-none"
       >
         {label}
       </label>
@@ -115,8 +115,8 @@ export function ToggleSwitch({
         aria-checked={checked}
         // The knob's stretch is the press feedback, so the track doesn't
         // also scale: shrinking it would shift the knob under the finger
-        // mid-drag. The pseudo-element grows the hit area to 52x44.
-        className="relative h-6 w-11 shrink-0 cursor-pointer touch-none rounded-full bg-foreground/15 outline-none select-none after:absolute after:-inset-x-1 after:-inset-y-2.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground dark:bg-foreground/25"
+        // mid-drag. The pseudo-element grows the hit area to 56x44.
+        className="relative h-7 w-12 shrink-0 cursor-pointer touch-none rounded-full bg-foreground/15 outline-none select-none after:absolute after:-inset-x-1 after:-inset-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground dark:bg-foreground/25"
         onPointerDown={(e) => {
           if (e.button !== 0 || gesture.current) return;
           swallowClick.current = false;
@@ -173,7 +173,7 @@ export function ToggleSwitch({
         />
         <motion.span
           aria-hidden
-          className="absolute top-0.5 left-0.5 h-5 rounded-full bg-background shadow-raised"
+          className="absolute top-0.5 left-0.5 h-6 rounded-full bg-background shadow-raised"
           style={{ x: knobX, width: knobWidth }}
         />
       </button>
@@ -191,7 +191,7 @@ export default function ToggleSwitchDemo() {
   });
 
   return (
-    <div className="w-72 divide-y divide-border">
+    <div className="w-[380px] max-w-full divide-y divide-border">
       {SETTINGS.map((name) => (
         <ToggleSwitch
           key={name}

@@ -145,7 +145,7 @@ export function ReorderList({
   };
 
   return (
-    <div className={cn("w-72", className)}>
+    <div className={cn("w-[400px] max-w-full", className)}>
       <Reorder.Group
         ref={listRef}
         axis="y"
@@ -153,7 +153,7 @@ export function ReorderList({
         onReorder={onReorder}
         aria-label={label}
         className={cn(
-          "flex flex-col gap-1",
+          "flex flex-col gap-3",
           // Keeps a fast drag from painting a selection across the list.
           dragging && "cursor-grabbing select-none",
         )}
@@ -255,7 +255,7 @@ function Row({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        "relative flex items-center gap-2 rounded-[14px] bg-surface p-1.5 pr-3.5",
+        "relative flex items-center gap-3 rounded-[16px] bg-surface p-1.5 pr-4",
         // Reorder only raises a row while it's pointer-dragged, so a row
         // moved from the keyboard needs this to slide over its neighbours.
         lifted && "z-10!",
@@ -267,7 +267,8 @@ function Row({
         style={{ boxShadow: LIFTED_SHADOW }}
         className="pointer-events-none absolute inset-0 rounded-[inherit]"
       />
-      {/* 6px row padding around 8px corners keeps the radii concentric: 14 = 8 + 6.
+      {/* 6px row padding around 10px corners keeps the radii concentric: 16 = 10 + 6,
+          and the 40px handle plus that padding makes a 52px row.
           No press scale: pressing lifts the whole row, which is the feedback. */}
       <button
         ref={handleRef}
@@ -282,13 +283,13 @@ function Row({
         onKeyDown={onKeyDown}
         onBlur={onBlur}
         className={cn(
-          "relative flex size-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-[8px] text-muted outline-none transition-[color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing",
+          "relative flex size-10 shrink-0 cursor-grab touch-none items-center justify-center rounded-[10px] text-muted outline-none transition-[color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing",
           lifted && "bg-foreground/5 text-foreground",
         )}
       >
         <svg
           viewBox="0 0 16 16"
-          className="size-4"
+          className="size-5"
           fill="currentColor"
           aria-hidden
         >
@@ -300,11 +301,11 @@ function Row({
           <circle cx="10" cy="12" r="1.25" />
         </svg>
       </button>
-      <span className="relative min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+      <span className="relative min-w-0 flex-1 truncate text-[15px] font-medium text-foreground">
         {item.label}
       </span>
       {item.meta && (
-        <span className="relative shrink-0 text-sm text-muted tabular-nums">
+        <span className="relative shrink-0 text-[13px] text-muted tabular-nums">
           {item.meta}
         </span>
       )}

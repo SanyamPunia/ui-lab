@@ -83,7 +83,7 @@ export function Gauge({
       aria-valuemax={100}
       aria-valuenow={clamped}
       aria-valuetext={`${clamped}%${high ? ", high" : ""}`}
-      className={cn("flex w-[200px] flex-col items-center", className)}
+      className={cn("flex w-[320px] max-w-full flex-col items-center", className)}
     >
       <div className="relative w-full">
         <svg
@@ -120,14 +120,14 @@ export function Gauge({
         {/* Tabular so the width holds steady while the number counts. */}
         <span
           aria-hidden
-          className="absolute inset-x-0 bottom-0 flex items-baseline justify-center text-5xl leading-none font-semibold tracking-tight text-foreground tabular-nums"
+          className="absolute inset-x-0 bottom-0 flex items-baseline justify-center text-6xl leading-none font-semibold tracking-tight text-foreground tabular-nums"
         >
           <motion.span>{shown}</motion.span>
-          <span className="ml-0.5 text-xl font-medium text-muted">%</span>
+          <span className="ml-1 text-2xl font-medium text-muted">%</span>
         </span>
       </div>
 
-      <div aria-hidden className="relative mt-2 flex h-5 items-center text-sm">
+      <div aria-hidden className="relative mt-3 flex h-6 items-center text-[15px]">
         <span className="text-muted">{label}</span>
         {/* Status never rides on colour alone, so high usage also gets a word.
             Out of flow so the label stays centred whether or not it shows. */}
@@ -139,7 +139,7 @@ export function Gauge({
               : "translate-y-0.5 opacity-0 blur-[4px] duration-150 motion-reduce:translate-y-0",
           )}
         >
-          <span className="size-1.5 rounded-full bg-danger" />
+          <span className="size-2 rounded-full bg-danger" />
           High
         </span>
       </div>
@@ -158,7 +158,7 @@ export default function GaugeDemo() {
   const preset = PRESETS[active];
 
   return (
-    <div className="flex flex-col items-center gap-5">
+    <div className="flex max-w-full flex-col items-center gap-6">
       <Gauge value={preset.value} label={preset.label} />
       <div className="flex gap-1 rounded-full bg-surface p-1">
         {PRESETS.map((p, i) => (
@@ -168,7 +168,7 @@ export default function GaugeDemo() {
             aria-pressed={i === active}
             onClick={() => setActive(i)}
             className={cn(
-              "h-8 touch-manipulation rounded-full px-3 text-sm font-medium outline-none transition-[scale,color,background-color,box-shadow] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
+              "h-10 touch-manipulation rounded-full px-4 text-sm font-medium outline-none transition-[scale,color,background-color,box-shadow] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
               i === active
                 ? "bg-background text-foreground shadow-raised"
                 : "text-muted hover:text-foreground",

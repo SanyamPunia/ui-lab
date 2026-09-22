@@ -20,7 +20,7 @@ import { cn } from "@/lib/cn";
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 // Far enough to read as travel, short enough that the fade does most of the
 // work and the grid never looks like it is leaving the card.
-const SLIDE = 40;
+const SLIDE = 56;
 const GRID: Variants = {
   enter: (dir: number) => ({ x: dir * SLIDE, opacity: 0, filter: "blur(4px)" }),
   center: {
@@ -200,14 +200,14 @@ export function MiniCalendar({
     <MotionConfig reducedMotion="user">
       <div
         className={cn(
-          "w-[248px] rounded-[20px] bg-background p-3 shadow-raised",
+          "w-[340px] max-w-full rounded-[28px] bg-background p-4 shadow-raised",
           className,
         )}
       >
-        <div className="mb-2 flex h-8 items-center justify-between">
+        <div className="mb-2 flex h-10 items-center justify-between">
           {/* Its own positioning context, so the outgoing title can sit on
               top of the incoming one while they crossfade. */}
-          <div aria-hidden className="relative flex-1 pl-2">
+          <div aria-hidden className="relative flex-1 pl-3">
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={shownMonth}
@@ -215,7 +215,7 @@ export function MiniCalendar({
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="block text-sm font-medium whitespace-nowrap text-foreground"
+                className="block text-[16px] font-medium whitespace-nowrap text-foreground"
               >
                 {monthTitle(shownMonth)}
               </motion.span>
@@ -319,7 +319,7 @@ function MonthGrid({
                   key={day}
                   scope="col"
                   abbr={day}
-                  className="h-6 p-0 text-center text-[11px] font-medium text-muted"
+                  className="h-8 p-0 text-center text-xs font-medium text-muted"
                 >
                   {day.slice(0, 2)}
                 </th>
@@ -348,7 +348,7 @@ function MonthGrid({
                         aria-current={iso === today ? "date" : undefined}
                         onClick={() => onSelect(iso)}
                         className={cn(
-                          "relative flex size-8 touch-manipulation items-center justify-center rounded-full text-xs tabular-nums outline-none select-none",
+                          "relative flex size-11 touch-manipulation items-center justify-center rounded-full text-sm tabular-nums outline-none select-none",
                           "transition-[scale,color,background-color] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                           "focus-visible:outline-2 focus-visible:outline-foreground",
                           isSelected
@@ -371,7 +371,7 @@ function MonthGrid({
                         {iso === today && (
                           <span
                             aria-hidden
-                            className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-current"
+                            className="absolute bottom-1.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-current"
                           />
                         )}
                       </button>
@@ -392,13 +392,13 @@ function Shell({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "w-[248px] rounded-[20px] bg-background p-3 shadow-raised",
+        "w-[340px] max-w-full rounded-[28px] bg-background p-4 shadow-raised",
         className,
       )}
     >
-      {/* Header row plus the weekday row and six 32px weeks. */}
-      <div className="mb-2 h-8" />
-      <div className="h-[216px]" />
+      {/* Header row plus the 32px weekday row and six 44px weeks. */}
+      <div className="mb-2 h-10" />
+      <div className="h-[296px]" />
     </div>
   );
 }
@@ -417,11 +417,11 @@ function MonthButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+      className="flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
     >
       <svg
         viewBox="0 0 16 16"
-        className="size-4"
+        className="size-5"
         fill="none"
         stroke="currentColor"
         strokeWidth={1.5}

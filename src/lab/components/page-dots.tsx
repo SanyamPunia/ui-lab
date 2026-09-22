@@ -104,7 +104,7 @@ export function PageDots({
     <div
       role="group"
       aria-label="Pages"
-      className={cn("relative h-6 [contain:layout]", className)}
+      className={cn("relative h-8 [contain:layout]", className)}
       // The row never changes width: the active slot is always one pill
       // wide, whichever dot owns it.
       style={{ width: (count - 1) * STEP + PILL }}
@@ -310,7 +310,7 @@ export default function PageDotsDemo() {
   return (
     <div
       ref={regionRef}
-      className="flex w-72 flex-col items-center gap-3"
+      className="flex w-[min(400px,100%)] flex-col items-center gap-4"
       // The toggle is left out on purpose: hovering it to press play must
       // not be what keeps autoplay paused.
       onPointerOver={(e) => {
@@ -337,7 +337,7 @@ export default function PageDotsDemo() {
         aria-live={running ? "off" : "polite"}
         // Keeps the horizontal swipe from also scrolling the page sideways
         // or triggering back navigation.
-        className="flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain rounded-2xl outline-none [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-scrollbar]:hidden"
+        className="flex w-full snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain rounded-[20px] outline-none [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-scrollbar]:hidden"
       >
         {PAGES.map((page, i) => (
           <div
@@ -345,22 +345,22 @@ export default function PageDotsDemo() {
             role="group"
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${PAGES.length}`}
-            className="flex h-32 w-full shrink-0 snap-center snap-always flex-col justify-end rounded-2xl border border-border bg-background p-4"
+            className="flex h-55 w-full shrink-0 snap-center snap-always flex-col justify-end rounded-[20px] border border-border bg-background p-6"
           >
-            <p className="text-xs text-muted tabular-nums">
+            <p className="text-sm text-muted tabular-nums">
               {String(i + 1).padStart(2, "0")}
             </p>
-            <p className="mt-1 text-sm font-medium text-foreground">
+            <p className="mt-1.5 text-lg font-medium text-foreground">
               {page.title}
             </p>
-            <p className="text-sm text-muted">{page.note}</p>
+            <p className="mt-0.5 text-[15px] text-muted">{page.note}</p>
           </div>
         ))}
       </div>
-      {/* The 24px toggle sits on the right with a matching 24px spacer on the
+      {/* The 32px toggle sits on the right with a matching 32px spacer on the
           left, so the dots stay centered under the cards. */}
-      <div className="flex items-center gap-3">
-        <span aria-hidden className="size-6" />
+      <div className="flex items-center gap-4">
+        <span aria-hidden className="size-8" />
         <PageDots
           count={PAGES.length}
           progress={progress}
@@ -373,7 +373,7 @@ export default function PageDotsDemo() {
           aria-label="Pause autoplay"
           aria-pressed={!playing}
           onClick={() => setChoice(!playing)}
-          className="relative flex size-6 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color] after:absolute after:-inset-2 after:rounded-full"
+          className="relative flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color] after:absolute after:-inset-1.5 after:rounded-full"
         >
           <span className="grid" aria-hidden>
             <SwapIcon visible={playing} reduceMotion={reduceMotion}>
@@ -405,7 +405,7 @@ function SwapIcon({
   return (
     <motion.svg
       viewBox="0 0 16 16"
-      className="col-start-1 row-start-1 size-3.5"
+      className="col-start-1 row-start-1 size-4"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.5}

@@ -155,7 +155,7 @@ export function SlidingTabs({
                   if (e.pointerType !== "touch") enter(tab.id);
                 }}
                 className={cn(
-                  "group relative flex h-10 touch-manipulation items-center rounded-lg px-2.5 text-sm font-medium text-muted outline-none transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-foreground",
+                  "group relative flex h-11 touch-manipulation items-center rounded-lg px-2.5 text-sm font-medium sm:px-4 sm:text-[15px] text-muted outline-none transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-foreground",
                   selected && "text-foreground",
                 )}
               >
@@ -165,7 +165,7 @@ export function SlidingTabs({
                     layoutId={`hover-${hover.session}`}
                     aria-hidden
                     // 6px in from top and bottom so the pill floats inside the
-                    // 40px tab without touching the underline.
+                    // 44px tab without touching the underline.
                     className="absolute inset-x-0 inset-y-1.5 rounded-md bg-surface"
                     initial={hover.entering ? { opacity: 0 } : false}
                     animate={{ opacity: hover.visible ? 1 : 0 }}
@@ -212,7 +212,7 @@ export function SlidingTabs({
               initial="enter"
               animate="center"
               exit="exit"
-              className="col-start-1 row-start-1 rounded-lg px-3 pt-4 pb-1 text-sm text-pretty text-muted outline-none focus-visible:outline-2 focus-visible:outline-foreground"
+              className="col-start-1 row-start-1 rounded-lg px-4 pt-5 pb-1 text-[15px] leading-relaxed text-pretty text-muted outline-none focus-visible:outline-2 focus-visible:outline-foreground"
             >
               {active.content}
             </motion.div>
@@ -271,8 +271,8 @@ export default function SlidingTabsDemo() {
   const [tab, setTab] = useState("overview");
   return (
     // A fixed height keeps the card still when panels of different lengths
-    // swap in.
-    <div className="h-36 w-82 rounded-2xl bg-background p-2 shadow-raised">
+    // swap in. 20px radius = the tabs' 8px plus the 12px padding.
+    <div className="h-55 w-[min(480px,100%)] rounded-[20px] bg-background p-3 shadow-raised">
       <SlidingTabs label="Project" tabs={TABS} value={tab} onChange={setTab} />
     </div>
   );

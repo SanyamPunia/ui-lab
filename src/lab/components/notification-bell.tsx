@@ -107,13 +107,13 @@ export function NotificationBell({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => (open ? close() : setOpen(true))}
-          className="relative flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="relative flex size-11 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           <svg
             ref={iconRef}
             viewBox="0 0 16 16"
             // Swings from where a bell hangs, not from its middle.
-            className="size-[18px] origin-[50%_12%]"
+            className="size-[22px] origin-[50%_12%]"
             fill="none"
             stroke="currentColor"
             strokeWidth={1.5}
@@ -134,7 +134,7 @@ export function NotificationBell({
                 animate={{ scale: 1, opacity: 1, transition: BADGE_IN }}
                 exit={{ scale: 0.6, opacity: 0, transition: BADGE_OUT }}
                 // The page-colored ring cuts the badge out of the bell.
-                className="absolute -top-1 -right-1 grid h-[18px] min-w-[18px] overflow-hidden rounded-full bg-danger px-1 text-[11px] leading-[18px] font-semibold text-background tabular-nums ring-2 ring-background"
+                className="absolute -top-1 -right-1 grid h-5 min-w-5 overflow-hidden rounded-full bg-danger px-1.5 text-xs leading-5 font-semibold text-background tabular-nums ring-2 ring-background"
               >
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.span
@@ -161,14 +161,14 @@ export function NotificationBell({
           aria-label="Notifications"
           inert={!open}
           className={cn(
-            "absolute top-full left-0 z-10 mt-2 w-64 origin-top-left rounded-2xl bg-background p-1.5 shadow-raised",
+            "absolute top-full left-0 z-10 mt-2.5 w-[340px] max-w-[calc(100vw-2rem)] origin-top-left rounded-[20px] bg-background p-2 shadow-raised",
             "transition-[opacity,scale,translate,visibility] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[opacity,visibility]",
             open
               ? "visible translate-y-0 scale-100 opacity-100 duration-150"
               : "invisible -translate-y-1 scale-[0.97] opacity-0 duration-100 motion-reduce:translate-y-0 motion-reduce:scale-100",
           )}
         >
-          <p className="px-2.5 pt-1.5 pb-1 text-xs font-medium text-muted">
+          <p className="px-3 pt-2 pb-1.5 text-[13px] font-medium text-muted">
             Notifications
           </p>
           <SmoothHeight>
@@ -186,14 +186,14 @@ export function NotificationBell({
                       transition: { duration: 0.15, ease: EASE_OUT },
                     }}
                     transition={ITEM}
-                    // 16px panel radius minus its 6px padding.
-                    className="flex items-start gap-2.5 rounded-[10px] px-2.5 py-2"
+                    // 20px panel radius minus its 8px padding.
+                    className="flex items-start gap-3 rounded-xl px-3 py-2.5"
                   >
                     <span
                       aria-hidden
                       className={cn(
-                        // 7px centers the 6px dot on the first 20px line.
-                        "mt-[7px] size-1.5 shrink-0 rounded-full bg-danger transition-opacity duration-200 ease-out",
+                        // 6px centers the 8px dot on the first 20px line.
+                        "mt-1.5 size-2 shrink-0 rounded-full bg-danger transition-opacity duration-200 ease-out",
                         i >= unreadCount && "opacity-0",
                       )}
                     />
@@ -204,7 +204,7 @@ export function NotificationBell({
                         )}
                         {n.title}
                       </span>
-                      <span className="text-xs text-muted">{n.time}</span>
+                      <span className="mt-0.5 text-[13px] text-muted">{n.time}</span>
                     </span>
                   </motion.li>
                 ))}
@@ -279,7 +279,7 @@ export default function NotificationBellDemo() {
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       <NotificationBell
         notifications={items}
         defaultReadId="n2"
@@ -289,7 +289,7 @@ export default function NotificationBellDemo() {
         ref={simulateRef}
         type="button"
         onClick={simulate}
-        className="h-10 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="h-11 touch-manipulation rounded-full bg-surface px-5 text-[15px] font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         Simulate notification
       </button>

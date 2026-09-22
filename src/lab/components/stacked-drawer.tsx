@@ -12,21 +12,21 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/cn";
 
-const FRAME_H = 340;
+const FRAME_H = 560;
 // The first sheet stops this far below the frame's top, and each nested one
 // a step lower, so every layer behind keeps a sliver showing above the next.
-const FIRST_TOP = 24;
-const STEP = 12;
+const FIRST_TOP = 40;
+const STEP = 18;
 // Pushed back: the page drops by one step so its top peeks out above the
 // first sheet, the way iOS tucks the presenting screen behind a sheet.
-const BASE_DROP = 12;
+const BASE_DROP = 18;
 const PUSH_SCALE = 0.94;
 const DIM = 0.2;
 // Past the frame's bottom edge, so the sheet's shadow is hidden too.
-const OFFSCREEN = 16;
+const OFFSCREEN = 24;
 // Upward overdrag tops out here. Sheets extend this far below the frame, so
 // rubber-banding up never opens a gap underneath.
-const RUBBER = 24;
+const RUBBER = 36;
 // Movement below this still counts as a tap on whatever was pressed.
 const DRAG_START = 4;
 // Released past 30% of its height, or flicked down faster than this (px/s),
@@ -58,7 +58,8 @@ const heightOf = (i: number) => FRAME_H - topOf(i);
 const closedAt = (i: number) => heightOf(i) + OFFSCREEN;
 
 function rubberBand(overdrag: number) {
-  return RUBBER * (1 - 1 / (1 + overdrag / 80));
+  // Half the cap is reached after 120px of pull, so resistance builds slowly.
+  return RUBBER * (1 - 1 / (1 + overdrag / 120));
 }
 
 // How far the layer above has come in, from 0 (gone) to 1 (fully open). Also
@@ -205,7 +206,7 @@ export function StackedDrawer({
       // The backdrop only shows once the page is pushed back: darker than
       // the page in both themes, like the black behind an iOS sheet.
       className={cn(
-        "relative w-[260px] overflow-hidden rounded-[28px] bg-border shadow-raised dark:bg-background",
+        "relative w-[320px] max-w-full overflow-hidden rounded-[40px] bg-border shadow-raised dark:bg-background",
         className,
       )}
     >
@@ -215,7 +216,7 @@ export function StackedDrawer({
           y: reduce ? zero : baseY,
           scale: reduce ? one : baseScale,
         }}
-        className="absolute inset-0 flex origin-top flex-col rounded-[28px] bg-surface p-5"
+        className="absolute inset-0 flex origin-top flex-col rounded-[40px] bg-surface p-7"
       >
         {children}
         <button
@@ -224,11 +225,11 @@ export function StackedDrawer({
           }}
           type="button"
           onClick={() => open(0)}
-          className="mt-auto h-10 touch-manipulation rounded-full bg-foreground text-sm font-medium text-background outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="mt-auto h-11 touch-manipulation rounded-full bg-foreground text-[15px] font-medium text-background outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           {trigger}
         </button>
-        <Scrim opacity={baseDim} className="rounded-[28px]" />
+        <Scrim opacity={baseDim} className="rounded-[40px]" />
       </motion.div>
 
       {sheets.map((sheet, i) => (
@@ -371,28 +372,28 @@ function SheetLayer({
         e.stopPropagation();
       }}
       className={cn(
-        "absolute inset-x-0 flex origin-top touch-none flex-col rounded-t-[20px] bg-background shadow-raised outline-none select-none",
+        "absolute inset-x-0 flex origin-top touch-none flex-col rounded-t-[28px] bg-background shadow-raised outline-none select-none",
         isTop && "cursor-grab active:cursor-grabbing",
       )}
     >
       <div
         aria-hidden
-        className="mx-auto mt-2 h-1 w-9 shrink-0 rounded-full bg-border"
+        className="mx-auto mt-2.5 h-1.5 w-11 shrink-0 rounded-full bg-border"
       />
-      <div className="flex flex-1 flex-col px-5 pt-4 pb-5">
-        <h2 id={titleId} className="text-base font-medium tracking-tight">
+      <div className="flex flex-1 flex-col px-6 pt-5 pb-6">
+        <h2 id={titleId} className="text-xl font-medium tracking-tight">
           {sheet.title}
         </h2>
-        <p className="mt-1 text-sm text-pretty text-muted">
+        <p className="mt-1.5 text-[15px] text-pretty text-muted">
           {sheet.description}
         </p>
-        <div className="mt-auto flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-2.5">
           {hasNext && sheet.next && (
             <button
               ref={setNextRef}
               type="button"
               onClick={onNext}
-              className="h-10 touch-manipulation rounded-full bg-foreground text-sm font-medium text-background outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+              className="h-11 touch-manipulation rounded-full bg-foreground text-[15px] font-medium text-background outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
             >
               {sheet.next}
             </button>
@@ -400,13 +401,13 @@ function SheetLayer({
           <button
             type="button"
             onClick={() => onClose()}
-            className="h-10 touch-manipulation rounded-full bg-surface text-sm font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+            className="h-11 touch-manipulation rounded-full bg-surface text-[15px] font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
           >
             Done
           </button>
         </div>
       </div>
-      <Scrim opacity={dim} className="rounded-t-[20px]" />
+      <Scrim opacity={dim} className="rounded-t-[28px]" />
     </motion.div>
   );
 }
@@ -448,9 +449,9 @@ const SHEETS: Sheet[] = [
 export default function StackedDrawerDemo() {
   return (
     <StackedDrawer sheets={SHEETS} trigger="Share">
-      <p className="text-xs text-muted">Drafts</p>
-      <p className="mt-1 text-lg font-medium tracking-tight">Launch notes</p>
-      <p className="mt-3 text-sm text-pretty text-muted">
+      <p className="text-[13px] text-muted">Drafts</p>
+      <p className="mt-1.5 text-2xl font-medium tracking-tight">Launch notes</p>
+      <p className="mt-4 text-[15px] text-pretty text-muted">
         Three fixes, one new component, and a faster index. Ship Thursday after
         review.
       </p>

@@ -25,10 +25,10 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 const DETAIL_DELAY = 0.25;
 // Closing is quicker to read, so the card's summary returns a little sooner.
 const RETURN_DELAY = 0.2;
-// The radius grows with the surface: 14px suits a 62px card, 20px the
+// The radius grows with the surface: 18px suits an 80px card, 24px the
 // larger dialog, and Motion animates between them.
-const CARD_RADIUS = 14;
-const DIALOG_RADIUS = 20;
+const CARD_RADIUS = 18;
+const DIALOG_RADIUS = 24;
 
 export function ExpandingCards({
   items,
@@ -106,8 +106,8 @@ export function ExpandingCards({
 
   return (
     <LayoutGroup id={group}>
-      <div className={cn("relative w-72", className)}>
-        <ul className="flex flex-col gap-2" inert={!!openId}>
+      <div className={cn("relative w-[400px] max-w-full", className)}>
+        <ul className="flex flex-col gap-3" inert={!!openId}>
           {items.map((item) => (
             <li key={item.id}>
               {item.id === openId ? (
@@ -214,20 +214,20 @@ export function ExpandingCards({
                 }
                 onKeyDown={trapTab}
                 style={{ borderRadius: DIALOG_RADIUS }}
-                className="pointer-events-auto w-80 max-w-[calc(100vw-2rem)] shrink-0 bg-surface p-5 shadow-raised"
+                className="pointer-events-auto w-[440px] max-w-[calc(100vw-2rem)] shrink-0 bg-surface p-6 shadow-raised"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex flex-col items-start gap-0.5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col items-start gap-1">
                     <motion.h2
                       id={titleId}
                       {...sharedText(shared(`title-${open.id}`))}
-                      className="text-sm font-medium text-foreground"
+                      className="text-[15px] font-medium text-foreground"
                     >
                       {open.title}
                     </motion.h2>
                     <motion.p
                       {...sharedText(shared(`meta-${open.id}`))}
-                      className="text-xs text-muted tabular-nums"
+                      className="text-[13px] text-muted tabular-nums"
                     >
                       {open.meta}
                     </motion.p>
@@ -239,14 +239,14 @@ export function ExpandingCards({
                       aria-label="Close"
                       onClick={close}
                       className={cn(
-                        "relative -mt-1.5 -mr-1.5 flex size-7 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
-                        // Grows the hit area to 40px around the 28px circle.
+                        "relative -mt-2 -mr-2 flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                        // Grows the hit area to 44px around the 32px circle.
                         "after:absolute after:-inset-1.5 after:rounded-full",
                       )}
                     >
                       <svg
                         viewBox="0 0 16 16"
-                        className="size-4"
+                        className="size-[18px]"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={1.5}
@@ -262,8 +262,8 @@ export function ExpandingCards({
                     with an ellipsis, so flying it across would snap the
                     hidden words in. It arrives with the detail instead. */}
                 <Delayed reduceMotion={reduceMotion}>
-                  <p className="mt-3 text-[13px] text-muted">{open.summary}</p>
-                  <p className="mt-2 text-[13px] leading-5 text-pretty text-muted">
+                  <p className="mt-4 text-[15px] text-muted">{open.summary}</p>
+                  <p className="mt-2.5 text-[15px] leading-6 text-pretty text-muted">
                     {open.detail}
                   </p>
                 </Delayed>
@@ -337,17 +337,17 @@ function CardFace({
     shared ? sharedText(shared(`${key}-${item.id}`)) : {};
 
   return (
-    <span className="flex flex-col items-start gap-1 px-3.5 py-3">
-      <span className="flex w-full items-baseline justify-between gap-3">
+    <span className="flex flex-col items-start gap-1.5 px-4.5 py-4">
+      <span className="flex w-full items-baseline justify-between gap-4">
         <Text
           {...props("title")}
-          className="truncate text-sm font-medium text-foreground"
+          className="truncate text-[15px] font-medium text-foreground"
         >
           {item.title}
         </Text>
         <Text
           {...props("meta")}
-          className="shrink-0 text-xs text-muted tabular-nums"
+          className="shrink-0 text-[13px] text-muted tabular-nums"
         >
           {item.meta}
         </Text>
@@ -366,12 +366,12 @@ function CardFace({
             filter: "blur(0px)",
             transition: { delay: RETURN_DELAY, duration: 0.2, ease: EASE_OUT },
           }}
-          className="max-w-full truncate text-[13px] text-muted"
+          className="max-w-full truncate text-sm text-muted"
         >
           {item.summary}
         </motion.span>
       ) : (
-        <span className="max-w-full truncate text-[13px] text-muted">
+        <span className="max-w-full truncate text-sm text-muted">
           {item.summary}
         </span>
       )}

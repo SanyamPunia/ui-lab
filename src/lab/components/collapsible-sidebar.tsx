@@ -7,11 +7,11 @@ import { cn } from "@/lib/cn";
 type Item = { id: string; label: string; icon: React.ReactNode };
 
 const EXPANDED = 240;
-// 40px items plus 8px padding each side, so a collapsed icon sits dead
+// 48px items plus 8px padding each side, so a collapsed icon sits dead
 // center in the rail.
-const COLLAPSED = 56;
-// Item row height plus the 2px gap between rows, for placing the tooltip.
-const ROW = 34;
+const COLLAPSED = 64;
+// Item row height plus the 4px gap between rows, for placing the tooltip.
+const ROW = 44;
 // No bounce: an overshooting sidebar would shove the content back and
 // forth. 0.3s is the most a panel this size can take and still feel direct.
 const WIDTH = { type: "spring", visualDuration: 0.3, bounce: 0 } as const;
@@ -91,7 +91,7 @@ export function CollapsibleSidebar({
           className="shrink-0 overflow-hidden border-r border-border"
           onPointerLeave={hideTip}
         >
-          <ul className="flex flex-col gap-0.5 p-2">
+          <ul className="flex flex-col gap-1 p-2">
             {items.map((item, i) => {
               const current = item.id === value;
               return (
@@ -109,7 +109,7 @@ export function CollapsibleSidebar({
                     }}
                     onBlur={hideTip}
                     className={cn(
-                      "group relative flex h-8 w-full touch-manipulation items-center gap-3 rounded-lg pl-3 text-sm font-medium whitespace-nowrap text-muted outline-none transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground",
+                      "group relative flex h-10 w-full touch-manipulation items-center gap-3 rounded-lg pl-3.5 text-sm font-medium whitespace-nowrap text-muted outline-none transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground",
                       current && "text-foreground",
                     )}
                   >
@@ -125,9 +125,10 @@ export function CollapsibleSidebar({
                         transition={reduce ? INSTANT : HIGHLIGHT}
                       />
                     )}
-                    {/* Presses in on its own, so the 16px icon never moves
-                        relative to the rail it is centered in. */}
-                    <span className="relative size-4 shrink-0 transition-[scale] duration-150 ease-out group-active:scale-[0.96] motion-reduce:transition-none">
+                    {/* Presses in on its own, so the 20px icon never moves
+                        relative to the rail it is centered in: 14px left
+                        padding puts its center 24px into the 48px row. */}
+                    <span className="relative size-5 shrink-0 transition-[scale] duration-150 ease-out group-active:scale-[0.96] motion-reduce:transition-none">
                       {item.icon}
                     </span>
                     {/* Collapsing, the label is gone in 100ms, well before
@@ -157,30 +158,30 @@ export function CollapsibleSidebar({
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute z-10 flex h-7 origin-left items-center rounded-md bg-foreground px-2 text-xs font-medium whitespace-nowrap text-background",
+            "pointer-events-none absolute z-10 flex h-8 origin-left items-center rounded-md bg-foreground px-2.5 text-[13px] font-medium whitespace-nowrap text-background",
             "transition-[opacity,scale,translate] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[opacity]",
             tip.open && !expanded
               ? "translate-x-0 scale-100 opacity-100 duration-125"
               : "-translate-x-1 scale-[0.97] opacity-0 duration-100 motion-reduce:translate-x-0 motion-reduce:scale-100",
           )}
-          // 8px of breathing room right of the rail, and 2px down so the
-          // 28px tip centers on the 32px row below the 8px padding.
-          style={{ left: COLLAPSED + 8, top: 8 + 2 + tip.index * ROW }}
+          // 8px of breathing room right of the rail, and 4px down so the
+          // 32px tip centers on the 40px row below the 8px padding.
+          style={{ left: COLLAPSED + 8, top: 8 + 4 + tip.index * ROW }}
         >
           {items[tip.index]?.label}
         </span>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex h-12 shrink-0 items-center gap-2 px-2">
+          <div className="flex h-14 shrink-0 items-center gap-2 px-2">
             <button
               type="button"
               aria-expanded={expanded}
               aria-controls={navId}
               aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
               onClick={toggle}
-              className="relative flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+              className="relative flex size-10 shrink-0 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
             >
-              <svg className="size-4" {...STROKE} aria-hidden>
+              <svg className="size-5" {...STROKE} aria-hidden>
                 <rect x="2.25" y="2.75" width="11.5" height="10.5" rx="2" />
                 <path d="M6.25 2.75v10.5" />
               </svg>
@@ -207,7 +208,7 @@ const ITEMS: Item[] = [
     id: "home",
     label: "Home",
     icon: (
-      <svg className="size-4" {...STROKE} aria-hidden>
+      <svg className="size-5" {...STROKE} aria-hidden>
         <path d="M2.75 7 8 2.75 13.25 7v5.25a1 1 0 0 1-1 1h-8.5a1 1 0 0 1-1-1Z" />
         <path d="M6.25 13.25V9.75h3.5v3.5" />
       </svg>
@@ -217,7 +218,7 @@ const ITEMS: Item[] = [
     id: "inbox",
     label: "Inbox",
     icon: (
-      <svg className="size-4" {...STROKE} aria-hidden>
+      <svg className="size-5" {...STROKE} aria-hidden>
         <path d="M2.75 9.25 4.5 3.5a1 1 0 0 1 1-.75h5a1 1 0 0 1 1 .75l1.75 5.75v3a1 1 0 0 1-1 1h-8.5a1 1 0 0 1-1-1Z" />
         <path d="M2.75 9.25h3l.75 1.5h3l.75-1.5h3" />
       </svg>
@@ -227,7 +228,7 @@ const ITEMS: Item[] = [
     id: "projects",
     label: "Projects",
     icon: (
-      <svg className="size-4" {...STROKE} aria-hidden>
+      <svg className="size-5" {...STROKE} aria-hidden>
         <path d="M2.75 4.25a1 1 0 0 1 1-1h2.5l1.5 1.5h4.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-8.5a1 1 0 0 1-1-1Z" />
       </svg>
     ),
@@ -236,7 +237,7 @@ const ITEMS: Item[] = [
     id: "reports",
     label: "Reports",
     icon: (
-      <svg className="size-4" {...STROKE} aria-hidden>
+      <svg className="size-5" {...STROKE} aria-hidden>
         <path d="M3.25 13.25V8.75M8 13.25v-10.5M12.75 13.25v-6.5" />
       </svg>
     ),
@@ -245,7 +246,7 @@ const ITEMS: Item[] = [
     id: "settings",
     label: "Settings",
     icon: (
-      <svg className="size-4" {...STROKE} aria-hidden>
+      <svg className="size-5" {...STROKE} aria-hidden>
         <circle cx="8" cy="8" r="2" />
         <path d="M8 1.75v1.5M8 12.75v1.5M1.75 8h1.5M12.75 8h1.5M3.6 3.6l1.05 1.05M11.35 11.35l1.05 1.05M3.6 12.4l1.05-1.05M11.35 4.65l1.05-1.05" />
       </svg>
@@ -253,10 +254,54 @@ const ITEMS: Item[] = [
   },
 ];
 
+const CONTENT: Record<string, { blurb: string; rows: [string, string][] }> = {
+  home: {
+    blurb: "Everything that moved since you last checked in.",
+    rows: [
+      ["Q3 planning notes", "Edited 2h ago"],
+      ["Onboarding checklist", "Edited yesterday"],
+      ["Design review", "Edited Monday"],
+    ],
+  },
+  inbox: {
+    blurb: "Three threads are waiting on a reply from you.",
+    rows: [
+      ["Launch timeline", "Maya, 10m ago"],
+      ["Invoice #2048", "Billing, 1h ago"],
+      ["Welcome aboard", "Team, 3h ago"],
+    ],
+  },
+  projects: {
+    blurb: "Active work across the team, sorted by last update.",
+    rows: [
+      ["Mobile redesign", "12 open tasks"],
+      ["Billing migration", "4 open tasks"],
+      ["Docs refresh", "7 open tasks"],
+    ],
+  },
+  reports: {
+    blurb: "Weekly numbers, refreshed every Monday morning.",
+    rows: [
+      ["Active users", "+8% this week"],
+      ["Retention", "Flat since June"],
+      ["Revenue", "+3% this week"],
+    ],
+  },
+  settings: {
+    blurb: "Workspace preferences shared by everyone.",
+    rows: [
+      ["Members", "14 people"],
+      ["Notifications", "Daily digest"],
+      ["Billing", "Pro plan"],
+    ],
+  },
+};
+
 export default function CollapsibleSidebarDemo() {
   const [value, setValue] = useState("home");
   const [expanded, setExpanded] = useState(true);
   const current = ITEMS.find((item) => item.id === value) ?? ITEMS[0];
+  const content = CONTENT[current.id];
 
   return (
     <CollapsibleSidebar
@@ -265,19 +310,28 @@ export default function CollapsibleSidebarDemo() {
       onChange={setValue}
       expanded={expanded}
       onExpandedChange={setExpanded}
-      // 184px fits the five rows and their padding with no scroll.
-      className="h-46 w-80"
+      // 340px fits the five 40px rows, their gaps and padding with no scroll.
+      className="h-85 w-[min(560px,100%)]"
     >
       {/* Fixed-width content, left aligned, so it slides with the rail's
-          edge instead of rewrapping on every frame. */}
-      <div className="flex flex-col gap-2 px-3 pt-1">
-        <p className="text-sm font-medium whitespace-nowrap text-foreground">
-          {current.label}
-        </p>
-        <div className="h-2 w-40 shrink-0 rounded-full bg-foreground/10" />
-        <div className="h-2 w-32 shrink-0 rounded-full bg-foreground/10" />
-        <div className="h-2 w-36 shrink-0 rounded-full bg-foreground/10" />
-        <div className="mt-2 h-10 w-44 shrink-0 rounded-lg bg-surface" />
+          edge instead of rewrapping on every frame. 280px is what's left
+          beside the expanded rail. */}
+      <div className="flex w-70 shrink-0 flex-col px-4 pt-1">
+        <p className="text-lg font-semibold text-foreground">{current.label}</p>
+        <p className="mt-1 text-sm text-muted">{content.blurb}</p>
+        <ul className="mt-4 flex flex-col gap-2">
+          {content.rows.map(([title, meta]) => (
+            <li
+              key={title}
+              className="flex h-12 items-center justify-between gap-3 rounded-xl bg-surface px-3.5"
+            >
+              <span className="truncate text-sm font-medium text-foreground">
+                {title}
+              </span>
+              <span className="shrink-0 text-xs text-muted">{meta}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </CollapsibleSidebar>
   );

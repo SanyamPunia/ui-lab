@@ -138,7 +138,7 @@ export function ScrubInput({
   return (
     <div
       className={cn(
-        "flex h-8 items-center rounded-md bg-background outline-foreground has-[input:focus-visible]:outline-2",
+        "flex h-10 items-center rounded-lg bg-background outline-foreground has-[input:focus-visible]:outline-2",
         className,
       )}
     >
@@ -146,7 +146,7 @@ export function ScrubInput({
         ref={labelRef}
         htmlFor={id}
         className={cn(
-          "flex h-full w-7 shrink-0 cursor-ew-resize touch-none items-center justify-center text-xs text-muted transition-[color] duration-150 ease-out select-none hover:text-foreground",
+          "flex h-full w-9 shrink-0 cursor-ew-resize touch-none items-center justify-center text-sm text-muted transition-[color] duration-150 ease-out select-none hover:text-foreground",
           scrubbing && "text-foreground",
         )}
         onPointerDown={(e) => {
@@ -228,7 +228,7 @@ export function ScrubInput({
         aria-valuemin={Number.isFinite(min) ? min : undefined}
         aria-valuemax={Number.isFinite(max) ? max : undefined}
         value={draft ?? format(value)}
-        className="h-full min-w-0 flex-1 bg-transparent pr-2 text-xs text-foreground tabular-nums outline-none"
+        className="h-full min-w-0 flex-1 bg-transparent pr-2.5 text-sm text-foreground tabular-nums outline-none"
         onFocus={(e) => {
           setDraft(format(value));
           e.currentTarget.select();
@@ -264,7 +264,7 @@ function AngleIcon() {
   return (
     <svg
       viewBox="0 0 16 16"
-      className="size-3.5"
+      className="size-4"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.5}
@@ -284,12 +284,12 @@ export default function ScrubInputDemo() {
   const [rotation, setRotation] = useState(0);
 
   return (
-    // 14px outer radius over 8px padding keeps the 6px fields concentric.
-    <div className="w-72 rounded-[14px] bg-surface p-2 shadow-raised">
-      <div className="px-1.5 pt-0.5 pb-2 text-xs font-medium text-foreground">
+    // 18px outer radius over 10px padding keeps the 8px fields concentric.
+    <div className="w-[380px] max-w-full rounded-[18px] bg-surface p-2.5 shadow-raised">
+      <div className="px-2 pt-0.5 pb-2.5 text-sm font-medium text-foreground">
         Transform
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2.5">
         <ScrubInput label="X" name="X position" value={x} onChange={setX} />
         <ScrubInput label="Y" name="Y position" value={y} onChange={setY} />
         <ScrubInput

@@ -54,11 +54,11 @@ export function ProfileCard({
 }) {
   const loaded = !loading;
   return (
-    // 24px radius around 16px padding leaves 8px for the inner stat block.
+    // 32px radius around 20px padding leaves 12px for the inner stat block.
     <div
       aria-busy={loading}
       className={cn(
-        "flex w-72 flex-col gap-3 rounded-3xl bg-surface p-4 shadow-raised",
+        "flex w-[400px] max-w-full flex-col gap-4 rounded-[32px] bg-surface p-5 shadow-raised",
         className,
       )}
     >
@@ -68,37 +68,37 @@ export function ProfileCard({
       {loading && <span className="sr-only">Loading profile</span>}
 
       {/* Every skeleton below is sized to the exact box its real content
-          fills: a 40px avatar, 20px and 16px line boxes with a shorter bar
-          centered in each (like the x-height of text), a 40px two-line
-          paragraph and a 56px stat block. Skeleton and content share one grid
+          fills: a 48px avatar, 24px and 20px line boxes with a shorter bar
+          centered in each (like the x-height of text), a 48px two-line
+          paragraph and a 72px stat block. Skeleton and content share one grid
           cell, so if the two ever disagreed the card would jump when data
           arrives. Matching them is the whole trick. */}
       <Block
         index={0}
         loaded={loaded}
         skeleton={
-          <div className="flex items-center gap-3">
-            <div className="skeleton-bone size-10 shrink-0 rounded-full" />
+          <div className="flex items-center gap-4">
+            <div className="skeleton-bone size-12 shrink-0 rounded-full" />
             <div className="flex flex-col">
+              <div className="flex h-6 items-center">
+                <div className="skeleton-bone h-3.5 w-32 rounded-full" />
+              </div>
               <div className="flex h-5 items-center">
                 <div className="skeleton-bone h-3 w-24 rounded-full" />
-              </div>
-              <div className="flex h-4 items-center">
-                <div className="skeleton-bone h-2.5 w-16 rounded-full" />
               </div>
             </div>
           </div>
         }
       >
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-sm font-medium text-foreground">
+        <div className="flex items-center gap-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-base font-medium text-foreground">
             {profile.initials}
           </div>
           <div className="flex min-w-0 flex-col">
-            <p className="truncate text-sm leading-5 font-medium text-foreground">
+            <p className="truncate text-base leading-6 font-medium text-foreground">
               {profile.name}
             </p>
-            <p className="truncate text-xs leading-4 text-muted">
+            <p className="truncate text-sm leading-5 text-muted">
               {profile.handle}
             </p>
           </div>
@@ -110,17 +110,17 @@ export function ProfileCard({
         loaded={loaded}
         skeleton={
           <div className="flex flex-col">
-            <div className="flex h-5 items-center">
-              <div className="skeleton-bone h-3 w-full rounded-full" />
+            <div className="flex h-6 items-center">
+              <div className="skeleton-bone h-3.5 w-full rounded-full" />
             </div>
-            <div className="flex h-5 items-center">
-              <div className="skeleton-bone h-3 w-2/3 rounded-full" />
+            <div className="flex h-6 items-center">
+              <div className="skeleton-bone h-3.5 w-2/3 rounded-full" />
             </div>
           </div>
         }
       >
         {/* Clamped to the two lines the skeleton promised. */}
-        <p className="line-clamp-2 h-10 text-sm leading-5 text-pretty text-foreground">
+        <p className="line-clamp-2 h-12 text-sm leading-6 text-pretty text-foreground">
           {profile.bio}
         </p>
       </Block>
@@ -128,23 +128,23 @@ export function ProfileCard({
       <Block
         index={2}
         loaded={loaded}
-        skeleton={<div className="skeleton-bone h-14 rounded-lg" />}
+        skeleton={<div className="skeleton-bone h-18 rounded-xl" />}
       >
-        <div className="flex h-14 items-center justify-between rounded-lg bg-background px-3">
+        <div className="flex h-18 items-center justify-between rounded-xl bg-background px-4">
           <div className="flex flex-col">
-            <span className="text-base leading-6 font-medium text-foreground tabular-nums">
+            <span className="text-xl leading-7 font-medium text-foreground tabular-nums">
               {profile.stat}
             </span>
-            <span className="text-xs leading-4 text-muted">
+            <span className="text-[13px] leading-5 text-muted">
               {profile.statLabel}
             </span>
           </div>
-          <div aria-hidden className="flex h-6 items-end gap-1">
+          <div aria-hidden className="flex h-8 items-end gap-1.5">
             {profile.week.map((v, i) => (
               <span
                 key={i}
                 className={cn(
-                  "w-1.5 rounded-full",
+                  "w-2 rounded-full",
                   i === profile.week.length - 1
                     ? "bg-foreground"
                     : "bg-foreground/20",
@@ -236,7 +236,7 @@ export default function SkeletonLoaderDemo() {
       <button
         type="button"
         onClick={reload}
-        className="flex h-8 touch-manipulation items-center gap-1.5 rounded-full bg-surface pr-3.5 pl-3 text-sm font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="flex h-9 touch-manipulation items-center gap-1.5 rounded-full bg-surface pr-4 pl-3.5 text-sm font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         <svg
           viewBox="0 0 16 16"

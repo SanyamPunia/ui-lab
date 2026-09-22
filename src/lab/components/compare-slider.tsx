@@ -117,13 +117,13 @@ export function CompareSlider({
   };
 
   const tag =
-    "pointer-events-none absolute top-2.5 rounded-full bg-background px-2 py-0.5 text-[11px] font-medium text-muted shadow-raised";
+    "pointer-events-none absolute top-4 rounded-full bg-background px-3 py-1 text-[13px] font-medium text-muted shadow-raised";
 
   return (
     <div
       ref={rootRef}
       className={cn(
-        "group relative h-[200px] w-80 cursor-ew-resize touch-pan-y overflow-hidden rounded-2xl bg-surface select-none",
+        "group relative h-[320px] w-[520px] max-w-full cursor-ew-resize touch-pan-y overflow-hidden rounded-3xl bg-surface select-none",
         className,
       )}
       onPointerDown={(e) => {
@@ -192,7 +192,7 @@ export function CompareSlider({
       <span
         ref={beforeTagRef}
         aria-hidden
-        className={cn(tag, "left-2.5")}
+        className={cn(tag, "left-4")}
         style={{ opacity: tagOpacity(initial) }}
       >
         Before
@@ -200,7 +200,7 @@ export function CompareSlider({
       <span
         ref={afterTagRef}
         aria-hidden
-        className={cn(tag, "right-2.5")}
+        className={cn(tag, "right-4")}
         style={{ opacity: tagOpacity(1 - initial) }}
       >
         After
@@ -223,7 +223,7 @@ export function CompareSlider({
           aria-valuemax={100}
           aria-valuenow={percent(initial)}
           aria-valuetext={valueText(initial)}
-          className="pointer-events-auto absolute top-1/2 left-0 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out group-data-[dragging]:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none"
+          className="pointer-events-auto absolute top-1/2 left-0 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out group-data-[dragging]:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none"
           onKeyDown={(e) => {
             const next = {
               ArrowLeft: target.current - STEP,
@@ -241,7 +241,7 @@ export function CompareSlider({
         >
           <svg
             viewBox="0 0 16 16"
-            className="size-4"
+            className="size-5"
             fill="none"
             stroke="currentColor"
             strokeWidth={1.5}
@@ -266,41 +266,41 @@ const ICON = {
 } as const;
 
 // The same file card twice. Before: square corners, a border faking depth,
-// one flat text style, cramped spacing. After: concentric radii (20px outer
-// = 8px inner + 12px padding), a layered shadow instead of a border, a muted
+// one flat text style, cramped spacing. After: concentric radii (28px outer
+// = 12px inner + 16px padding), a layered shadow instead of a border, a muted
 // secondary line with tabular numbers, and room to breathe.
 function FileCard({ polished }: { polished: boolean }) {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-surface">
       <div
         className={cn(
-          "flex w-60 flex-col bg-background text-foreground",
+          "flex w-[380px] max-w-[calc(100%-2.5rem)] flex-col bg-background text-foreground",
           polished
-            ? "gap-3 rounded-[20px] p-3 shadow-raised"
-            : "gap-1 border border-foreground/25 p-1.5",
+            ? "gap-4 rounded-[28px] p-4 shadow-raised"
+            : "gap-1.5 border border-foreground/25 p-2",
         )}
       >
-        <div className={cn("flex items-center", polished ? "gap-3" : "gap-1.5")}>
+        <div className={cn("flex items-center", polished ? "gap-4" : "gap-2")}>
           <div
             className={cn(
-              "flex size-10 shrink-0 items-center justify-center",
-              polished ? "rounded-lg bg-surface text-muted" : "bg-foreground/15",
+              "flex size-14 shrink-0 items-center justify-center",
+              polished ? "rounded-xl bg-surface text-muted" : "bg-foreground/15",
             )}
           >
             {polished && (
-              <svg className="size-4" strokeWidth={1.5} {...ICON}>
+              <svg className="size-6" strokeWidth={1.5} {...ICON}>
                 <path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5L9 2ZM9 2v3.5h3.5" />
               </svg>
             )}
           </div>
           <div className="min-w-0">
-            <p className={cn("truncate text-sm", polished && "font-medium")}>
+            <p className={cn("truncate text-[15px]", polished && "font-medium")}>
               Brand guidelines.pdf
             </p>
             <p
               className={cn(
                 "truncate",
-                polished ? "text-xs text-muted tabular-nums" : "text-sm",
+                polished ? "mt-0.5 text-[13px] text-muted tabular-nums" : "text-[15px]",
               )}
             >
               2.4 MB · Updated 3h ago
@@ -309,15 +309,15 @@ function FileCard({ polished }: { polished: boolean }) {
         </div>
         <div
           className={cn(
-            "flex h-8 items-center justify-center gap-1.5 text-sm",
+            "flex h-11 items-center justify-center gap-2 text-[15px]",
             polished
-              ? "rounded-lg bg-foreground font-medium text-background"
+              ? "rounded-xl bg-foreground font-medium text-background"
               : "border border-foreground/40",
           )}
         >
           {polished && (
             // 2px stroke to match the medium-weight label beside it.
-            <svg className="size-3.5" strokeWidth={2} {...ICON}>
+            <svg className="size-4" strokeWidth={2} {...ICON}>
               <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
             </svg>
           )}

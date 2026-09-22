@@ -12,8 +12,12 @@ type Drag = {
   samples: { t: number; x: number }[];
 };
 
-const CARD_WIDTH = 200;
-const GAP = 12;
+const CARD_WIDTH = 280;
+const GAP = 16;
+// How long a release coasts at its own speed before picking a card. Scaled
+// with the card step (296px now, 212px when this was tuned at 200ms) so the
+// same flick still travels the same number of cards.
+const COAST = 280;
 
 // The scrollLeft that centers each slide, read from layout so it holds for
 // any card size or padding. The scroller is positioned, so offsetLeft is
@@ -155,9 +159,9 @@ export function SnapCarousel({
           Math.abs(t - pos) < Math.abs(targets[best] - pos) ? i : best,
         0,
       );
-    // Coasts for 200ms at the release speed, a short decay that turns a
-    // long fast drag into a card or two of travel, not a runaway spin.
-    let index = nearest(el.scrollLeft + velocity * 200);
+    // Coasts at the release speed for a short decay that turns a long fast
+    // drag into a card or two of travel, not a runaway spin.
+    let index = nearest(el.scrollLeft + velocity * COAST);
     const from = nearest(d.startScroll);
     // A flick faster than 300px/s always moves at least one card, however
     // short it was.
@@ -206,18 +210,24 @@ export function SnapCarousel({
   };
 
   return (
-    <div className={cn("flex w-80 flex-col items-center gap-3", className)}>
+    <div
+      className={cn(
+        "flex w-[min(520px,100%)] flex-col items-center gap-3",
+        className,
+      )}
+    >
       <style href="snap-carousel" precedence="default">
         {CSS}
       </style>
       {/* The focus ring lives on the wrapper so the edge mask below fades
           only the cards, not the outline. */}
-      <div className="w-full rounded-2xl has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground">
+      <div className="w-full rounded-3xl has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground">
         {/* Native scroll-snap, so touch, trackpad momentum and arrow keys all
-            behave like the platform. 60px inline padding, (320 - 200) / 2,
-            lets the first and last cards reach the center; 12px of block
-            padding keeps their shadows from being clipped. The 24px mask
-            hints there is more past each edge. */}
+            behave like the platform. Inline padding of (container - 280px)
+            / 2, 120px at full width, lets the first and last cards reach the
+            center at any width; 16px of block padding keeps their shadows
+            from being clipped. The 32px mask hints there is more past each
+            edge. */}
         <div
           ref={scrollerRef}
           onScroll={sync}
@@ -236,7 +246,7 @@ export function SnapCarousel({
           role="region"
           aria-roledescription="carousel"
           aria-label={label}
-          className="relative flex cursor-grab snap-x snap-mandatory gap-3 data-dragging:cursor-grabbing data-dragging:select-none overflow-x-auto overscroll-x-contain rounded-2xl px-[60px] py-3 outline-none [mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="relative flex cursor-grab snap-x snap-mandatory gap-4 data-dragging:cursor-grabbing data-dragging:select-none overflow-x-auto overscroll-x-contain rounded-3xl px-[calc((100%-280px)/2)] py-4 outline-none [mask-image:linear-gradient(to_right,transparent,black_32px,black_calc(100%-32px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {slides.map((slide, i) => (
             // Snaps on the outer box and animates the inner one, so the
@@ -248,11 +258,11 @@ export function SnapCarousel({
               aria-label={`${i + 1} of ${slides.length}`}
               className="shrink-0 snap-center"
             >
-              <div className="snap-carousel-card flex h-[140px] w-[200px] flex-col justify-end gap-1 rounded-2xl bg-surface p-4 shadow-raised">
-                <p className="text-sm font-medium text-foreground">
+              <div className="snap-carousel-card flex h-[200px] w-[280px] flex-col justify-end gap-1.5 rounded-3xl bg-surface p-6 shadow-raised">
+                <p className="text-[15px] font-medium text-foreground">
                   {slide.title}
                 </p>
-                <p className="text-sm leading-5 text-pretty text-muted">
+                <p className="text-sm leading-5.5 text-pretty text-muted">
                   {slide.text}
                 </p>
               </div>
@@ -260,7 +270,7 @@ export function SnapCarousel({
           ))}
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <Arrow
           label="Previous card"
           disabled={atStart}
@@ -300,13 +310,13 @@ function Arrow({
         if (!disabled) onClick();
       }}
       className={cn(
-        "flex size-8 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-[opacity]",
+        "flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-[opacity]",
         disabled ? "cursor-default opacity-40" : "active:scale-[0.96]",
       )}
     >
       <svg
         viewBox="0 0 16 16"
-        className="size-4"
+        className="size-5"
         fill="none"
         stroke="currentColor"
         strokeWidth={1.5}
