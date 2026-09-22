@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto w-full max-w-3xl px-4 pt-10 pb-16 sm:px-6">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-10 pb-16 sm:px-6">
         <p className="text-sm text-muted">
           {lab.length} {lab.length === 1 ? "component" : "components"}
         </p>
