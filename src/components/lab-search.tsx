@@ -2,7 +2,7 @@
 
 import { Children, useEffect, useRef, useState } from "react";
 
-type Entry = { name: string; description: string };
+type Entry = { name: string; description: string; keywords?: string };
 
 function isEditable(target: EventTarget | null) {
   return (
@@ -41,8 +41,8 @@ export function LabSearch({
   // Every word has to appear somewhere, in any order, so "drag card" finds
   // the swipe deck without the exact phrase.
   const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const visible = entries.map(({ name, description }) => {
-    const haystack = `${name} ${description}`.toLowerCase();
+  const visible = entries.map(({ name, description, keywords = "" }) => {
+    const haystack = `${name} ${description} ${keywords}`.toLowerCase();
     return words.every((word) => haystack.includes(word));
   });
   const count = visible.filter(Boolean).length;

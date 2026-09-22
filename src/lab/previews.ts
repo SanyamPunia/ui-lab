@@ -70,6 +70,26 @@ import WaveTextDemo from "./components/wave-text";
 import DotGridDemo from "./components/dot-grid";
 import SpotlightCardDemo from "./components/spotlight-card";
 import StoryProgressDemo from "./components/story-progress";
+import DataTableDemo from "./components/data-table";
+import ComboboxDemo from "./components/combobox";
+import DateRangePickerDemo from "./components/date-range-picker";
+import InlineEditDemo from "./components/inline-edit";
+import DialogDemo from "./components/dialog";
+import PaginationDemo from "./components/pagination";
+import AnnouncementBannerDemo from "./components/announcement-banner";
+import ShortcutSheetDemo from "./components/shortcut-sheet";
+import SpringPlaygroundDemo from "./components/spring-playground";
+import EasingEditorDemo from "./components/easing-editor";
+import StaggerVisualizerDemo from "./components/stagger-visualizer";
+import OnboardingChecklistDemo from "./components/onboarding-checklist";
+import FlipCardDemo from "./components/flip-card";
+import IconMorphDemo from "./components/icon-morph";
+import StickyStackDemo from "./components/sticky-stack";
+import InfiniteCanvasDemo from "./components/infinite-canvas";
+import DragSelectDemo from "./components/drag-select";
+import SortableGridDemo from "./components/sortable-grid";
+import MagnetLinesDemo from "./components/magnet-lines";
+import MorphingNavDemo from "./components/morphing-nav";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -146,5 +166,25 @@ export const previews: Record<string, ComponentType> = {
   "dot-grid": DotGridDemo,
   "spotlight-card": SpotlightCardDemo,
   "story-progress": StoryProgressDemo,
+  "data-table": DataTableDemo,
+  "combobox": ComboboxDemo,
+  "date-range-picker": DateRangePickerDemo,
+  "inline-edit": InlineEditDemo,
+  "dialog": DialogDemo,
+  "pagination": PaginationDemo,
+  "announcement-banner": AnnouncementBannerDemo,
+  "shortcut-sheet": ShortcutSheetDemo,
+  "spring-playground": SpringPlaygroundDemo,
+  "easing-editor": EasingEditorDemo,
+  "stagger-visualizer": StaggerVisualizerDemo,
+  "onboarding-checklist": OnboardingChecklistDemo,
+  "flip-card": FlipCardDemo,
+  "icon-morph": IconMorphDemo,
+  "sticky-stack": StickyStackDemo,
+  "infinite-canvas": InfiniteCanvasDemo,
+  "drag-select": DragSelectDemo,
+  "sortable-grid": SortableGridDemo,
+  "magnet-lines": MagnetLinesDemo,
+  "morphing-nav": MorphingNavDemo,
   // new-component:entries
 };

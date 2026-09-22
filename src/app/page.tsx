@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SourceLink } from "@/components/source-link";
 import { previews } from "@/lab/previews";
 import { lab } from "@/lab/registry";
+import { cn } from "@/lib/cn";
 
 export default function Home() {
   return (
@@ -13,9 +14,13 @@ export default function Home() {
       <ScrollMemory />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-10 pb-16 sm:px-6">
         <LabSearch
-          entries={lab.map(({ name, description }) => ({ name, description }))}
+          entries={lab.map(({ name, description, keywords }) => ({
+            name,
+            description,
+            keywords,
+          }))}
         >
-          {lab.map(({ slug, name, description, previewScale }) => {
+          {lab.map(({ slug, name, description, previewScale, previewCrop }) => {
             const Preview = previews[slug];
             return (
               <li key={slug} className="group/card relative">
@@ -32,7 +37,14 @@ export default function Home() {
                       overflow-hidden, which would cut off the card's shadow. */}
                   <div
                     inert
-                    className="flex h-56 items-center justify-center overflow-hidden rounded-xl bg-surface transition-[background-color] duration-150 ease-out [content-visibility:auto] group-hover/preview:bg-background"
+                    className={cn(
+                      "flex h-56 justify-center overflow-hidden rounded-xl bg-surface transition-[background-color] duration-150 ease-out [content-visibility:auto] group-hover/preview:bg-background",
+                      // Cropped previews start at the top and fade out below,
+                      // like a screenshot of the top of the tool.
+                      previewCrop
+                        ? "items-start pt-4 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]"
+                        : "items-center",
+                    )}
                   >
                     {/* As wide as the demo would have at full size (the box
                         divided by the scale), so demos sized in percentages
@@ -42,6 +54,7 @@ export default function Home() {
                       className="flex shrink-0 justify-center"
                       style={{
                         scale: previewScale && String(previewScale),
+                        transformOrigin: previewCrop ? "top" : undefined,
                         width: `${100 / (previewScale ?? 1)}%`,
                       }}
                     >
