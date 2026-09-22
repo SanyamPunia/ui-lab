@@ -1,0 +1,149 @@
+"use client";
+
+import { useId, useRef, useState } from "react";
+import { cn } from "@/lib/cn";
+
+export type AccordionItem = { question: string; answer: string };
+
+// Panels open independently. Closing one automatically when another opens
+// would shift the clicked header up by the closed panel's height; this way a
+// header never moves, so it can be closed again without moving the mouse.
+export function Accordion({
+  items,
+  defaultOpen = [],
+  className,
+}: {
+  items: AccordionItem[];
+  defaultOpen?: number[];
+  className?: string;
+}) {
+  const [open, setOpen] = useState(() => new Set(defaultOpen));
+  const toggle = (index: number) =>
+    setOpen((current) => {
+      const next = new Set(current);
+      if (!next.delete(index)) next.add(index);
+      return next;
+    });
+  const headers = useRef<(HTMLButtonElement | null)[]>([]);
+  const baseId = useId();
+
+  const focusHeader = (index: number) => {
+    const count = items.length;
+    headers.current[(index + count) % count]?.focus();
+  };
+
+  return (
+    <div className={cn("w-80 divide-y divide-border", className)}>
+      {items.map((item, i) => {
+        const isOpen = open.has(i);
+        const headerId = `${baseId}-header-${i}`;
+        const panelId = `${baseId}-panel-${i}`;
+
+        return (
+          <div key={item.question}>
+            <h3>
+              <button
+                ref={(el) => {
+                  headers.current[i] = el;
+                }}
+                id={headerId}
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                onClick={() => toggle(i)}
+                onKeyDown={(e) => {
+                  const target = {
+                    ArrowDown: i + 1,
+                    ArrowUp: i - 1,
+                    Home: 0,
+                    End: items.length - 1,
+                  }[e.key];
+                  if (target === undefined) return;
+                  e.preventDefault();
+                  focusHeader(target);
+                }}
+                className="group flex h-12 w-full items-center justify-between gap-4 rounded-md text-left text-sm font-medium text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              >
+                {item.question}
+                <svg
+                  viewBox="0 0 16 16"
+                  aria-hidden
+                  className={cn(
+                    "size-4 shrink-0 text-muted transition-[rotate,color] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:text-foreground motion-reduce:transition-[color]",
+                    isOpen && "rotate-180 text-foreground",
+                  )}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m4 6 4 4 4-4" />
+                </svg>
+              </button>
+            </h3>
+            {/* Animating grid-template-rows between 0fr and 1fr is the one
+                place height animates: the row resolves to the content's real
+                height, so nothing is measured and text that reflows at a new
+                width is never clipped. */}
+            <div
+              id={panelId}
+              role="region"
+              aria-labelledby={headerId}
+              inert={!isOpen}
+              className={cn(
+                "grid ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+                isOpen
+                  ? "grid-rows-[1fr] transition-[grid-template-rows] duration-250"
+                  : "grid-rows-[0fr] transition-[grid-template-rows] duration-200",
+              )}
+            >
+              <div className="min-h-0 overflow-hidden">
+                {/* Opening waits 60ms so the row has begun to part before the
+                    text arrives; closing starts at once and fades in 120ms,
+                    so the text is gone before the row finishes shutting. */}
+                <p
+                  className={cn(
+                    "pr-8 pb-4 text-sm leading-relaxed text-pretty text-muted ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
+                    isOpen
+                      ? "translate-y-0 opacity-100 transition-[opacity,translate] delay-60 duration-200"
+                      : "-translate-y-1 opacity-0 transition-[opacity,translate] duration-120",
+                  )}
+                >
+                  {item.answer}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const FAQ: AccordionItem[] = [
+  {
+    question: "What is this lab?",
+    answer:
+      "A collection of small interface components, each built to get the details right: timing, easing, focus and both themes.",
+  },
+  {
+    question: "How are components built?",
+    answer:
+      "React with Tailwind, CSS transitions wherever they can do the job, and Motion only for springs and gestures CSS cannot express.",
+  },
+  {
+    question: "Can I use the code?",
+    answer:
+      "Yes. Every component is a single file with no setup, so copy it into your project and adjust the tokens to match.",
+  },
+  {
+    question: "Does it respect reduced motion?",
+    answer:
+      "It does. Movement drops out and only gentle fades remain, so every state change is still clear without anything sliding around.",
+  },
+];
+
+export default function AccordionDemo() {
+  return <Accordion items={FAQ} />;
+}

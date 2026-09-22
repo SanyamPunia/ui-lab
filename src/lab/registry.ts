@@ -10,6 +10,10 @@ import ElasticSliderDemo from "./components/elastic-slider";
 import MagneticButtonDemo from "./components/magnetic-button";
 import TextScrambleDemo from "./components/text-scramble";
 import SwipeDeckDemo from "./components/swipe-deck";
+import ScrollRevealDemo from "./components/scroll-reveal";
+import CopyButtonDemo from "./components/copy-button";
+import ExpandingSearchDemo from "./components/expanding-search";
+import AccordionDemo from "./components/accordion";
 // new-component:imports
 
 export type LabEntry = {
@@ -19,6 +23,9 @@ export type LabEntry = {
   Demo: ComponentType;
   // Shrinks the demo on the index cards only, for ones taller than a preview.
   previewScale?: number;
+  // Pins the demo to the top of its page instead of centring it, for demos
+  // that change height, so growing never shifts what is under the cursor.
+  anchor?: "top";
 };
 
 export const lab: LabEntry[] = [
@@ -91,6 +98,32 @@ export const lab: LabEntry[] = [
     description: "Fling a card away and the rest of the deck steps forward.",
     Demo: SwipeDeckDemo,
     previewScale: 0.55,
+  },
+  {
+    slug: "scroll-reveal",
+    name: "Scroll reveal",
+    description: "Words light up one by one as you scroll through them.",
+    previewScale: 0.8,
+    Demo: ScrollRevealDemo,
+  },
+  {
+    slug: "copy-button",
+    name: "Copy button",
+    description: "Confirms the copy before the clipboard even answers.",
+    Demo: CopyButtonDemo,
+  },
+  {
+    slug: "expanding-search",
+    name: "Expanding search",
+    description: "Opens from a circle into a search field, and closes faster than it opens.",
+    Demo: ExpandingSearchDemo,
+  },
+  {
+    slug: "accordion",
+    name: "Accordion",
+    description: "Opens without moving the row you clicked, so it closes right where you are.",
+    anchor: "top",
+    Demo: AccordionDemo,
   },
   // new-component:entries
 ];

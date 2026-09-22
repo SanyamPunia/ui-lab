@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SourceLink } from "@/components/source-link";
 import { getEntry, lab } from "@/lab/registry";
+import { cn } from "@/lib/cn";
 
 export function generateStaticParams() {
   return lab.map(({ slug }) => ({ slug }));
@@ -25,7 +26,12 @@ export default async function LabPage({ params }: PageProps<"/lab/[slug]">) {
       <main className="flex flex-1 flex-col">
         {/* Clipped sideways so thrown or dragged demos can't widen the page.
             `clip` rather than `hidden`, which would make this a scroll box. */}
-        <div className="flex flex-1 items-center justify-center overflow-x-clip p-4">
+        <div
+          className={cn(
+            "flex flex-1 justify-center overflow-x-clip p-4",
+            entry.anchor === "top" ? "items-start pt-[18vh]" : "items-center",
+          )}
+        >
           <Demo />
         </div>
         <div className="mx-auto flex w-full max-w-3xl items-baseline justify-between gap-4 px-4 sm:px-6">
