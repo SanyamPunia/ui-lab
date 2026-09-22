@@ -14,6 +14,10 @@ import ScrollRevealDemo from "./components/scroll-reveal";
 import CopyButtonDemo from "./components/copy-button";
 import ExpandingSearchDemo from "./components/expanding-search";
 import AccordionDemo from "./components/accordion";
+import ExpandingCardDemo from "./components/expanding-card";
+import OtpInputDemo from "./components/otp-input";
+import ToggleSwitchDemo from "./components/toggle-switch";
+import CommandPaletteDemo from "./components/command-palette";
 // new-component:imports
 
 export type LabEntry = {
@@ -124,6 +128,30 @@ export const lab: LabEntry[] = [
     description: "Opens without moving the row you clicked, so it closes right where you are.",
     anchor: "top",
     Demo: AccordionDemo,
+  },
+  {
+    slug: "expanding-card",
+    name: "Expanding card",
+    description: "Grows from its slot into a detail view and folds back when you are done.",
+    Demo: ExpandingCardDemo,
+  },
+  {
+    slug: "otp-input",
+    name: "OTP input",
+    description: "Six slots mirror one real input, so paste and SMS autofill just work.",
+    Demo: OtpInputDemo,
+  },
+  {
+    slug: "toggle-switch",
+    name: "Toggle switch",
+    description: "Leans into the move when pressed, then springs across and squashes on landing.",
+    Demo: ToggleSwitchDemo,
+  },
+  {
+    slug: "command-palette",
+    name: "Command palette",
+    description: "Opens on ⌘K and filters commands as you type.",
+    Demo: CommandPaletteDemo,
   },
   // new-component:entries
 ];
