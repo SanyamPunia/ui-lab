@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import OdometerDemo from "./components/odometer";
 import HoldToDeleteDemo from "./components/hold-to-delete";
 import SegmentedControlDemo from "./components/segmented-control";
+import TiltCardDemo from "./components/tilt-card";
 // new-component:imports
 
 export type LabEntry = {
@@ -32,6 +33,12 @@ export const lab: LabEntry[] = [
     description:
       "Each label changes color exactly as the pill slides over it.",
     Demo: SegmentedControlDemo,
+  },
+  {
+    slug: "tilt-card",
+    name: "Tilt card",
+    description: "Leans toward your cursor with a glare that follows the light.",
+    Demo: TiltCardDemo,
   },
   // new-component:entries
 ];
