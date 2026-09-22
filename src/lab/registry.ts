@@ -4,6 +4,8 @@ import HoldToDeleteDemo from "./components/hold-to-delete";
 import SegmentedControlDemo from "./components/segmented-control";
 import TiltCardDemo from "./components/tilt-card";
 import DockDemo from "./components/dock";
+import SheetDemo from "./components/sheet";
+import ToastStackDemo from "./components/toast-stack";
 // new-component:imports
 
 export type LabEntry = {
@@ -46,6 +48,18 @@ export const lab: LabEntry[] = [
     name: "Dock",
     description: "Icons swell as your cursor nears them, like the macOS dock.",
     Demo: DockDemo,
+  },
+  {
+    slug: "sheet",
+    name: "Sheet",
+    description: "Drag it down or flick it away; pull it up and it pushes back.",
+    Demo: SheetDemo,
+  },
+  {
+    slug: "toast-stack",
+    name: "Toast stack",
+    description: "Stacks with depth, fans out on hover, swipes away.",
+    Demo: ToastStackDemo,
   },
   // new-component:entries
 ];
