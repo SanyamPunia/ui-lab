@@ -3,6 +3,7 @@ import OdometerDemo from "./components/odometer";
 import HoldToDeleteDemo from "./components/hold-to-delete";
 import SegmentedControlDemo from "./components/segmented-control";
 import TiltCardDemo from "./components/tilt-card";
+import DockDemo from "./components/dock";
 // new-component:imports
 
 export type LabEntry = {
@@ -39,6 +40,12 @@ export const lab: LabEntry[] = [
     name: "Tilt card",
     description: "Leans toward your cursor with a glare that follows the light.",
     Demo: TiltCardDemo,
+  },
+  {
+    slug: "dock",
+    name: "Dock",
+    description: "Icons swell as your cursor nears them, like the macOS dock.",
+    Demo: DockDemo,
   },
   // new-component:entries
 ];
