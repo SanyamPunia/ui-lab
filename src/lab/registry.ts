@@ -7,6 +7,8 @@ import DockDemo from "./components/dock";
 import SheetDemo from "./components/sheet";
 import ToastStackDemo from "./components/toast-stack";
 import ElasticSliderDemo from "./components/elastic-slider";
+import MagneticButtonDemo from "./components/magnetic-button";
+import TextScrambleDemo from "./components/text-scramble";
 // new-component:imports
 
 export type LabEntry = {
@@ -67,6 +69,18 @@ export const lab: LabEntry[] = [
     name: "Elastic slider",
     description: "Stretches like rubber when you drag past the end, then springs back.",
     Demo: ElasticSliderDemo,
+  },
+  {
+    slug: "magnetic-button",
+    name: "Magnetic button",
+    description: "Leans toward your cursor before you even reach it.",
+    Demo: MagneticButtonDemo,
+  },
+  {
+    slug: "text-scramble",
+    name: "Text scramble",
+    description: "Hover a word and it decodes itself, one letter at a time.",
+    Demo: TextScrambleDemo,
   },
   // new-component:entries
 ];
