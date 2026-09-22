@@ -6,6 +6,7 @@ import TiltCardDemo from "./components/tilt-card";
 import DockDemo from "./components/dock";
 import SheetDemo from "./components/sheet";
 import ToastStackDemo from "./components/toast-stack";
+import ElasticSliderDemo from "./components/elastic-slider";
 // new-component:imports
 
 export type LabEntry = {
@@ -61,9 +62,22 @@ export const lab: LabEntry[] = [
     description: "Stacks with depth, fans out on hover, swipes away.",
     Demo: ToastStackDemo,
   },
+  {
+    slug: "elastic-slider",
+    name: "Elastic slider",
+    description: "Stretches like rubber when you drag past the end, then springs back.",
+    Demo: ElasticSliderDemo,
+  },
   // new-component:entries
 ];
 
 export function getEntry(slug: string) {
   return lab.find((entry) => entry.slug === slug);
+}
+
+const REPO = "https://github.com/xevrion/ui-lab";
+
+// `bun run new` names every file after its slug, so the path follows from it.
+export function sourceUrl(slug: string) {
+  return `${REPO}/blob/main/src/lab/components/${slug}.tsx`;
 }
