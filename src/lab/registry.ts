@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import OdometerDemo from "./components/odometer";
 import HoldToDeleteDemo from "./components/hold-to-delete";
+import SegmentedControlDemo from "./components/segmented-control";
 // new-component:imports
 
 export type LabEntry = {
@@ -24,6 +25,13 @@ export const lab: LabEntry[] = [
     description:
       "Fills slowly while you commit to it, snaps back the moment you let go.",
     Demo: HoldToDeleteDemo,
+  },
+  {
+    slug: "segmented-control",
+    name: "Segmented control",
+    description:
+      "Each label changes color exactly as the pill slides over it.",
+    Demo: SegmentedControlDemo,
   },
   // new-component:entries
 ];
