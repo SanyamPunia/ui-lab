@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import { SourceLink } from "@/components/source-link";
 import { getEntry, lab } from "@/lab/registry";
 
 export function generateStaticParams() {
@@ -21,8 +22,14 @@ export default async function LabPage({ params }: PageProps<"/lab/[slug]">) {
   return (
     <>
       <SiteHeader title={entry.name} />
-      <main className="flex flex-1 items-center justify-center p-4">
-        <Demo />
+      <main className="flex flex-1 flex-col">
+        <div className="flex flex-1 items-center justify-center p-4">
+          <Demo />
+        </div>
+        <div className="mx-auto flex w-full max-w-3xl items-baseline justify-between gap-4 px-4 sm:px-6">
+          <p className="text-sm text-pretty text-muted">{entry.description}</p>
+          <SourceLink slug={entry.slug} name={entry.name} className="shrink-0" />
+        </div>
       </main>
     </>
   );

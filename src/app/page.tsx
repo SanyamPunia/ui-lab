@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { SourceLink } from "@/components/source-link";
 import { lab } from "@/lab/registry";
 
 export default function Home() {
@@ -13,7 +14,7 @@ export default function Home() {
 
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {lab.map(({ slug, name, description, Demo }) => (
-            <li key={slug}>
+            <li key={slug} className="group/card relative">
               <Link
                 href={`/lab/${slug}`}
                 className="group block h-full rounded-[20px] bg-background p-2 shadow-raised transition-[background-color] duration-150 ease-out hover:bg-surface"
@@ -31,6 +32,13 @@ export default function Home() {
                   </p>
                 </div>
               </Link>
+              {/* Beside the card link rather than inside it, since links can't
+                  nest; positioned over the preview's corner. */}
+              <SourceLink
+                slug={slug}
+                name={name}
+                className="absolute top-4 right-4 px-1.5 py-1 text-xs group-hover/card:text-foreground"
+              />
             </li>
           ))}
         </ul>
