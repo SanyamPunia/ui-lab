@@ -22,6 +22,12 @@ const FADE = 48;
 // A page leaves one fade's worth of overlap, so the tab that was half hidden
 // under the fade lands fully in view instead of scrolling past unseen.
 const PAGE_OVERLAP = FADE;
+// Time constant of the wheel glide in ms: each notch settles in about 250ms,
+// and notches that land mid-glide add to the target instead of restarting.
+const GLIDE = 60;
+// Mouse wheels send whole notches (around 100px); trackpads send a stream of
+// small deltas that are already smooth and must stay 1:1 with the fingers.
+const NOTCH = 50;
 
 const panel = {
   enter: (reduce: boolean) => ({
@@ -64,6 +70,8 @@ export function OverflowTabs({
   const tabRefs = useRef(new Map<string, HTMLButtonElement>());
   const [edges, setEdges] = useState({ start: false, end: false });
   const [hovering, setHovering] = useState(false);
+  // Lets the arrows and keyboard take over from a wheel glide mid-flight.
+  const stopGlide = useRef(() => {});
 
   // Fade widths live in motion values, so scrolling never re-renders.
   const fadeStart = useMotionValue(0);
@@ -87,19 +95,59 @@ export function OverflowTabs({
       setEdges((e) => (e.start === start && e.end === end ? e : { start, end }));
     };
 
-    // A vertical wheel over the strip scrolls it sideways, but only while
-    // there's room, so the page takes over again at either end.
+    // Tracked separately from scrollLeft, which some browsers round to whole
+    // pixels and would stall the last few frames of the glide.
+    let target = 0;
+    let position = 0;
+    let frame = 0;
+    let last = 0;
+
+    const glide = (now: number) => {
+      const t = 1 - Math.exp(-(now - last) / GLIDE);
+      last = now;
+      position += (target - position) * t;
+      if (Math.abs(target - position) < 0.5) position = target;
+      el.scrollLeft = position;
+      frame = position === target ? 0 : requestAnimationFrame(glide);
+    };
+    const stop = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+    stopGlide.current = stop;
+
+    // Shift + wheel and a plain vertical wheel both scroll the strip
+    // sideways. A vertical wheel only does so while there's room, so the page
+    // takes over again at either end.
     const wheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || e.ctrlKey) return;
+      if (e.ctrlKey) return;
+      const vertical = !e.shiftKey && Math.abs(e.deltaY) > Math.abs(e.deltaX);
+      const delta =
+        Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const precise = e.deltaMode === 0 && Math.abs(delta) < NOTCH;
+      // A trackpad swiping sideways is already smooth; leave it native.
+      if (precise && !vertical) return;
+
       const max = el.scrollWidth - el.clientWidth;
-      if (
-        (e.deltaY < 0 && el.scrollLeft <= 0) ||
-        (e.deltaY > 0 && el.scrollLeft >= max - 1)
-      ) {
+      // Picks up from wherever the strip is when nothing is gliding, so a
+      // tab click or scrollbar drag in between is respected.
+      if (!frame) target = position = el.scrollLeft;
+      if ((delta < 0 && target <= 0) || (delta > 0 && target >= max - 1)) {
         return;
       }
       e.preventDefault();
-      el.scrollLeft += e.deltaY;
+      const px = e.deltaMode === 1 ? delta * 16 : delta;
+      target = Math.min(Math.max(target + px, 0), max);
+
+      if (precise || reduce) {
+        stop();
+        el.scrollLeft = position = target;
+        return;
+      }
+      if (!frame) {
+        last = performance.now();
+        frame = requestAnimationFrame(glide);
+      }
     };
 
     update();
@@ -109,11 +157,12 @@ export function OverflowTabs({
     el.addEventListener("scroll", update, { passive: true });
     el.addEventListener("wheel", wheel, { passive: false });
     return () => {
+      stop();
       observer.disconnect();
       el.removeEventListener("scroll", update);
       el.removeEventListener("wheel", wheel);
     };
-  }, [fadeStart, fadeEnd]);
+  }, [fadeStart, fadeEnd, reduce]);
 
   const index = Math.max(
     tabs.findIndex((t) => t.id === value),
@@ -124,6 +173,7 @@ export function OverflowTabs({
   const page = (direction: 1 | -1) => {
     const el = scrollerRef.current;
     if (!el) return;
+    stopGlide.current();
     el.scrollBy({
       left: direction * (el.clientWidth - PAGE_OVERLAP),
       behavior: reduce ? "auto" : "smooth",
@@ -174,6 +224,7 @@ export function OverflowTabs({
                 // Native focus scrolling jumps; this glides the tab in, and
                 // "nearest" leaves it alone when it's already visible.
                 el.focus({ preventScroll: true });
+                stopGlide.current();
                 el.scrollIntoView({
                   block: "nearest",
                   inline: "nearest",
