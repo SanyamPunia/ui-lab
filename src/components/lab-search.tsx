@@ -100,7 +100,10 @@ export function LabSearch({
         </div>
       </div>
 
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+      {/* grid-cols-1 rather than no template: its minmax(0, 1fr) caps the
+          column at the screen, where an implicit column grows to fit the
+          widest demo and scrolls the whole page sideways on phones. */}
+      <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {cards.filter((_, i) => visible[i])}
       </ul>
 
