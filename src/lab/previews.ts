@@ -154,6 +154,26 @@ import SizePickerDemo from "./components/size-picker";
 import OrderTrackerDemo from "./components/order-tracker";
 import GiftWrapDemo from "./components/gift-wrap";
 import StoreHoursDemo from "./components/store-hours";
+import WordRotatorDemo from "./components/word-rotator";
+import KeycapHintDemo from "./components/keycap-hint";
+import CapsLockWarningDemo from "./components/caps-lock-warning";
+import EyeToggleDemo from "./components/eye-toggle";
+import RelativeTimeDemo from "./components/relative-time";
+import CopyEmailDemo from "./components/copy-email";
+import DirectionalUnderlineDemo from "./components/directional-underline";
+import HoverPreviewLinkDemo from "./components/hover-preview-link";
+import ScribbleCheckboxDemo from "./components/scribble-checkbox";
+import FocusParagraphDemo from "./components/focus-paragraph";
+import TextProgressDemo from "./components/text-progress";
+import SpoilerTextDemo from "./components/spoiler-text";
+import BadgeCounterDemo from "./components/badge-counter";
+import StarButtonDemo from "./components/star-button";
+import FollowButtonDemo from "./components/follow-button";
+import LiveIndicatorDemo from "./components/live-indicator";
+import MiniClockDemo from "./components/mini-clock";
+import PixelLoaderDemo from "./components/pixel-loader";
+import GreetingDemo from "./components/greeting";
+import ArrowCalloutDemo from "./components/arrow-callout";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -314,5 +334,25 @@ export const previews: Record<string, ComponentType> = {
   "order-tracker": OrderTrackerDemo,
   "gift-wrap": GiftWrapDemo,
   "store-hours": StoreHoursDemo,
+  "word-rotator": WordRotatorDemo,
+  "keycap-hint": KeycapHintDemo,
+  "caps-lock-warning": CapsLockWarningDemo,
+  "eye-toggle": EyeToggleDemo,
+  "relative-time": RelativeTimeDemo,
+  "copy-email": CopyEmailDemo,
+  "directional-underline": DirectionalUnderlineDemo,
+  "hover-preview-link": HoverPreviewLinkDemo,
+  "scribble-checkbox": ScribbleCheckboxDemo,
+  "focus-paragraph": FocusParagraphDemo,
+  "text-progress": TextProgressDemo,
+  "spoiler-text": SpoilerTextDemo,
+  "badge-counter": BadgeCounterDemo,
+  "star-button": StarButtonDemo,
+  "follow-button": FollowButtonDemo,
+  "live-indicator": LiveIndicatorDemo,
+  "mini-clock": MiniClockDemo,
+  "pixel-loader": PixelLoaderDemo,
+  "greeting": GreetingDemo,
+  "arrow-callout": ArrowCalloutDemo,
   // new-component:entries
 };

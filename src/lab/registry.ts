@@ -398,7 +398,8 @@ export const lab: LabEntry[] = [
   {
     slug: "confetti-button",
     name: "Confetti button",
-    description: "Bursts theme-colored confetti from the button.",
+    description:
+      "A click pops confetti; hold it and the fuse burns until the whole thing blows.",
     keywords: "celebrate confetti particles canvas",
     previewScale: 0.65,
   },
@@ -1030,7 +1031,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "scroll-spine",
-    isNew: true,
     name: "Scroll spine",
     description:
       "Maps the article as a spine of bands, each as long as its section, filling in as you read.",
@@ -1039,7 +1039,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "availability-badge",
-    isNew: true,
     name: "Availability badge",
     description: "Shows when the owner is working, and when that overlaps with your day.",
     keywords: "availability status timezone working hours portfolio hire me local time",
@@ -1047,7 +1046,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "sidenotes",
-    isNew: true,
     name: "Sidenotes",
     description: "Slides footnotes into the margin beside their sentence, and folds them inline on narrow screens.",
     keywords: "footnotes sidenotes margin notes tufte blog annotations references",
@@ -1055,7 +1053,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "footer-signature",
-    isNew: true,
     name: "Footer signature",
     description: "Signs the footer by hand when it scrolls into view, slowing through every loop.",
     keywords: "signature footer handwriting svg path stroke animation draw on scroll portfolio",
@@ -1063,7 +1060,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "changelog-stack",
-    isNew: true,
     name: "Changelog stack",
     description: "Files each release card behind the stack like a hand riffling index cards.",
     keywords: "changelog release notes whats new version card stack swipe timeline",
@@ -1071,7 +1067,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "pricing-calculator",
-    isNew: true,
     name: "Pricing calculator",
     description: "Itemizes your bill like an invoice and upgrades the plan the moment your team crosses a seat threshold.",
     keywords: "pricing calculator saas seats slider billing invoice plans",
@@ -1079,7 +1074,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "feature-spotlight",
-    isNew: true,
     name: "Feature spotlight",
     description: "A camera zooms into the part of the product screenshot each feature describes as you scroll past it.",
     keywords: "landing page features scroll spotlight product tour zoom sticky screenshot",
@@ -1087,7 +1081,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "testimonial-highlight",
-    isNew: true,
     name: "Testimonial highlight",
     description: "Swipes a highlighter across the line that sold the customer, one line at a time.",
     keywords: "testimonials quotes reviews highlighter marker carousel social proof",
@@ -1095,7 +1088,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "waitlist-join",
-    isNew: true,
     name: "Waitlist join",
     description: "Drops your face into a real queue and rolls out your place in line.",
     keywords: "waitlist signup queue referral early access launch position email",
@@ -1103,7 +1095,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "cookie-consent",
-    isNew: true,
     name: "Cookie consent",
     description:
       "Bakes a bite back into the cookie for every category you allow.",
@@ -1112,7 +1103,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "email-typo-fix",
-    isNew: true,
     name: "Email typo fix",
     description: "Catches gmial.com and fixes it by moving only the letters that were wrong.",
     keywords: "email typo suggestion signup validation autocorrect domain input",
@@ -1120,7 +1110,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "coupon-code",
-    isNew: true,
     name: "Coupon code",
     description: "Stamps your promo code onto the order and strikes out the price it beat.",
     keywords: "coupon promo code discount checkout order summary cart",
@@ -1129,7 +1118,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "code-morph",
-    isNew: true,
     name: "Code morph",
     description: "Glides every surviving token to its new spot as a tutorial moves to the next step.",
     keywords: "code diff tutorial magic move syntax steps blog",
@@ -1138,7 +1126,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "image-hotspots",
-    isNew: true,
     name: "Image hotspots",
     description:
       "Draws a leader line to one label card that travels between a watch's features, never covering the product.",
@@ -1147,7 +1134,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "quote-share",
-    isNew: true,
     name: "Quote share",
     description: "Lifts the words you select out of the paragraph and into a shareable quote card.",
     keywords: "quote share selection highlight text fragment blog article",
@@ -1155,7 +1141,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "waveform-player",
-    isNew: true,
     name: "Waveform player",
     description: "Inks in a podcast's waveform, with chapter markers and a ghost playhead.",
     keywords: "audio podcast waveform player scrubber chapters media",
@@ -1163,7 +1148,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "size-picker",
-    isNew: true,
     name: "Size picker",
     description: "Pulls a tee over a body outline so you see the fit before you pick the size.",
     keywords: "size picker clothing fit apparel ecommerce sizing product page",
@@ -1171,7 +1155,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "order-tracker",
-    isNew: true,
     name: "Order tracker",
     description:
       "Drives a parcel across a street map to your door and stamps each stop as it arrives.",
@@ -1180,7 +1163,6 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "gift-wrap",
-    isNew: true,
     name: "Gift wrap",
     description: "Folds kraft paper over the cart item, ties a ribbon and bow, and asks who it's for.",
     keywords: "gift wrap cart checkout gift message ecommerce toggle bag",
@@ -1189,11 +1171,170 @@ export const lab: LabEntry[] = [
   },
   {
     slug: "store-hours",
-    isNew: true,
     name: "Store hours",
     description: "Draws the week's hours on a 24-hour scale and can redraw them in your own time zone.",
     keywords: "store hours opening hours open now business hours timezone local business schedule",
     previewScale: 0.35,
+  },
+  {
+    slug: "word-rotator",
+    isNew: true,
+    name: "Word rotator",
+    description: "Keeps the letters two words share and glides them into place as the rest trade out.",
+    keywords: "text headline rotate morph flip letters hero",
+    previewScale: 0.85,
+  },
+  {
+    slug: "keycap-hint",
+    isNew: true,
+    name: "Keycap hint",
+    description: "Keycaps that sink when you press the real keys.",
+    keywords: "keyboard shortcut kbd keycap hint command",
+    previewScale: 1.6,
+  },
+  {
+    slug: "caps-lock-warning",
+    isNew: true,
+    name: "Caps lock warning",
+    description: "A small caps lock key with its light on slides into the field when caps is on.",
+    keywords: "password input caps lock warning form keycap",
+    previewScale: 0.95,
+  },
+  {
+    slug: "eye-toggle",
+    isNew: true,
+    name: "Eye toggle",
+    description: "The eye shuts when your password is hidden and watches while you type.",
+    keywords: "password eye toggle reveal show hide input",
+    previewScale: 0.95,
+  },
+  {
+    slug: "relative-time",
+    isNew: true,
+    name: "Relative time",
+    description: "Says \"4 min ago\" and changes only at the moment the words would change.",
+    keywords: "time relative timestamp tooltip digits roll ticker",
+    previewScale: 0.7,
+  },
+  {
+    slug: "copy-email",
+    isNew: true,
+    name: "Copy email",
+    description: "Click the address and its letters flip, one by one, into \"Copied to clipboard\".",
+    keywords: "email copy clipboard flip cascade portfolio mailto",
+    previewScale: 0.9,
+  },
+  {
+    slug: "directional-underline",
+    isNew: true,
+    name: "Directional underline",
+    description: "The underline comes in from the side your cursor entered and leaves toward the side it left.",
+    keywords: "link underline hover direction nav clip-path",
+    previewScale: 0.75,
+  },
+  {
+    slug: "hover-preview-link",
+    isNew: true,
+    name: "Hover preview link",
+    description: "Hover a link to get a preview card that trails your cursor and leans as it moves.",
+    keywords: "link preview hover card spring tilt velocity",
+    previewScale: 0.75,
+  },
+  {
+    slug: "scribble-checkbox",
+    isNew: true,
+    name: "Scribble checkbox",
+    description: "Checks itself off with a quick pen stroke and strikes the words through.",
+    keywords: "checkbox todo hand-drawn strikethrough svg pen checklist",
+    previewScale: 0.95,
+  },
+  {
+    slug: "focus-paragraph",
+    isNew: true,
+    name: "Focus paragraph",
+    description: "Brings the sentence you're reading forward and lets the rest step back.",
+    keywords: "reading paragraph focus hover blur dim text",
+    previewScale: 0.7,
+  },
+  {
+    slug: "text-progress",
+    isNew: true,
+    name: "Text progress",
+    description: "Fills the label itself with ink as the upload runs.",
+    keywords: "progress upload clip-path text loader percent rolling",
+    previewScale: 1.6,
+  },
+  {
+    slug: "spoiler-text",
+    isNew: true,
+    name: "Spoiler text",
+    description: "Hides a spoiler under shimmering grain that blows away from your click.",
+    keywords: "spoiler reveal canvas particles noise inline text",
+    previewScale: 0.75,
+  },
+  {
+    slug: "badge-counter",
+    isNew: true,
+    name: "Badge counter",
+    description: "Rolls its digits the way the count moved and bumps each time it changes.",
+    keywords: "badge notification counter inbox unread rolling digits",
+    previewScale: 1.6,
+  },
+  {
+    slug: "star-button",
+    isNew: true,
+    name: "Star button",
+    description: "Spins once and throws off tiny sparks when starred, then rolls the count.",
+    keywords: "star github split button count sparks",
+    previewScale: 1.6,
+  },
+  {
+    slug: "follow-button",
+    isNew: true,
+    name: "Follow button",
+    description: "Turns its plus into a check as you follow, and warns before you unfollow.",
+    keywords: "follow button morph unfollow avatar stack social",
+    previewScale: 1.2,
+  },
+  {
+    slug: "live-indicator",
+    isNew: true,
+    name: "Live indicator",
+    description: "Breathes while live, lets the viewer count drift, and blinks hollow while reconnecting.",
+    keywords: "live status pill viewers realtime presence",
+    previewScale: 1.6,
+  },
+  {
+    slug: "mini-clock",
+    isNew: true,
+    name: "Mini clock",
+    description: "A tiny analog clock that sweeps in its city's time and turns dark after sundown.",
+    keywords: "clock time timezone analog footer night hover",
+    previewScale: 1.6,
+  },
+  {
+    slug: "pixel-loader",
+    isNew: true,
+    name: "Pixel loader",
+    description: "A tiny pixel grid that cycles spiral, snake, pulse and checker, then draws a check when done.",
+    keywords: "loader spinner pixel grid progress status check",
+    previewScale: 1.6,
+  },
+  {
+    slug: "greeting",
+    isNew: true,
+    name: "Greeting",
+    description: "Greets by time of day, with a sun or moon that rises into place along an arc.",
+    keywords: "greeting time sun moon phase welcome crossfade",
+    previewScale: 1.6,
+  },
+  {
+    slug: "arrow-callout",
+    isNew: true,
+    name: "Arrow callout",
+    description: "A handwritten note whose arrow draws itself to whatever it points at.",
+    keywords: "annotation arrow callout handwritten onboarding hint marker",
+    previewScale: 0.85,
   },
   // new-component:entries
 ];

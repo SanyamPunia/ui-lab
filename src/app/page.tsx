@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
+import { LabCard } from "@/components/lab-card";
 import { LabSearch } from "@/components/lab-search";
 import { NewMark } from "@/components/new-mark";
 import { ScrollMemory } from "@/components/scroll-memory";
@@ -88,7 +89,7 @@ export default function Home() {
           {shown.map(({ slug, name, description, previewScale, previewCrop, isNew }) => {
             const Preview = previews[slug];
             return (
-              <li
+              <LabCard
                 key={slug}
                 // Named groups, because demos use plain group-hover for their
                 // own hover states; an unnamed group here would trigger all of
@@ -157,7 +158,7 @@ export default function Home() {
                   name={name}
                   className="absolute top-[242px] right-3 z-10 px-1.5 py-1 text-xs group-hover/card:text-foreground"
                 />
-              </li>
+              </LabCard>
             );
           })}
         </LabSearch>
