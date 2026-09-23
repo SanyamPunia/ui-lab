@@ -26,11 +26,19 @@ type Body = {
 // the glass floor.
 const JAR_W = 176;
 const STAGE_H = 260;
-const MOUTH_Y = 60;
+// 40px above the mouth is where tapped coins appear, just clear of the lid.
+const MOUTH_Y = 40;
 const GLASS = 8;
 const FLOOR = STAGE_H - 12;
 const LEFT = GLASS;
 const RIGHT = JAR_W - GLASS;
+// The glass outlines. The inner wall sits 1px outside where coins stop, so
+// a resting coin touches the glass instead of overlapping it, and the base
+// is 10px of solid glass below the floor. The inner corners stay tight
+// (10px) because the physics floor is square: a rounder curve would let
+// resting coins sink into the glass.
+const OUTER = `M2 ${MOUTH_Y + 8} V${FLOOR - 6} Q2 ${STAGE_H - 2} 18 ${STAGE_H - 2} H${JAR_W - 18} Q${JAR_W - 2} ${STAGE_H - 2} ${JAR_W - 2} ${FLOOR - 6} V${MOUTH_Y + 8}`;
+const INNER = `M${GLASS - 1} ${MOUTH_Y + 8} V${FLOOR - 10} Q${GLASS - 1} ${FLOOR} ${GLASS + 9} ${FLOOR} H${JAR_W - GLASS - 9} Q${JAR_W - GLASS + 1} ${FLOOR} ${JAR_W - GLASS + 1} ${FLOOR - 10} V${MOUTH_Y + 8}`;
 
 // Tuned by feel: heavy enough that a coin drops like metal, a bounce that
 // dies after two or three hops, and slow impacts that don't bounce at all
@@ -53,7 +61,40 @@ const HOME = { type: "spring", stiffness: 500, damping: 34 } as const;
 
 // Bigger coins are worth more, like real money.
 function radius(value: number) {
-  return value >= 5 ? 17 : value >= 2 ? 15 : 13;
+  return value >= 5 ? 18 : value >= 2 ? 16 : 14;
+}
+
+// A repeatable scatter for the coins the demo starts with, so the server and
+// the client agree on where they lie.
+function seeded(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return s / 2147483647 - 0.5;
+  };
+}
+
+// Drops the starting coins one by one and lets each settle, so the jar
+// opens already holding a believable little pile.
+function pile(values: number[]) {
+  const rand = seeded(7);
+  const list: Body[] = [];
+  values.forEach((value, id) => {
+    const r = radius(value);
+    list.push({
+      id,
+      r,
+      x: JAR_W / 2 + rand() * 90,
+      y: MOUTH_Y - r,
+      vx: rand() * 120,
+      vy: 0,
+      angle: rand() * Math.PI * 2,
+    });
+    for (let i = 0; i < 90; i++) step(list, 1 / 60);
+  });
+  for (let i = 0; i < 240; i++) step(list, 1 / 60);
+  for (const b of list) b.vx = b.vy = 0;
+  return list;
 }
 
 function step(bodies: Body[], dt: number) {
@@ -130,32 +171,50 @@ function jitter(spread: number) {
   return (Math.random() - 0.5) * spread;
 }
 
+function transformOf(b: Body) {
+  return `translate(${(b.x - b.r).toFixed(2)}px, ${(b.y - b.r).toFixed(2)}px) rotate(${b.angle.toFixed(3)}rad)`;
+}
+
 function place(el: HTMLElement, b: Body) {
-  el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px) rotate(${b.angle}rad)`;
+  el.style.transform = transformOf(b);
 }
 
 export function TipJar({
   denominations = [1, 2, 5],
+  initialCoins = [],
   currency = "$",
   capacity = 24,
   onChange,
   className,
 }: {
   denominations?: number[];
+  // Coins already in the jar when it first renders.
+  initialCoins?: number[];
   currency?: string;
   capacity?: number;
   onChange?: (total: number) => void;
   className?: string;
 }) {
   const reduceMotion = useReducedMotion();
-  const [coins, setCoins] = useState<Coin[]>([]);
+  const [start] = useState(() => {
+    const settled = pile(initialCoins);
+    return {
+      coins: initialCoins.map((value, id) => ({ id, value })) as Coin[],
+      bodies: settled,
+      // Written once into the markup, so the pile is in place before
+      // hydration instead of flashing in from the corner.
+      transforms: new Map(settled.map((b) => [b.id, transformOf(b)])),
+      total: initialCoins.reduce((sum, v) => sum + v, 0),
+    };
+  });
+  const [coins, setCoins] = useState<Coin[]>(start.coins);
   const [ghost, setGhost] = useState<number | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const readoutRef = useRef<HTMLSpanElement>(null);
-  const bodies = useRef<Body[]>([]);
+  const bodies = useRef<Body[]>(start.bodies);
   const els = useRef(new Map<number, HTMLElement>());
-  const nextId = useRef(0);
+  const nextId = useRef(start.coins.length);
   const frame = useRef(0);
   const [jarScope, animateJar] = useAnimate<HTMLDivElement>();
 
@@ -166,7 +225,7 @@ export function TipJar({
 
   // Counts up to the new total rather than jumping, so each coin reads as
   // being added to what was there.
-  const shown = useMotionValue(0);
+  const shown = useMotionValue(start.total);
   useMotionValueEvent(shown, "change", (v) => {
     if (readoutRef.current) readoutRef.current.textContent = format(v);
   });
@@ -356,7 +415,9 @@ export function TipJar({
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-base font-medium text-foreground">Leave a tip</h2>
-          <p className="mt-1 text-sm text-muted">Drop coins in the jar.</p>
+          <p className="mt-1 text-sm text-muted" aria-live="polite">
+            {full ? "The jar is full. Thank you!" : "Tap a coin, or throw one in."}
+          </p>
         </div>
         <div className="text-right">
           <span
@@ -364,7 +425,7 @@ export function TipJar({
             aria-hidden
             className="block text-3xl font-semibold tracking-tight text-foreground tabular-nums"
           >
-            {format(0)}
+            {format(start.total)}
           </span>
           <span className="text-xs text-muted tabular-nums">
             {count} {count === 1 ? "coin" : "coins"}
@@ -376,10 +437,15 @@ export function TipJar({
       </output>
 
       <div
-        className="relative mx-auto mt-2"
+        className="relative mx-auto mt-3"
         style={{ width: JAR_W, height: STAGE_H }}
         ref={stageRef}
       >
+        {/* Where the jar meets the table. */}
+        <span
+          aria-hidden
+          className="absolute -inset-x-1 -bottom-1.5 h-3 rounded-[50%] bg-black/10 blur-[5px] dark:bg-black/60"
+        />
         <div
           ref={jarScope}
           className="absolute inset-0"
@@ -390,11 +456,8 @@ export function TipJar({
             viewBox={`0 0 ${JAR_W} ${STAGE_H}`}
             className="absolute inset-0 size-full overflow-visible"
           >
-            {/* The back of the glass, behind the coins. */}
-            <path
-              d={`M4 ${MOUTH_Y + 6} V${FLOOR - 10} Q4 ${FLOOR + 8} 22 ${FLOOR + 8} H${JAR_W - 22} Q${JAR_W - 4} ${FLOOR + 8} ${JAR_W - 4} ${FLOOR - 10} V${MOUTH_Y + 6} Z`}
-              className="fill-foreground/[0.035]"
-            />
+            {/* The inside of the jar, seen through the far wall. */}
+            <path d={`${INNER} Z`} className="fill-foreground/[0.035]" />
           </svg>
 
           {coins.map((coin) => {
@@ -412,7 +475,11 @@ export function TipJar({
                   if (body && !coin.leaving) place(el, body);
                 }}
                 className="absolute top-0 left-0 transition-[opacity] duration-150 ease-out will-change-transform starting:opacity-0"
-                style={{ width: r * 2, height: r * 2 }}
+                style={{
+                  width: r * 2,
+                  height: r * 2,
+                  transform: start.transforms.get(coin.id),
+                }}
               >
                 <CoinFace value={coin.value} currency={currency} />
               </div>
@@ -425,41 +492,101 @@ export function TipJar({
             className="pointer-events-none absolute inset-0 size-full overflow-visible"
             fill="none"
           >
-            {/* The glass walls and the thick bottom. */}
+            {/* The glass itself: the band between the outer and inner
+                walls, thickest at the base where real jars are poured
+                heavy. Filling it tints whatever sits behind the wall. */}
             <path
-              d={`M4 ${MOUTH_Y + 6} V${FLOOR - 10} Q4 ${FLOOR + 8} 22 ${FLOOR + 8} H${JAR_W - 22} Q${JAR_W - 4} ${FLOOR + 8} ${JAR_W - 4} ${FLOOR - 10} V${MOUTH_Y + 6}`}
-              strokeWidth={1.5}
-              className="stroke-foreground/25"
+              d={`${OUTER} Z ${INNER} Z`}
+              fillRule="evenodd"
+              className="fill-foreground/[0.07]"
             />
-            <path
-              d={`M14 ${FLOOR + 1} H${JAR_W - 14}`}
-              strokeWidth={1}
-              className="stroke-foreground/10"
-            />
-            {/* The lip, drawn in front so coins drop in behind it. */}
+            <path d={OUTER} strokeWidth={1.25} className="stroke-foreground/25" />
+            <path d={INNER} strokeWidth={1} className="stroke-foreground/10" />
+            {/* Specular light on curved glass is white in any room, so
+                these are plain white at a theme-dependent strength. */}
             <rect
-              x="1"
-              y={MOUTH_Y - 4}
-              width={JAR_W - 2}
-              height="10"
-              rx="4"
+              x="11"
+              y={MOUTH_Y + 20}
+              width="5"
+              height={FLOOR - MOUTH_Y - 66}
+              rx="2.5"
+              className="fill-white/70 dark:fill-white/[0.14]"
+            />
+            <rect
+              x="19"
+              y={MOUTH_Y + 26}
+              width="1.5"
+              height="46"
+              rx="0.75"
+              className="fill-white/60 dark:fill-white/10"
+            />
+            <rect
+              x={JAR_W - 14}
+              y={MOUTH_Y + 24}
+              width="3"
+              height="52"
+              rx="1.5"
+              className="fill-white/60 dark:fill-white/10"
+            />
+            <path
+              d={`M30 ${FLOOR + 5} H${JAR_W - 30}`}
               strokeWidth={1.5}
+              strokeLinecap="round"
+              className="stroke-white/70 dark:stroke-white/10"
+            />
+            {/* The threaded neck, drawn in front so coins drop in behind
+                it. */}
+            <rect
+              x="0.75"
+              y={MOUTH_Y - 6}
+              width={JAR_W - 1.5}
+              height="16"
+              rx="5"
+              strokeWidth={1.25}
               className="fill-surface stroke-foreground/25"
             />
-            {/* Reflections on curved glass. */}
-            <path
-              d={`M15 ${MOUTH_Y + 24} V${FLOOR - 40}`}
-              strokeWidth={3}
-              strokeLinecap="round"
-              className="stroke-foreground/[0.07]"
+            <rect
+              x="0.75"
+              y={MOUTH_Y - 6}
+              width={JAR_W - 1.5}
+              height="16"
+              rx="5"
+              className="fill-foreground/[0.06]"
             />
             <path
-              d={`M${JAR_W - 16} ${MOUTH_Y + 30} V${MOUTH_Y + 64}`}
-              strokeWidth={2}
+              d={`M6 ${MOUTH_Y - 1} L${JAR_W - 6} ${MOUTH_Y + 2} M6 ${MOUTH_Y + 4} L${JAR_W - 6} ${MOUTH_Y + 7}`}
+              strokeWidth={1}
               strokeLinecap="round"
-              className="stroke-foreground/[0.06]"
+              className="stroke-foreground/15"
+            />
+            <path
+              d={`M8 ${MOUTH_Y - 3.5} H${JAR_W * 0.45}`}
+              strokeWidth={1.25}
+              strokeLinecap="round"
+              className="stroke-white/80 dark:stroke-white/15"
             />
           </svg>
+
+          {/* A kraft paper label stuck on the front. Coins pile up behind
+              it, the way they would behind a real one. Kraft and its
+              stamped ink are physical materials, so they are raw colors;
+              the dark theme only dims the room light on them. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 flex w-[96px] -translate-x-1/2 -rotate-3 flex-col items-center rounded-[3px] py-2 shadow-[0_1px_2px_oklch(0_0_0/0.18)] dark:shadow-[0_1px_2px_oklch(0_0_0/0.6)]"
+            style={{
+              top: MOUTH_Y + 30,
+              backgroundColor: "light-dark(oklch(0.84 0.05 72), oklch(0.7 0.045 70))",
+              color: "oklch(0.32 0.04 55)",
+            }}
+          >
+            <span className="text-[13px] leading-5 font-semibold tracking-[0.24em]">
+              TIPS
+            </span>
+            <span className="text-xs leading-4 opacity-75">thank you</span>
+            {/* A dashed stitch border, like a printed tag. */}
+            <span className="absolute inset-1 rounded-[2px] border border-dashed border-current opacity-25" />
+          </div>
 
           <button
             type="button"
@@ -469,8 +596,8 @@ export function TipJar({
                 : "Tip jar, empty"
             }
             onClick={removeLast}
-            className="absolute inset-x-0 touch-manipulation rounded-t-[6px] rounded-b-[22px] outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-            style={{ top: MOUTH_Y - 4, height: FLOOR + 8 - (MOUTH_Y - 4) }}
+            className="absolute inset-x-0 touch-manipulation rounded-t-[6px] rounded-b-[22px] outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            style={{ top: MOUTH_Y - 6, height: STAGE_H - (MOUTH_Y - 6) }}
           />
         </div>
       </div>
@@ -487,7 +614,7 @@ export function TipJar({
               type="button"
               disabled={full}
               aria-label={`Add ${format(value)}`}
-              className="flex size-11 cursor-grab touch-none items-center justify-center rounded-full outline-hidden transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex size-11 cursor-grab touch-none items-center justify-center rounded-full outline-hidden transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
               onClick={() => {
                 if (suppressClick.current) {
                   suppressClick.current = false;
@@ -560,20 +687,11 @@ export function TipJar({
           type="button"
           onClick={removeLast}
           disabled={count === 0}
-          className="h-9 touch-manipulation rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100"
+          className="h-9 touch-manipulation rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100"
         >
           Remove last
         </button>
       </div>
-      <p
-        className={cn(
-          "mt-2 h-4 text-xs text-muted transition-[opacity] duration-150 ease-out",
-          !full && "opacity-0",
-        )}
-        aria-live="polite"
-      >
-        {full ? "The jar is full." : ""}
-      </p>
 
       {ghost !== null && (
         <motion.div
@@ -604,30 +722,34 @@ function CoinFace({
   currency: string;
   lifted?: boolean;
 }) {
-  const big = value >= 5;
+  // Small change is nickel, the middle coin is bimetallic (a brass ring
+  // around a nickel core), the big one is solid brass.
+  const rim = value >= 2 ? BRASS : NICKEL;
+  const core = value >= 5 ? BRASS : NICKEL;
   return (
     <span
-      className={cn(
-        "flex size-full items-center justify-center rounded-full text-xs font-semibold tabular-nums",
-        big
-          ? "bg-foreground text-background"
-          : "bg-background text-foreground shadow-[inset_0_0_0_1.5px_color-mix(in_oklab,var(--foreground)_35%,transparent)]",
-        lifted && "shadow-[0_6px_14px_-4px_oklch(0_0_0/0.3)]",
-        lifted &&
-          !big &&
-          "shadow-[inset_0_0_0_1.5px_color-mix(in_oklab,var(--foreground)_35%,transparent),0_6px_14px_-4px_oklch(0_0_0/0.3)]",
-      )}
+      className="relative block size-full rounded-full"
+      style={{
+        // A raised rim turned on a lathe: the conic sweep is the brushed
+        // edge catching light at two points, the radial is the dome.
+        background: `radial-gradient(circle at 34% 28%, oklch(1 0 0 / 0.55), transparent 52%), conic-gradient(from 210deg, ${rim.hi}, ${rim.mid} 22%, ${rim.lo} 42%, ${rim.mid} 58%, ${rim.hi} 74%, ${rim.mid} 88%, ${rim.hi})`,
+        boxShadow: lifted
+          ? `inset 0 0 0 0.5px ${rim.lo}, 0 10px 16px -6px oklch(0 0 0 / 0.4)`
+          : `inset 0 0 0 0.5px ${rim.lo}, 0 1px 1.5px oklch(0 0 0 / 0.35)`,
+      }}
     >
-      {/* The raised rim every coin has, inset from the edge. */}
+      {/* The sunken field, with the value struck in relief. */}
       <span
-        className={cn(
-          "flex size-[78%] items-center justify-center rounded-full",
-          big
-            ? "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--background)_30%,transparent)]"
-            : "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--foreground)_15%,transparent)]",
-          value === 2 &&
-            "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--foreground)_15%,transparent),0_0_0_2px_var(--background),0_0_0_3px_color-mix(in_oklab,var(--foreground)_15%,transparent)]",
-        )}
+        className="absolute inset-[14%] grid place-items-center rounded-full font-semibold tabular-nums"
+        style={{
+          background: `radial-gradient(circle at 38% 30%, ${core.hi}, ${core.mid} 58%, ${core.lo})`,
+          boxShadow: `inset 0 1px 1.5px oklch(0 0 0 / 0.35), inset 0 -1px 1px oklch(1 0 0 / 0.35)`,
+          color: core.ink,
+          fontSize: value >= 5 ? 13 : 12,
+          letterSpacing: "-0.02em",
+          textShadow:
+            "0 -0.5px 0 oklch(1 0 0 / 0.6), 0 0.75px 0 oklch(0 0 0 / 0.25)",
+        }}
       >
         {currency}
         {value}
@@ -636,6 +758,22 @@ function CoinFace({
   );
 }
 
+// Coin metals are physical materials, so they are raw colors that stay the
+// same in either theme: highlight, body, shadow, and the tone a struck
+// number takes on that metal.
+const NICKEL = {
+  hi: "oklch(0.96 0.004 250)",
+  mid: "oklch(0.82 0.008 250)",
+  lo: "oklch(0.6 0.012 250)",
+  ink: "oklch(0.4 0.014 250)",
+};
+const BRASS = {
+  hi: "oklch(0.95 0.085 95)",
+  mid: "oklch(0.8 0.12 84)",
+  lo: "oklch(0.6 0.11 70)",
+  ink: "oklch(0.42 0.08 62)",
+};
+
 export default function TipJarDemo() {
-  return <TipJar />;
+  return <TipJar initialCoins={[2, 1, 5, 1, 2, 1]} />;
 }

@@ -112,7 +112,7 @@ export function SendButton({
         className={cn(
           "inline-flex h-11 touch-manipulation items-center justify-center gap-2 rounded-full text-[15px] font-medium outline-hidden select-none",
           "transition-[scale,background-color,opacity] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-[background-color,opacity]",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
           variant === "solid"
             ? "bg-foreground text-background hover:bg-foreground/90"
             : "bg-surface text-foreground shadow-raised hover:bg-background",

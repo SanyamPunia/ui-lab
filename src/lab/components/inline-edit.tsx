@@ -89,7 +89,7 @@ export function InlineEdit({
         className={cn(
           box,
           "cursor-text outline-hidden transition-[background-color] duration-150 ease-out",
-          "hover:bg-foreground/[0.04] focus-visible:outline-2 focus-visible:outline-foreground",
+          "hover:bg-foreground/[0.04] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground",
           editing && "invisible",
           empty && "text-muted",
         )}

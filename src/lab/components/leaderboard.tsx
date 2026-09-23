@@ -282,7 +282,7 @@ export default function LeaderboardDemo() {
         <button
           type="button"
           onClick={simulate}
-          className="h-9 touch-manipulation rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="h-9 touch-manipulation rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           Simulate round
         </button>

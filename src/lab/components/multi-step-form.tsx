@@ -280,7 +280,7 @@ function Footer({
         onClick={onBack}
         disabled={!canGoBack}
         className={cn(
-          "h-11 touch-manipulation rounded-full px-4 text-[15px] font-medium text-muted outline-hidden transition-[scale,opacity,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+          "h-11 touch-manipulation rounded-full px-4 text-[15px] font-medium text-muted outline-hidden transition-[scale,opacity,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]",
           !canGoBack && "pointer-events-none opacity-0",
         )}
       >
@@ -289,7 +289,7 @@ function Footer({
       <button
         type="submit"
         disabled={!valid}
-        className="h-11 touch-manipulation rounded-full bg-foreground px-5 text-[15px] font-medium text-background outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-11 touch-manipulation rounded-full bg-foreground px-5 text-[15px] font-medium text-background outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {/* Every label shares one grid cell, so the button holds the width of
             the longest and never resizes as the label changes. */}
@@ -347,7 +347,7 @@ function PanelContent({
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Acme Inc"
           autoComplete="organization"
-          className="h-11 rounded-xl bg-background px-3.5 text-[15px] text-foreground shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground"
+          className="h-11 rounded-xl bg-background px-3.5 text-[15px] text-foreground shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
         />
       </div>
     );
@@ -364,7 +364,7 @@ function PanelContent({
               <label
                 key={p.id}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3.5 rounded-xl bg-background px-4 py-3 shadow-raised transition-[scale,box-shadow] duration-150 ease-out select-none active:scale-[0.98] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-foreground",
+                  "flex cursor-pointer items-center gap-3.5 rounded-xl bg-background px-4 py-3 shadow-raised transition-[scale,box-shadow] duration-150 ease-out select-none active:scale-[0.98] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-foreground",
                   checked && "shadow-[0_0_0_1.5px_var(--foreground)]",
                 )}
               >

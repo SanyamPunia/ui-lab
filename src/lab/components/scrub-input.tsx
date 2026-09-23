@@ -145,7 +145,7 @@ export function ScrubInput({
   return (
     <div
       className={cn(
-        "relative flex h-10 items-center overflow-hidden rounded-lg bg-background outline-foreground has-[input:focus-visible]:outline-2",
+        "relative flex h-10 items-center overflow-hidden rounded-lg bg-background outline-foreground has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-solid",
         className,
       )}
     >

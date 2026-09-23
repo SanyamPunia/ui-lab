@@ -309,7 +309,7 @@ function Layer({
 }
 
 const button =
-  "flex h-10 touch-manipulation items-center justify-center rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]";
+  "flex h-10 touch-manipulation items-center justify-center rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]";
 const secondary = cn(button, "bg-surface text-foreground hover:bg-border");
 const primary = cn(
   button,
@@ -374,7 +374,7 @@ export default function DialogDemo() {
             onChange={(e) => setDraft(e.target.value)}
             spellCheck={false}
             autoComplete="off"
-            className="mt-1.5 h-10 w-full rounded-lg bg-surface px-3 text-[15px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+            className="mt-1.5 h-10 w-full rounded-lg bg-surface px-3 text-[15px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
           />
 
           {/* 10px padding + the 18px button radius = 28px. */}

@@ -7,6 +7,7 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
+  useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
   type ValueAnimationTransition,
@@ -60,6 +61,19 @@ function rollImpression(id: number, verdict: Verdict): Impression {
   };
 }
 
+// Stamp-pad ink is a physical material: the classic blue-violet office pad
+// for approvals, and the danger red (which is red ink anyway) for
+// rejections. The blue lifts in the dark theme to stay readable.
+const INK: Record<Verdict, string> = {
+  approved: "light-dark(oklch(0.45 0.16 268), oklch(0.7 0.13 268))",
+  rejected: "var(--danger)",
+};
+// The stamp's wooden handle and mount, and the brass ring between them.
+const WOOD_LIGHT = "oklch(0.74 0.085 68)";
+const WOOD = "oklch(0.62 0.095 58)";
+const WOOD_DARK = "oklch(0.5 0.09 50)";
+const BRASS = "oklch(0.8 0.11 85)";
+
 const LABEL: Record<Verdict, string> = {
   approved: "Approved",
   rejected: "Rejected",
@@ -90,6 +104,12 @@ export function RubberStamp({
   const squashX = useMotionValue(1);
   const squashY = useMotionValue(1);
   const pageY = useMotionValue(0);
+  // 0 when the stamp is at its highest, 1 on the paper.
+  const near = useTransform(
+    () => toolOpacity.get() * (1 - Math.min(1, -toolY.get() / -LIFT_Y)),
+  );
+  const shadowOpacity = useTransform(near, (n) => n * 0.28);
+  const shadowScale = useTransform(near, (n) => 1.15 - n * 0.15);
 
   useEffect(() => {
     const list = running.current;
@@ -194,7 +214,7 @@ export function RubberStamp({
         aria-description="Press A to approve, R to reject, U to undo."
         aria-keyshortcuts="A R U"
         style={{ y: pageY }}
-        className="relative w-full rounded-2xl bg-background p-6 shadow-raised outline-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+        className="relative w-full rounded-2xl bg-background p-6 shadow-raised outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground"
       >
         {children}
 
@@ -202,6 +222,21 @@ export function RubberStamp({
           aria-hidden
           className="pointer-events-none absolute right-6 bottom-5 h-14 w-[168px]"
         >
+          {/* The box a form leaves for the stamp. It stays under the ink,
+              the way a printed box does on paper. */}
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg border border-dashed border-foreground/15">
+            {/* Fades under a fresh impression so the two words never
+                compete; the box itself stays, like print on paper. */}
+            <span
+              className={cn(
+                "text-[12px] font-medium tracking-[0.14em] text-muted/70 uppercase transition-[opacity] duration-200 ease-out",
+                impression && "opacity-0",
+              )}
+            >
+              Office use
+            </span>
+          </div>
+
           <AnimatePresence initial={false}>
             {impression && (
               <Ink
@@ -211,6 +246,13 @@ export function RubberStamp({
               />
             )}
           </AnimatePresence>
+
+          {/* The stamp's shadow on the page, tightening and darkening as it
+              comes down: the cue that says "this is about to land". */}
+          <motion.span
+            className="absolute inset-x-2 -bottom-1 h-5 rounded-[50%] bg-black blur-[6px]"
+            style={{ opacity: shadowOpacity, scaleX: shadowScale }}
+          />
 
           <motion.div
             style={{
@@ -265,9 +307,8 @@ function Ink({ mark, reduce }: { mark: Impression; reduce: boolean }) {
         // Ink soaks into the paper: it darkens what is under it in light mode
         // and brightens it in dark mode, so the printed total shows through.
         "mix-blend-multiply dark:mix-blend-screen",
-        mark.verdict === "rejected" ? "text-danger" : "text-foreground",
       )}
-      style={{ x: mark.x, rotate: mark.rotate }}
+      style={{ x: mark.x, rotate: mark.rotate, color: INK[mark.verdict] }}
       initial={reduce ? { opacity: 0, y: mark.y } : { opacity: 0, y: mark.y, scale: 1.02 }}
       animate={{ opacity: 0.9, y: mark.y, scale: 1 }}
       // Lifts off softer and quicker than it went down.
@@ -367,39 +408,65 @@ function Ink({ mark, reduce }: { mark: Impression; reduce: boolean }) {
   );
 }
 
-// A front view of a desk stamp: knob, neck, block, inked rubber face.
+// A front view of a desk stamp: a turned wooden knob and neck, a brass
+// ferrule, the wooden mount with its index label, the foam cushion and the
+// inked rubber die.
 function StampTool({ ink }: { ink: Verdict }) {
+  const id = useId().replace(/[^a-zA-Z0-9-]/g, "");
   return (
-    <svg viewBox="0 0 176 132" className="w-full" aria-hidden>
-      <ellipse cx="88" cy="20" rx="22" ry="18" className="fill-foreground" />
-      {/* Highlight on the knob, from the same token as the page. */}
-      <ellipse cx="80" cy="12" rx="8" ry="4.5" className="fill-background/25" />
-      <rect
-        x="78"
-        y="34"
-        width="20"
-        height="38"
-        rx="4"
-        className="fill-foreground/85"
+    <svg viewBox="0 0 176 132" className="w-full overflow-visible" aria-hidden>
+      <defs>
+        {/* Light from the top left, as on the rest of the page. */}
+        <radialGradient id={`${id}-knob`} cx="0.36" cy="0.3" r="0.75">
+          <stop offset="0" stopColor={WOOD_LIGHT} />
+          <stop offset="0.55" stopColor={WOOD} />
+          <stop offset="1" stopColor={WOOD_DARK} />
+        </radialGradient>
+        <linearGradient id={`${id}-turned`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor={WOOD_DARK} />
+          <stop offset="0.35" stopColor={WOOD_LIGHT} />
+          <stop offset="1" stopColor={WOOD_DARK} />
+        </linearGradient>
+        <linearGradient id={`${id}-block`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor={WOOD_LIGHT} />
+          <stop offset="1" stopColor={WOOD} />
+        </linearGradient>
+      </defs>
+      {/* Knob and neck. */}
+      <path d="M80 36C80 44 82 48 82 58H94C94 48 96 44 96 36Z" fill={`url(#${id}-turned)`} />
+      <ellipse cx="88" cy="22" rx="23" ry="19" fill={`url(#${id}-knob)`} />
+      <ellipse cx="80" cy="13" rx="8" ry="4" fill="oklch(1 0 0 / 0.35)" />
+      {/* Brass ferrule. */}
+      <rect x="76" y="56" width="24" height="10" rx="2.5" fill={BRASS} />
+      <rect x="76" y="58" width="24" height="2" fill="oklch(1 0 0 / 0.4)" />
+      {/* The mount, with a little end grain and a lighter top edge. */}
+      <rect x="6" y="66" width="164" height="42" rx="6" fill={`url(#${id}-block)`} />
+      <path
+        d="M16 76C50 73 70 79 104 76S150 74 160 77M14 98C48 95 80 101 120 97S152 96 162 99"
+        fill="none"
+        stroke={WOOD_DARK}
+        strokeOpacity={0.35}
+        strokeWidth={1}
       />
-      <rect
-        x="6"
-        y="70"
-        width="164"
-        height="44"
-        rx="9"
-        className="fill-surface stroke-foreground/25"
-        strokeWidth={1.5}
-      />
-      <rect x="7" y="104" width="162" height="9" className="fill-foreground/10" />
-      <rect
-        x="10"
-        y="114"
-        width="156"
-        height="18"
-        rx="3"
-        className={ink === "rejected" ? "fill-danger" : "fill-foreground"}
-      />
+      <rect x="6" y="66" width="164" height="2.5" rx="1.25" fill="oklch(1 0 0 / 0.35)" />
+      {/* The index label, printed with what the die says. */}
+      <rect x="52" y="78" width="72" height="18" rx="2" fill="oklch(0.97 0.01 90)" />
+      <text
+        x="88"
+        y="87.5"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="9"
+        fontWeight={800}
+        letterSpacing="1.5"
+        style={{ fill: INK[ink] }}
+      >
+        {LABEL[ink].toUpperCase()}
+      </text>
+      {/* Foam cushion and the rubber die, wet with ink. */}
+      <rect x="9" y="108" width="158" height="6" fill="oklch(0.3 0.01 60)" />
+      <rect x="10" y="114" width="156" height="18" rx="2.5" style={{ fill: INK[ink] }} />
+      <rect x="12" y="115" width="152" height="2" rx="1" fill="oklch(1 0 0 / 0.25)" />
     </svg>
   );
 }
@@ -424,7 +491,7 @@ function StampButton({
       disabled={disabled}
       aria-keyshortcuts={shortcut}
       aria-pressed={disabled ? undefined : !!active}
-      className="flex h-10 touch-manipulation items-center gap-2.5 rounded-full bg-surface pr-2.5 pl-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-[opacity]"
+      className="flex h-10 touch-manipulation items-center gap-2.5 rounded-full bg-surface pr-2.5 pl-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-[opacity]"
     >
       {children}
       {/* A 20px chip 10px in from the pill's edge: 10 + 10 = 20 radius, so

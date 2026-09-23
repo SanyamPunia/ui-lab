@@ -98,7 +98,7 @@ export function TabBar({
               // button's box is scaled mid-morph.
               style={{ borderRadius: 24 }}
               className={cn(
-                "group relative flex h-12 touch-manipulation items-center overflow-hidden px-3 outline-hidden select-none focus-visible:outline-2 focus-visible:outline-foreground",
+                "group relative flex h-12 touch-manipulation items-center overflow-hidden px-3 outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground",
                 active ? "text-foreground" : "text-muted",
                 "transition-[color] duration-150 ease-out",
               )}
@@ -307,7 +307,7 @@ const SCREENS: Record<string, { title: string; body: React.ReactNode }> = {
           type="search"
           aria-label="Search"
           placeholder="Search notes and people"
-          className="h-11 w-full rounded-xl bg-surface px-3.5 text-[15px] text-foreground outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground"
+          className="h-11 w-full rounded-xl bg-surface px-3.5 text-[15px] text-foreground outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
         />
         <p className="mt-5 text-[13px] font-medium text-muted">Recent</p>
         <ul className="mt-1 divide-y divide-border">
@@ -398,7 +398,7 @@ export default function TabBarDemo() {
               initial="enter"
               animate="center"
               exit="exit"
-              className="col-start-1 row-start-1 min-h-0 overflow-hidden px-5 pt-3 outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground"
+              className="col-start-1 row-start-1 min-h-0 overflow-hidden px-5 pt-3 outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-foreground"
             >
               <h3 className="text-2xl font-semibold tracking-tight text-foreground">
                 {screen.title}

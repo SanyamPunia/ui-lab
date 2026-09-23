@@ -292,7 +292,7 @@ const Cell = memo(function Cell({
       tabIndex={focusable ? 0 : -1}
       aria-label={label}
       className={cn(
-        "shrink-0 rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-foreground",
+        "shrink-0 rounded-[2px] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-foreground",
         // Rings the hovered day outside itself, so it shows on the darkest
         // level too.
         "hover:outline-1 hover:outline-offset-1 hover:outline-foreground/50",
@@ -341,7 +341,7 @@ export default function ContributionHeatmapDemo() {
           href={`https://github.com/${contributions.user}`}
           target="_blank"
           rel="noreferrer"
-          className="rounded-sm font-medium text-foreground underline decoration-foreground/25 underline-offset-2 outline-hidden transition-[text-decoration-color] duration-150 ease-out hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          className="rounded-sm font-medium text-foreground underline decoration-foreground/25 underline-offset-2 outline-hidden transition-[text-decoration-color] duration-150 ease-out hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
         >
           @{contributions.user}
         </a>

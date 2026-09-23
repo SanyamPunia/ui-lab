@@ -216,7 +216,7 @@ function TaskRow({
           <span
             aria-hidden
             className={cn(
-              "pointer-events-none grid size-5 place-items-center rounded-md border-[1.5px] transition-[background-color,border-color,scale] duration-150 ease-out group-active:scale-[0.96] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-foreground motion-reduce:transition-[background-color,border-color]",
+              "pointer-events-none grid size-5 place-items-center rounded-md border-[1.5px] transition-[background-color,border-color,scale] duration-150 ease-out group-active:scale-[0.96] peer-focus-visible:outline-2 peer-focus-visible:outline-solid peer-focus-visible:outline-offset-2 peer-focus-visible:outline-foreground motion-reduce:transition-[background-color,border-color]",
               done
                 ? "border-foreground bg-foreground text-background"
                 : "border-muted/60 [@media(hover:hover)]:group-hover:border-muted",
@@ -250,7 +250,7 @@ function TaskRow({
           aria-expanded={open}
           aria-controls={detailsId}
           onClick={onToggleOpen}
-          className="flex h-12 min-w-0 flex-1 items-center justify-between gap-3 rounded-[10px] pr-3 pl-1 text-left outline-hidden transition-[background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:bg-foreground/[0.06] [@media(hover:hover)]:hover:bg-foreground/[0.04]"
+          className="flex h-12 min-w-0 flex-1 items-center justify-between gap-3 rounded-[10px] pr-3 pl-1 text-left outline-hidden transition-[background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:bg-foreground/[0.06] [@media(hover:hover)]:hover:bg-foreground/[0.04]"
         >
           <span
             className={cn(
@@ -314,7 +314,7 @@ function TaskRow({
                 if (!done) onToggle(true);
               }}
               className={cn(
-                "grid h-9 rounded-full px-4 text-sm font-medium outline-hidden transition-[background-color,color,scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+                "grid h-9 rounded-full px-4 text-sm font-medium outline-hidden transition-[background-color,color,scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
                 done
                   ? "cursor-default bg-foreground/[0.06] text-muted"
                   : "bg-foreground text-background active:scale-[0.96]",
@@ -411,7 +411,7 @@ function Celebration({
         <button
           type="button"
           onClick={onDismiss}
-          className="h-9 rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="h-9 rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           Dismiss
         </button>
@@ -479,7 +479,7 @@ export default function OnboardingChecklistDemo() {
             animate={{ opacity: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, transition: { duration: 0.1 } }}
             transition={{ duration: 0.25, ease: EASE_OUT }}
-            className="h-9 rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+            className="h-9 rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
           >
             Show checklist again
           </motion.button>

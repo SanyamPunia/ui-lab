@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   animate,
   useMotionValue,
@@ -39,6 +39,19 @@ const STEP = 0.1;
 // Copying only makes sense once the button is fully in the gap.
 const REVEAL_AT = 0.9;
 const SETTLE = { type: "spring", stiffness: 500, damping: 50 } as const;
+
+// Physical materials, the same in both themes the way a real pouch is:
+// indigo canvas, a darker lining, brass hardware, cream thread, a
+// leather pull and a paper voucher with near-black ink.
+const FABRIC = "oklch(0.43 0.075 258)";
+const LINING = "oklch(0.24 0.04 258)";
+const TAPE_FILL = "oklch(0.27 0.045 258)";
+const THREAD = "oklch(0.9 0.045 85)";
+const BRASS_LIGHT = "oklch(0.9 0.09 92)";
+const BRASS_DARK = "oklch(0.62 0.1 72)";
+const LEATHER = "oklch(0.36 0.06 48)";
+const CARD = "oklch(0.975 0.012 90)";
+const CARD_INK = "oklch(0.24 0.01 260)";
 
 const clamp = (v: number, min: number, max: number) =>
   Math.min(Math.max(v, min), max);
@@ -97,9 +110,9 @@ function describe(p: number) {
 }
 
 export function ZipperReveal({
-  label = "Your code",
+  label = "Voucher",
   secret = "LAB-7Q2X",
-  note = "20% off your next order",
+  note = "20% off",
   className,
 }: {
   label?: string;
@@ -108,6 +121,8 @@ export function ZipperReveal({
   className?: string;
 }) {
   const reduceMotion = useReducedMotion();
+  // SVG ids must be plain: React's ids carry colons or guillemets.
+  const uid = `zip${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const p = useMotionValue(P_MIN);
   const [revealed, setRevealed] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -205,47 +220,74 @@ export function ZipperReveal({
   };
 
   return (
-    <div className={cn("w-[min(400px,100%)]", className)}>
+    <div className={cn("w-[min(440px,100%)]", className)}>
       <div
         ref={boxRef}
-        className="relative w-full overflow-hidden rounded-[24px] bg-background shadow-raised"
-        style={{ aspectRatio: `${W} / ${H}` }}
+        className="relative w-full overflow-hidden rounded-[22px] shadow-raised"
+        style={{ aspectRatio: `${W} / ${H}`, background: LINING }}
       >
-        {/* Underneath: the lining, recessed, with the secret on it. */}
+        {/* Underneath: the lining, shadowed under the flaps, with a
+            voucher tucked into the pouch. */}
         <motion.div
-          className="absolute inset-0 flex flex-col items-center pt-[8%] shadow-wheel"
+          className="absolute inset-0 flex justify-center pt-[6%] shadow-[inset_0_10px_24px_oklch(0_0_0/0.45)]"
           style={{ filter: blur }}
           inert={!revealed}
         >
-          <span className="text-xs text-muted">{label}</span>
-          <span className="mt-1 font-mono text-2xl font-semibold tracking-wider text-foreground">
-            {secret}
-          </span>
-          <span className="mt-1 text-sm text-muted">{note}</span>
-          <button
-            type="button"
-            onClick={copy}
-            className="mt-3 h-9 touch-manipulation rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+          <div
+            className={cn(
+              "h-fit w-[min(212px,56%)] rounded-[14px] px-3.5 pt-3 pb-3.5 transition-[translate,rotate,box-shadow] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+              revealed
+                ? "-translate-y-1 rotate-0 shadow-[0_10px_24px_-6px_oklch(0_0_0/0.55)]"
+                : "translate-y-1 -rotate-2 shadow-[0_2px_6px_oklch(0_0_0/0.4)]",
+            )}
+            style={{ background: CARD, color: CARD_INK }}
           >
-            <span className="grid">
-              <span
-                className={cn(
-                  "col-start-1 row-start-1 transition-[opacity,filter] duration-200 ease-out",
-                  copied && "opacity-0 blur-[4px]",
-                )}
-              >
-                Copy code
+            <div className="flex items-baseline justify-between gap-2 text-xs font-medium whitespace-nowrap">
+              <span className="truncate tracking-wide uppercase opacity-60">
+                {label}
               </span>
+              <span className="font-semibold">{note}</span>
+            </div>
+            <div className="mt-1 font-mono text-[22px] leading-8 font-semibold tracking-wider">
+              {secret}
+            </div>
+            {/* Perforation, with the two notches a ticket punch leaves. */}
+            <div className="relative -mx-3.5 my-2.5 border-t border-dashed border-current/25">
               <span
-                className={cn(
-                  "col-start-1 row-start-1 transition-[opacity,filter] duration-200 ease-out",
-                  !copied && "opacity-0 blur-[4px]",
-                )}
-              >
-                Copied
+                className="absolute -top-1.5 -left-1.5 size-3 rounded-full"
+                style={{ background: LINING }}
+              />
+              <span
+                className="absolute -top-1.5 -right-1.5 size-3 rounded-full"
+                style={{ background: LINING }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={copy}
+              className="h-9 w-full touch-manipulation rounded-[8px] text-sm font-medium outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-current active:scale-[0.96]"
+              style={{ background: CARD_INK, color: CARD }}
+            >
+              <span className="grid">
+                <span
+                  className={cn(
+                    "col-start-1 row-start-1 transition-[opacity,filter] duration-200 ease-out",
+                    copied && "opacity-0 blur-[4px]",
+                  )}
+                >
+                  Copy code
+                </span>
+                <span
+                  className={cn(
+                    "col-start-1 row-start-1 transition-[opacity,filter] duration-200 ease-out",
+                    !copied && "opacity-0 blur-[4px]",
+                  )}
+                >
+                  Copied
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
+          </div>
         </motion.div>
 
         <svg
@@ -253,32 +295,66 @@ export function ZipperReveal({
           viewBox={`0 0 ${W} ${H}`}
           className="pointer-events-none absolute inset-0 size-full"
         >
+          <defs>
+            {/* A plain canvas weave: faint light warp, faint dark weft. */}
+            <pattern
+              id={`${uid}w`}
+              width={3}
+              height={3}
+              patternUnits="userSpaceOnUse"
+            >
+              <rect width={3} height={1} fill="oklch(1 0 0 / 0.07)" />
+              <rect width={1} height={3} fill="oklch(0 0 0 / 0.12)" />
+            </pattern>
+            <linearGradient id={`${uid}b`} x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stopColor={BRASS_LIGHT} />
+              <stop offset="1" stopColor={BRASS_DARK} />
+            </linearGradient>
+            <path id={`${uid}l`} ref={flapL} d={flapPath(P_MIN, -1)} />
+            <path id={`${uid}r`} ref={flapR} d={flapPath(P_MIN, 1)} />
+          </defs>
           {/* The flaps, shading the lining where they lift off it. */}
-          <g className="pointer-events-auto [filter:drop-shadow(0_1px_3px_oklch(0_0_0/0.22))]">
-            <path
-              ref={flapL}
-              d={flapPath(P_MIN, -1)}
-              className="fill-surface"
-            />
-            <path ref={flapR} d={flapPath(P_MIN, 1)} className="fill-surface" />
+          <g className="[filter:drop-shadow(0_2px_4px_oklch(0_0_0/0.45))]">
+            <use href={`#${uid}l`} fill={FABRIC} />
+            <use href={`#${uid}r`} fill={FABRIC} />
           </g>
-          {/* Stitching around the three closed sides. */}
-          <path
-            d={`M12 30 V${H - 28} Q12 ${H - 12} 28 ${H - 12} H${W - 28} Q${W - 12} ${H - 12} ${W - 12} ${H - 28} V30`}
+          <use href={`#${uid}l`} fill={`url(#${uid}w)`} />
+          <use href={`#${uid}r`} fill={`url(#${uid}w)`} />
+          {/* Light falls from above: a soft sheen across the top. */}
+          <rect
+            width={W}
+            height={H}
             fill="none"
-            strokeDasharray="4 3"
-            className="stroke-foreground/15"
+            stroke="oklch(1 0 0 / 0.12)"
+            strokeWidth={2}
+            rx={20}
           />
+          {/* Stitching around the three closed sides, in cream thread. */}
           <path
-            ref={tapeL}
-            d={tapePath(P_MIN, -1)}
-            className="fill-foreground/[0.08]"
+            d={`M14 30 V${H - 30} Q14 ${H - 14} 30 ${H - 14} H${W - 30} Q${W - 14} ${H - 14} ${W - 14} ${H - 30} V30`}
+            fill="none"
+            stroke={THREAD}
+            strokeWidth={1.2}
+            strokeDasharray="5 3.5"
+            strokeLinecap="round"
           />
-          <path
-            ref={tapeR}
-            d={tapePath(P_MIN, 1)}
-            className="fill-foreground/[0.08]"
-          />
+          {/* A woven maker's label sewn into the seam. */}
+          <g transform={`translate(34 ${H - 44})`}>
+            <rect width={46} height={16} rx={2} fill={THREAD} />
+            <text
+              x={23}
+              y={11}
+              textAnchor="middle"
+              fontSize={8}
+              fontWeight={700}
+              letterSpacing={1.6}
+              fill={FABRIC}
+            >
+              UI LAB
+            </text>
+          </g>
+          <path ref={tapeL} d={tapePath(P_MIN, -1)} fill={TAPE_FILL} />
+          <path ref={tapeR} d={tapePath(P_MIN, 1)} fill={TAPE_FILL} />
           {Array.from({ length: TOOTH_COUNT }, (_, i) =>
             ([-1, 1] as const).map((side) => (
               <rect
@@ -295,45 +371,53 @@ export function ZipperReveal({
                 height={4}
                 rx={1.2}
                 transform={toothTransform(i, side, P_MIN)}
-                className="fill-foreground/55"
+                fill={`url(#${uid}b)`}
               />
             )),
           )}
           {/* The zip ends here. */}
           <rect
-            x={CX - 4}
+            x={CX - 4.5}
             y={P_MAX + 2}
-            width={8}
-            height={6}
+            width={9}
+            height={7}
             rx={1.5}
-            className="fill-foreground/55"
+            fill={BRASS_DARK}
           />
 
           <g ref={slider} transform={`translate(${CX} ${P_MIN})`}>
             <g ref={tab}>
+              {/* A leather pull, riveted to the slider's bail. */}
               <rect
-                x={-7}
+                x={-8}
                 y={2}
-                width={14}
-                height={40}
-                rx={7}
-                className="fill-foreground"
+                width={16}
+                height={42}
+                rx={5}
+                fill={LEATHER}
               />
               <rect
-                x={-3}
-                y={26}
-                width={6}
-                height={10}
-                rx={3}
-                className="fill-surface"
+                x={-5.5}
+                y={5}
+                width={11}
+                height={36}
+                rx={3.5}
+                fill="none"
+                stroke={THREAD}
+                strokeWidth={0.8}
+                strokeDasharray="2 1.6"
+                opacity={0.7}
               />
+              <circle cy={34} r={2.6} fill={`url(#${uid}b)`} />
             </g>
             <path
               d={`M-11 ${-SLIDER_TOP} H11 L8 8 Q0 11 -8 8 Z`}
               strokeLinejoin="round"
-              className="fill-foreground"
+              fill={`url(#${uid}b)`}
+              stroke={BRASS_DARK}
+              strokeWidth={0.8}
             />
-            <circle r={2.5} cy={0} className="fill-surface/40" />
+            <circle r={2.6} fill={BRASS_DARK} />
           </g>
         </svg>
 
@@ -356,7 +440,7 @@ export function ZipperReveal({
             aria-valuemax={100}
             aria-valuenow={0}
             aria-valuetext="Zipped"
-            className="pointer-events-auto absolute left-1/2 w-12 -translate-x-1/2 cursor-grab touch-none rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-foreground active:cursor-grabbing"
+            className="pointer-events-auto absolute left-1/2 w-12 -translate-x-1/2 cursor-grab touch-none rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:cursor-grabbing"
             // From the slider's top edge to just past the tab's end.
             style={{ top: `${(-12 / H) * 100}%`, height: `${(58 / H) * 100}%` }}
             onPointerDown={(e) => {

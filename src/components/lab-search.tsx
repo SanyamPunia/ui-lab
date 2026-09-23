@@ -86,7 +86,7 @@ export function LabSearch({
             aria-keyshortcuts="/"
             spellCheck={false}
             autoComplete="off"
-            className="h-9 w-full rounded-full bg-surface pr-9 pl-9 text-sm text-foreground shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
+            className="h-9 w-full rounded-full bg-surface pr-9 pl-9 text-sm text-foreground shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
           />
           {/* Hidden once typing starts, so it never sits under the text. */}
           {!query && (

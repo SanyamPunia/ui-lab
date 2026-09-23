@@ -126,7 +126,7 @@ export function StickyStack({
         role="region"
         aria-label={label}
         tabIndex={0}
-        className="min-w-0 flex-1 overflow-y-auto overscroll-contain rounded-3xl bg-surface px-4 outline-hidden [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-scrollbar]:hidden"
+        className="min-w-0 flex-1 overflow-y-auto overscroll-contain rounded-3xl bg-surface px-4 outline-hidden [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-scrollbar]:hidden"
         style={{ height: VIEWPORT }}
       >
         <div style={{ paddingBottom: bottomPad }}>
@@ -181,7 +181,7 @@ export function StickyStack({
             type="button"
             aria-label={`${i + 1}. ${item.title}`}
             onClick={() => goTo(i)}
-            className="group flex h-10 w-6 touch-manipulation items-center justify-center rounded-full outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+            className="group flex h-10 w-6 touch-manipulation items-center justify-center rounded-full outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
           >
             <span className="h-7 w-[3px] overflow-hidden rounded-full bg-border transition-[scale] duration-150 ease-out group-hover:scale-x-150 motion-reduce:transition-none">
               <span

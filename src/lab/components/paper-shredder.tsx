@@ -223,6 +223,7 @@ export function PaperShredder({
         </p>
 
         <Head running={running > 0 && !reduceMotion} />
+        <BinBack count={trash.length} />
 
         {flights.map((flight) => (
           <FlightView
@@ -244,6 +245,7 @@ export function PaperShredder({
             }}
           />
         ))}
+        <BinFront />
       </div>
 
       <div className="mt-2 flex h-10 items-center justify-center">
@@ -263,7 +265,7 @@ export function PaperShredder({
           <button
             type="button"
             onClick={undo}
-            className="h-8 touch-manipulation rounded-full bg-background/15 px-3 text-sm font-medium text-background outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-background/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+            className="h-8 touch-manipulation rounded-full bg-background/15 px-3 text-sm font-medium text-background outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-background/25 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
           >
             Undo
           </button>
@@ -350,7 +352,7 @@ function Row({
       aria-label={`${file.name}, ${file.meta}`}
       style={{ x, y, height: ROW_H }}
       className={cn(
-        "relative shrink-0 cursor-grab touch-none rounded-[12px] outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative shrink-0 cursor-grab touch-none rounded-[12px] outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
         lifted && "z-20 cursor-grabbing",
       )}
       onKeyDown={(e) => {
@@ -420,7 +422,7 @@ function Row({
             type="button"
             aria-label={`Shred ${file.name}`}
             onClick={() => onShred(top(), x.get(), 0, false)}
-            className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+            className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
           >
             <TrashIcon />
           </button>
@@ -672,12 +674,110 @@ function Strip({
   );
 }
 
+// The machine is a physical object, the same in both themes: charcoal
+// plastic with a lighter moulded edge, a black mouth and a green power
+// light.
+const BODY = "oklch(0.29 0.006 260)";
+const BODY_EDGE = "oklch(0.4 0.006 260)";
+const MOUTH = "oklch(0.13 0 0)";
+const LED_ON = "oklch(0.8 0.18 145)";
+const LED_OFF = "oklch(0.42 0.02 145)";
+
+// Seeded, so the pile of strips is the same on the server and the client.
+function seeded(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+// One layer of strips per shredded file, drawn up front and faded in as
+// files land, so the basket fills up and empties on undo. Layer 0 is what
+// was already in the basket, so it never starts out bare.
+const PILE_LAYERS = 6;
+const PILE = (() => {
+  const next = seeded(7);
+  return Array.from({ length: PILE_LAYERS }, (_, layer) =>
+    Array.from({ length: 22 }, () => ({
+      x: -10 + next() * 390,
+      y: 41 - layer * 6 - next() * 4,
+      w: 24 + next() * 40,
+      rot: (next() - 0.5) * 24,
+    })),
+  );
+})();
+
+function BinBack({ count }: { count: number }) {
+  return (
+    <div
+      aria-hidden
+      className="absolute inset-x-2 overflow-hidden rounded-b-[16px] bg-foreground/[0.035] shadow-[inset_0_10px_12px_-8px_oklch(0_0_0/0.3)]"
+      style={{ top: BIN_TOP, height: BIN_H }}
+    >
+      <svg
+        viewBox="0 0 400 48"
+        preserveAspectRatio="none"
+        className="absolute inset-x-0 bottom-0 h-12 w-full"
+      >
+        {PILE.map((layer, i) => (
+          <g
+            key={i}
+            className={cn(
+              "transition-opacity ease-out motion-reduce:delay-0",
+              // A new layer appears once its strips have fallen onto it.
+              i <= count ? "opacity-100 delay-300 duration-300" : "opacity-0 duration-150",
+            )}
+          >
+            {layer.map((s, j) => (
+              <rect
+                key={j}
+                x={s.x}
+                y={s.y}
+                width={s.w}
+                height={5}
+                rx={1}
+                transform={`rotate(${s.rot} ${s.x + s.w / 2} ${s.y + 2})`}
+                fill="var(--background)"
+                stroke="color-mix(in oklab, var(--foreground) 24%, transparent)"
+                strokeWidth={0.8}
+              />
+            ))}
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// The basket's wire front, drawn over the falling strips so they land
+// inside it rather than in front of it.
+function BinFront() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-2 rounded-b-[16px] border-x-[1.5px] border-b-[1.5px] border-foreground/15"
+      style={{
+        top: BIN_TOP,
+        height: BIN_H,
+        backgroundImage:
+          "repeating-linear-gradient(90deg, color-mix(in oklab, var(--foreground) 9%, transparent) 0 1.5px, transparent 1.5px 12px)",
+      }}
+    />
+  );
+}
+
 function Head({ running }: { running: boolean }) {
   return (
     <motion.div
       aria-hidden
-      className="absolute inset-x-0 flex items-end justify-between rounded-t-[8px] rounded-b-[16px] bg-foreground px-4 pb-2.5"
-      style={{ top: LIST_H + HEAD_GAP, height: HEAD_H }}
+      className="absolute inset-x-0 z-[5] flex items-end justify-between rounded-t-[10px] rounded-b-[8px] px-4 pb-2.5"
+      style={{
+        top: LIST_H + HEAD_GAP,
+        height: HEAD_H,
+        background: BODY,
+        boxShadow: `inset 0 1px 0 ${BODY_EDGE}, 0 6px 14px -6px oklch(0 0 0 / 0.45)`,
+      }}
       // A sub-pixel buzz: enough to feel the motor, not enough to blur text.
       animate={
         running
@@ -690,16 +790,27 @@ function Head({ running }: { running: boolean }) {
           : { duration: 0.1 }
       }
     >
-      <div className="absolute inset-x-2 top-1.5 h-1 rounded-full bg-background/35" />
-      <span className="text-xs font-medium tracking-[0.2em] text-background/50">
+      {/* The mouth: a black slot under a moulded lip, centred on SLOT_Y. */}
+      <div
+        className="absolute inset-x-2.5 top-[5px] h-1.5 rounded-full"
+        style={{
+          background: MOUTH,
+          boxShadow: `0 1px 0 ${BODY_EDGE}`,
+        }}
+      />
+      <span className="text-xs font-semibold tracking-[0.24em] text-[oklch(1_0_0/0.4)]">
         SHRED
       </span>
-      <span
-        className={cn(
-          "size-1.5 rounded-full transition-[background-color] duration-150 ease-out",
-          running ? "bg-background" : "bg-background/25",
-        )}
-      />
+      <span className="flex items-center gap-2 text-xs font-medium tracking-wide text-[oklch(1_0_0/0.4)]">
+        AUTO
+        <span
+          className="size-1.5 rounded-full transition-[background-color,box-shadow] duration-150 ease-out"
+          style={{
+            background: running ? LED_ON : LED_OFF,
+            boxShadow: running ? `0 0 6px ${LED_ON}` : "none",
+          }}
+        />
+      </span>
     </motion.div>
   );
 }

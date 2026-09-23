@@ -196,7 +196,7 @@ export function StaggerVisualizer({ className }: { className?: string }) {
           <button
             type="button"
             onClick={() => play(plan)}
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-foreground pr-4 pl-3 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-foreground pr-4 pl-3 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
           >
             {/* Nudged right: a triangle's visual center sits left of its box. */}
             <svg viewBox="0 0 16 16" className="size-4 translate-x-px" fill="currentColor" aria-hidden>
@@ -217,7 +217,7 @@ export function StaggerVisualizer({ className }: { className?: string }) {
               aria-label={`Ripple from tile ${i + 1}`}
               onClick={() => ripple(i)}
               className={cn(
-                "flex h-12 flex-col justify-between rounded-lg bg-surface p-2 text-left outline-hidden transition-[scale,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+                "flex h-12 flex-col justify-between rounded-lg bg-surface p-2 text-left outline-hidden transition-[scale,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]",
                 direction === "ripple" && origin === i && "shadow-[inset_0_0_0_1.5px_var(--foreground)]",
               )}
             >
@@ -298,7 +298,7 @@ export function StaggerVisualizer({ className }: { className?: string }) {
               onChange={(e) => setStagger(Number(e.target.value))}
               style={{ "--fill": `${(stagger / MAX_DELAY) * 100}%` } as React.CSSProperties}
               className={cn(
-                "h-8 w-full cursor-pointer appearance-none rounded-full bg-transparent outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+                "h-8 w-full cursor-pointer appearance-none rounded-full bg-transparent outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
                 // The filled part is a hard color stop at the value, not a blend.
                 "[&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--foreground)_var(--fill),var(--border)_var(--fill))]",
                 "[&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[linear-gradient(to_right,var(--foreground)_var(--fill),var(--border)_var(--fill))]",
@@ -407,7 +407,7 @@ function Choice<T extends string>({
             onClick={() => onChange(o.id)}
             className={cn(
               // 8px radius + 4px padding = the 12px group.
-              "h-8 min-w-0 truncate rounded-[8px] px-1 text-[13px] font-medium outline-hidden transition-[color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+              "h-8 min-w-0 truncate rounded-[8px] px-1 text-[13px] font-medium outline-hidden transition-[color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]",
               mono && "font-mono font-normal",
               value === o.id ? "bg-background text-foreground shadow-raised" : "text-muted hover:text-foreground",
             )}

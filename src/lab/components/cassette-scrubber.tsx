@@ -36,6 +36,22 @@ const STEP = 5;
 const STILL_MS = 80;
 const ICON_SWAP = { type: "spring", duration: 0.3, bounce: 0 } as const;
 
+// The cassette is a physical object, so it keeps its own materials in both
+// themes: a smoke-grey shell, a cream paper label with two printed stripes,
+// brown-black magnetic tape and white plastic hubs.
+const SHELL = "oklch(0.27 0.008 260)";
+const SHELL_TOP = "oklch(0.33 0.008 260)";
+const SHELL_DEEP = "oklch(0.2 0.008 260)";
+const SMOKE = "oklch(0.17 0.006 260)";
+const TAPE = "oklch(0.36 0.045 45)";
+const HUB_WHITE = "oklch(0.95 0.005 90)";
+const LABEL = "oklch(0.95 0.02 85)";
+const INK = "oklch(0.24 0.02 60)";
+const INK_SOFT = "oklch(0.5 0.02 60)";
+const STRIPE_A = "oklch(0.72 0.15 60)";
+const STRIPE_B = "oklch(0.6 0.19 32)";
+const METAL = "oklch(0.72 0.005 260)";
+
 type Mode = "free" | "drag" | "seek";
 type Point = { x: number; y: number };
 
@@ -320,16 +336,15 @@ export function CassetteScrubber({
             <clipPath id={clipId}>
               <path d={WINDOW_PATH} />
             </clipPath>
+            <linearGradient id={`${clipId}-shell`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor={SHELL_TOP} />
+              <stop offset="1" stopColor={SHELL} />
+            </linearGradient>
           </defs>
-          <rect
-            x={8}
-            y={8}
-            width={424}
-            height={264}
-            rx={18}
-            className="fill-surface stroke-foreground/15"
-          />
-          <path d={WINDOW_PATH} className="fill-foreground/[0.04]" />
+          {/* The shell, with a faint bevel where the light catches its rim. */}
+          <rect x={8} y={8} width={424} height={264} rx={18} fill={`url(#${clipId}-shell)`} />
+          <rect x={9} y={9} width={422} height={262} rx={17} fill="none" stroke="oklch(1 0 0 / 0.1)" />
+          <path d={WINDOW_PATH} fill={SMOKE} />
           <g clipPath={`url(#${clipId})`}>
             {[LEFT, RIGHT].map((c, i) => (
               <g key={i}>
@@ -340,7 +355,7 @@ export function CassetteScrubber({
                   cx={c.x}
                   cy={c.y}
                   r={packRadius(i ? start : 1 - start)}
-                  className="fill-foreground/80"
+                  fill={TAPE}
                 />
                 {/* The outermost wraps catch a little light. */}
                 <circle
@@ -351,7 +366,7 @@ export function CassetteScrubber({
                   cy={c.y}
                   r={Math.max(packRadius(i ? start : 1 - start) - 3, HUB)}
                   fill="none"
-                  className="stroke-background/20"
+                  stroke="oklch(1 0 0 / 0.14)"
                 />
               </g>
             ))}
@@ -362,8 +377,8 @@ export function CassetteScrubber({
             }}
             d={tapePath(packRadius(1 - start), packRadius(start))}
             fill="none"
-            className="stroke-foreground/70"
-            strokeWidth={1.5}
+            stroke={TAPE}
+            strokeWidth={2}
           />
           {[LEFT, RIGHT].map((c, i) => (
             <g key={i}>
@@ -372,12 +387,9 @@ export function CassetteScrubber({
                   parts.current[i ? "reelR" : "reelL"] = el;
                 }}
               >
-                <circle
-                  cx={c.x}
-                  cy={c.y}
-                  r={HUB - 1}
-                  className="fill-surface stroke-foreground/25"
-                />
+                {/* White plastic hub: three windows, and a toothed socket
+                    for the deck's spindle. */}
+                <circle cx={c.x} cy={c.y} r={HUB - 1} fill={HUB_WHITE} stroke="oklch(0 0 0 / 0.15)" />
                 {[0, 120, 240].map((a) => (
                   <circle
                     key={a}
@@ -385,15 +397,10 @@ export function CassetteScrubber({
                     cx={Math.round(c.x + 14 * Math.cos((a * Math.PI) / 180))}
                     cy={Math.round(c.y + 14 * Math.sin((a * Math.PI) / 180))}
                     r={3.5}
-                    className="fill-foreground/15"
+                    fill={TAPE}
                   />
                 ))}
-                <circle
-                  cx={c.x}
-                  cy={c.y}
-                  r={8}
-                  className="fill-background stroke-foreground/30"
-                />
+                <circle cx={c.x} cy={c.y} r={8} fill={SHELL} />
                 {[0, 60, 120, 180, 240, 300].map((a) => (
                   <rect
                     key={a}
@@ -403,7 +410,7 @@ export function CassetteScrubber({
                     height={3.5}
                     rx={0.5}
                     transform={`rotate(${a} ${c.x} ${c.y})`}
-                    className="fill-foreground/40"
+                    fill={HUB_WHITE}
                   />
                 ))}
               </g>
@@ -416,81 +423,59 @@ export function CassetteScrubber({
                 r={14}
                 fill="none"
                 opacity={0}
-                className="stroke-foreground/40"
+                stroke="oklch(0.6 0.02 60)"
                 strokeWidth={7}
               />
             </g>
           ))}
-          {/* The label, with the window cut out of it. */}
+          {/* Glare on the smoked window, so it reads as plastic you look
+              through rather than a hole. */}
+          <path
+            d={`M${WINDOW.x + 150} ${WINDOW.y} L${WINDOW.x + 196} ${WINDOW.y} L${WINDOW.x + 120} ${WINDOW.y + WINDOW.h} L${WINDOW.x + 74} ${WINDOW.y + WINDOW.h}Z`}
+            clipPath={`url(#${clipId})`}
+            fill="oklch(1 0 0 / 0.06)"
+            className="pointer-events-none"
+          />
+          {/* The paper label, with the window cut out of it. */}
           <path
             d={`${roundedRect(30, 22, 380, 192, 10)}${WINDOW_PATH}`}
             fillRule="evenodd"
-            className="fill-background stroke-foreground/10"
+            fill={LABEL}
           />
-          <text
-            x={48}
-            y={57}
-            className="fill-foreground font-sans"
-            fontSize={22}
-            fontWeight={600}
-          >
+          <path
+            d={WINDOW_PATH}
+            fill="none"
+            stroke="oklch(0 0 0 / 0.25)"
+            strokeWidth={1.5}
+          />
+          <text x={48} y={57} fill={INK} className="font-sans" fontSize={22} fontWeight={700}>
             {side}
           </text>
-          <text
-            x={76}
-            y={56}
-            className="fill-foreground font-sans"
-            fontSize={15}
-            fontWeight={500}
-          >
+          <text x={76} y={56} fill={INK} className="font-sans" fontSize={16} fontWeight={500}>
             {title}
           </text>
-          <text
-            x={392}
-            y={56}
-            textAnchor="end"
-            className="fill-muted font-mono"
-            fontSize={12}
-          >
+          <text x={392} y={56} textAnchor="end" fill={INK_SOFT} className="font-mono" fontSize={12}>
             {clock(duration)}
           </text>
-          <line
-            x1={48}
-            x2={392}
-            y1={68}
-            y2={68}
-            className="stroke-foreground/10"
-          />
+          {/* Two printed stripes run under the title, stopping short of
+              the window. */}
+          <rect x={30} y={67} width={380} height={4} fill={STRIPE_A} />
+          <rect x={30} y={71} width={380} height={4} fill={STRIPE_B} />
           {/* Head opening, with the tape running across it. */}
-          <path
-            d="M112 272 L132 222 H308 L328 272"
-            className="fill-background stroke-foreground/10"
-          />
+          <path d="M112 272 L132 222 H308 L328 272" fill={SHELL_DEEP} stroke="oklch(1 0 0 / 0.08)" />
           <line
             x1={POST_L.x}
             x2={POST_R.x}
             y1={POST_L.y}
             y2={POST_R.y}
-            className="stroke-foreground/70"
-            strokeWidth={1.5}
+            stroke={TAPE}
+            strokeWidth={2}
           />
           {[POST_L, POST_R].map((p) => (
-            <circle
-              key={p.x}
-              cx={p.x}
-              cy={p.y + 4}
-              r={4}
-              className="fill-surface stroke-foreground/30"
-            />
+            <circle key={p.x} cx={p.x} cy={p.y + 4} r={4} fill={METAL} stroke="oklch(0 0 0 / 0.3)" />
           ))}
           {[168, 272].map((x) => (
-            <circle
-              key={x}
-              cx={x}
-              cy={252}
-              r={6}
-              className="fill-surface stroke-foreground/15"
-            />
+            <circle key={x} cx={x} cy={252} r={6} fill="oklch(0.12 0 0)" stroke="oklch(1 0 0 / 0.08)" />
           ))}
           {[
             [20, 20],
@@ -500,16 +485,8 @@ export function CassetteScrubber({
             [220, 250],
           ].map(([x, y]) => (
             <g key={`${x}-${y}`}>
-              <circle
-                cx={x}
-                cy={y}
-                r={4}
-                className="fill-background stroke-foreground/20"
-              />
-              <path
-                d={`M${x - 2} ${y}h4M${x} ${y - 2}v4`}
-                className="stroke-foreground/30"
-              />
+              <circle cx={x} cy={y} r={4} fill={METAL} stroke="oklch(0 0 0 / 0.35)" />
+              <path d={`M${x - 2} ${y}h4M${x} ${y - 2}v4`} stroke="oklch(0.35 0 0)" />
             </g>
           ))}
         </svg>
@@ -523,7 +500,7 @@ export function CassetteScrubber({
           // Seeded once for the server render; the frame loop owns it after.
           aria-valuenow={Math.floor(start * duration)}
           aria-valuetext={`${clock(start * duration)} of ${clock(duration)}`}
-          className="absolute cursor-grab touch-none rounded-[7%/16%] outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing"
+          className="absolute cursor-grab touch-none rounded-[7%/16%] outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing"
           style={{
             left: `${(WINDOW.x / VB_W) * 100}%`,
             top: `${(WINDOW.y / VB_H) * 100}%`,
@@ -586,7 +563,7 @@ export function CassetteScrubber({
           type="button"
           aria-label={playing ? "Pause" : "Play"}
           onClick={togglePlay}
-          className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-foreground text-background outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-foreground text-background outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           <SwapIcon visible={!playing}>
             {/* Drawn 1 unit right of center: a triangle's visual weight

@@ -97,7 +97,7 @@ export function IconMorphButton({
         aria-label={label}
         aria-pressed={pressed}
         onClick={toggle}
-        className="flex size-11 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
+        className="flex size-11 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border/60 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
       >
         <motion.svg
           viewBox="0 0 24 24"

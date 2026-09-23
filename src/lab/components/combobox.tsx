@@ -272,7 +272,7 @@ export function Combobox({
             onClick={clear}
             className={cn(
               "absolute right-1 grid size-9 place-items-center rounded-lg text-muted outline-hidden select-none",
-              "transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+              "transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
             )}
           >
             <SwapSlot visible={hasText} reduceMotion={reduceMotion}>

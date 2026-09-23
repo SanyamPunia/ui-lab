@@ -126,7 +126,7 @@ export function UploadButton({
         className={cn(
           "group relative inline-flex h-10 touch-manipulation items-center justify-center overflow-hidden rounded-full text-sm font-medium shadow-raised outline-hidden select-none",
           "transition-[background-color,color] duration-200 ease-out",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
           checked ? "bg-foreground text-background" : "bg-surface text-foreground",
           status === "done" && "cursor-default",
         )}

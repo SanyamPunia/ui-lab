@@ -607,7 +607,7 @@ function Card({
         className={cn(
           "relative flex size-full cursor-grab touch-none items-center rounded-[10px] bg-background px-3 text-left text-sm text-foreground shadow-raised outline-hidden select-none",
           "transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none",
-          "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-foreground",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-foreground",
           // Lifted already reads as pressed; don't shrink under the lift.
           held && "active:scale-100",
         )}

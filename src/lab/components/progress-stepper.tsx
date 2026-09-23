@@ -241,7 +241,7 @@ function Swap({
 }
 
 const button =
-  "h-10 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]";
+  "h-10 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]";
 
 export default function ProgressStepperDemo() {
   const steps = ["Cart", "Shipping", "Payment", "Done"];

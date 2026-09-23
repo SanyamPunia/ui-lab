@@ -157,7 +157,7 @@ export function DonutChart({
               onBlur={() => setHovered(null)}
               onClick={() => toggle(i)}
               className={cn(
-                "flex h-9 w-full touch-manipulation items-center gap-2.5 rounded-lg px-2 text-left text-sm transition-[scale,opacity,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity,background-color]",
+                "flex h-9 w-full touch-manipulation items-center gap-2.5 rounded-lg px-2 text-left text-sm transition-[scale,opacity,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity,background-color]",
                 active !== null && active !== i ? "opacity-40" : "opacity-100",
                 pinned === i && "bg-surface",
               )}

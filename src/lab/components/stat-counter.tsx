@@ -203,7 +203,7 @@ function StatCard({ stat, started, index }: { stat: Stat; started: boolean; inde
             setScrub(clamped === last ? null : clamped);
           }}
           // A few px of padding widens the target without moving the line.
-          className="-mx-1 -my-1 cursor-ew-resize touch-pan-y rounded-lg px-1 py-1 outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+          className="-mx-1 -my-1 cursor-ew-resize touch-pan-y rounded-lg px-1 py-1 outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
         >
           <Sparkline
             series={stat.series}
@@ -415,7 +415,7 @@ export default function StatCounterDemo() {
         <button
           type="button"
           onClick={refresh}
-          className="flex h-9 touch-manipulation items-center gap-2 rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="flex h-9 touch-manipulation items-center gap-2 rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           {/* Half a turn per press, so repeated presses keep spinning the
               same way instead of snapping back. */}

@@ -130,7 +130,7 @@ export function ReadingProgress({
           <h2
             ref={heading}
             tabIndex={-1}
-            className="rounded-sm text-xl font-semibold text-balance text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            className="rounded-sm text-xl font-semibold text-balance text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
           >
             {title}
           </h2>
@@ -158,7 +158,7 @@ export function ReadingProgress({
         inert={!showTop}
         aria-label="Back to top"
         className={cn(
-          "absolute right-4 bottom-4 flex size-10 touch-manipulation items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]",
+          "absolute right-4 bottom-4 flex size-10 touch-manipulation items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]",
           "transition-[opacity,translate,scale] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
           showTop ? "translate-y-0 opacity-100 duration-200" : "translate-y-2 opacity-0 duration-150",
         )}

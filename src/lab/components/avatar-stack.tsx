@@ -165,7 +165,7 @@ export function AvatarStack({
               "group relative flex size-full touch-manipulation items-center justify-center rounded-full text-sm font-medium text-foreground ring-2 ring-background outline-hidden select-none",
               "transition-[translate,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
               "motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-105 motion-safe:focus-visible:-translate-y-0.5 motion-safe:focus-visible:scale-105",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]",
+              "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]",
               // Line-drawn faces are black ink, so they sit on a light circle in
               // both themes, like a printed photo; initials keep the theme tints.
               item.avatar ? "bg-[oklch(0.97_0_0)]" : item.tint,

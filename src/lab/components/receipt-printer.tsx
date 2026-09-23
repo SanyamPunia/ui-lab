@@ -42,6 +42,9 @@ const TOOTH = 5;
 const TOOTH_WIDTH = 8;
 // Blank paper between that old tear and the first line, as a real roll has.
 const LEAD = 14;
+// Between receipts the roll's serrated edge stands a little out of the
+// slot, as on a real printer, so the idle and torn states still show paper.
+const STUB = TOOTH + 9;
 // After the last line the printer keeps feeding blank paper, so the text
 // clears the cutter before you tear.
 const TAIL = 36;
@@ -117,9 +120,11 @@ export function ReceiptPrinter({
   // How much paper has come out of the slot. Everything still inside the
   // printer sits below the clip, so a line only appears once it's printed
   // and fed out, never before.
-  const fed = useMotionValue(0);
+  const fed = useMotionValue(STUB);
   const inside = useTransform(fed, (f) => height - f);
-  const shade = useTransform(fed, [0, 24], [0, 1]);
+  // None at the stub, which is shorter than the shade and would leave it
+  // hanging in the air above the slot; full once a receipt has risen.
+  const shade = useTransform(fed, [STUB, STUB + 24], [0, 1]);
   const twist = useMotionValue(0);
   const lift = useMotionValue(0);
 
@@ -134,7 +139,7 @@ export function ReceiptPrinter({
     drag.current = null;
     twist.jump(0);
     lift.jump(0);
-    fed.jump(0);
+    fed.jump(STUB);
     setPhase("printing");
     if (reduceMotion) {
       fed.jump(height);
@@ -144,9 +149,9 @@ export function ReceiptPrinter({
     // One keyframed run: feed out the blank lead, then for every line hold
     // still while the head burns it and feed it out, then run out the tail.
     // A single animation is simple to cancel when Reprint interrupts it.
-    const values = [0];
+    const values = [STUB];
     const times = [0];
-    let position = 0;
+    let position = STUB;
     let time = 0;
     const feed = (px: number) => {
       position += px;
@@ -159,7 +164,7 @@ export function ReceiptPrinter({
       values.push(position);
       times.push(time);
     };
-    feed(TOOTH + LEAD);
+    feed(TOOTH + LEAD - STUB);
     for (const line of lines) {
       burn();
       feed(HEIGHTS[line.kind]);
@@ -197,7 +202,9 @@ export function ReceiptPrinter({
       setPhase("torn");
       if (!reduceMotion) setPieces((list) => [...list, piece]);
     });
-    fed.jump(0);
+    // What stays behind is the next stretch of roll, its fresh serrated
+    // edge standing just out of the slot.
+    fed.jump(STUB);
     twist.jump(0);
     lift.jump(0);
     navigator.vibrate?.(10);
@@ -219,7 +226,8 @@ export function ReceiptPrinter({
 
   const printed = phase === "printed";
   const status = {
-    idle: "Ready",
+    // The LED already says ready or busy, so the text says something else.
+    idle: "Paper loaded",
     printing: "Printing",
     printed: "Twist or pull to tear it off",
     torn: "Torn off",
@@ -319,7 +327,16 @@ const CUTTER =
 
 function Printer({ busy, status }: { busy: boolean; status: string }) {
   return (
-    <div className="relative h-[92px] w-full rounded-[22px] bg-surface shadow-raised">
+    <div className="relative h-[92px] w-full rounded-[22px] bg-linear-to-b from-surface to-[color-mix(in_oklch,var(--surface),var(--foreground)_4%)] shadow-[var(--shadow-raised),inset_0_1px_0_oklch(1_0_0/0.6)] dark:shadow-[var(--shadow-raised),inset_0_1px_0_oklch(1_0_0/0.06)]">
+      {/* Rubber feet, so the case stands on the page rather than floating. */}
+      <span aria-hidden className="absolute -bottom-1 left-7 h-1.5 w-10 rounded-b-md bg-foreground/15" />
+      <span aria-hidden className="absolute right-7 -bottom-1 h-1.5 w-10 rounded-b-md bg-foreground/15" />
+      {/* The seam of the cover you would lift to load a new roll, with a
+          lit lower edge so it reads as a groove in the molding. */}
+      <span
+        aria-hidden
+        className="absolute inset-x-4 top-[34px] h-px bg-foreground/10 shadow-[0_1px_0_oklch(1_0_0/0.7)] dark:shadow-[0_1px_0_oklch(1_0_0/0.05)]"
+      />
       {/* The slot the paper leaves through, with the serrated cutter bar
           along its front lip. */}
       <div
@@ -335,18 +352,27 @@ function Printer({ busy, status }: { busy: boolean; status: string }) {
       >
         <path fill="currentColor" d={CUTTER} />
       </svg>
-      <div className="absolute inset-x-5 bottom-4 flex items-center justify-between">
-        <p className="text-sm text-muted" aria-live="polite">
+      <div className="absolute inset-x-5 bottom-[18px] flex items-center justify-between gap-3">
+        <p className="truncate text-sm text-muted" aria-live="polite">
           {status}
         </p>
-        {/* Pulses while the motor runs, like a real status light. */}
-        <span
-          aria-hidden
-          className={cn(
-            "size-2 rounded-full transition-[background-color] duration-150 ease-out",
-            busy ? "animate-pulse bg-foreground" : "bg-foreground/25",
-          )}
-        />
+        {/* A status LED is a physical light, so it gets real LED colors:
+            steady green when ready, amber blinking while the motor runs. */}
+        <span aria-hidden className="flex shrink-0 items-center gap-2 text-[12px] font-medium tracking-[0.12em] text-muted uppercase">
+          {busy ? "Busy" : "Ready"}
+          <span
+            className={cn(
+              "size-2 rounded-full transition-[background-color,box-shadow] duration-150 ease-out",
+              busy && "animate-pulse",
+            )}
+            style={{
+              background: busy ? "oklch(0.8 0.16 75)" : "oklch(0.74 0.17 150)",
+              boxShadow: busy
+                ? "0 0 6px oklch(0.8 0.16 75 / 0.7)"
+                : "0 0 6px oklch(0.74 0.17 150 / 0.6)",
+            }}
+          />
+        </span>
       </div>
     </div>
   );
@@ -577,7 +603,7 @@ function Button({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="h-10 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-[opacity]"
+      className="h-10 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-[opacity]"
     >
       {children}
     </button>

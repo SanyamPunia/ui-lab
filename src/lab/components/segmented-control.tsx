@@ -97,7 +97,7 @@ export function SegmentedControl({
       role="radiogroup"
       aria-label={label}
       className={cn(
-        "relative inline-flex rounded-full bg-surface p-1 shadow-raised has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground",
+        "relative inline-flex rounded-full bg-surface p-1 shadow-raised has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground",
         className,
       )}
       onKeyDown={(e) => {

@@ -129,7 +129,7 @@ export function Breadcrumbs({
               e.preventDefault();
               onNavigate(item, index);
             }}
-            className="inline-flex h-9 touch-manipulation items-center rounded-md px-1.5 text-sm whitespace-nowrap text-muted underline decoration-transparent underline-offset-4 outline-hidden transition-[color,text-decoration-color,scale] duration-150 ease-out select-none hover:text-foreground hover:decoration-foreground/40 focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,text-decoration-color]"
+            className="inline-flex h-9 touch-manipulation items-center rounded-md px-1.5 text-sm whitespace-nowrap text-muted underline decoration-transparent underline-offset-4 outline-hidden transition-[color,text-decoration-color,scale] duration-150 ease-out select-none hover:text-foreground hover:decoration-foreground/40 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,text-decoration-color]"
           >
             {item.label}
           </a>
@@ -265,7 +265,7 @@ function FoldMenu({
           }
         }}
         className={cn(
-          "flex h-8 w-9 touch-manipulation items-center justify-center rounded-md text-muted outline-hidden transition-[color,background-color,scale] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+          "flex h-8 w-9 touch-manipulation items-center justify-center rounded-md text-muted outline-hidden transition-[color,background-color,scale] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
           open && "bg-foreground/[0.06] text-foreground",
         )}
       >
@@ -510,7 +510,7 @@ export default function BreadcrumbsDemo() {
             resize(next);
           }}
           // A 24px wide hit area around a 6px grip, centred on the edge.
-          className="group absolute top-1/2 -right-3 flex h-10 w-6 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+          className="group absolute top-1/2 -right-3 flex h-10 w-6 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
         >
           <span className="h-6 w-1.5 rounded-full bg-border transition-[background-color,scale] duration-150 ease-out group-hover:bg-muted group-active:scale-y-[1.15] group-active:bg-foreground motion-reduce:transition-[background-color]" />
         </div>

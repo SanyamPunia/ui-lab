@@ -48,6 +48,15 @@ const FLICKER: Keyframe[] = [
   { opacity: 1, offset: 1 },
 ];
 
+// The lamp is a physical object and keeps its materials in both themes:
+// green enamel shade, braided flex, nickel chain, and warm incandescent
+// light, which is a colour of light rather than a theme colour.
+const ENAMEL = "oklch(0.34 0.06 165)";
+const ENAMEL_LIT = "oklch(0.46 0.07 165)";
+const FLEX = "oklch(0.35 0.01 60)";
+const NICKEL = "oklch(0.64 0.01 80)";
+const WARM = "oklch(0.93 0.1 85)";
+
 // Where the bulb sits on screen at the moment of the pull, in viewport px.
 export type BulbOrigin = { x: number; y: number; r: number };
 
@@ -337,7 +346,7 @@ export function PullCordSwitch({
   return (
     <div className={cn("flex w-[400px] max-w-full flex-col gap-4", className)}>
       <div
-        className="relative h-[360px] w-full overflow-hidden rounded-3xl bg-surface shadow-raised [--glow:var(--background)] [--glow-strength:1] [--warm:color-mix(in_oklab,var(--background)_92%,var(--danger))] dark:[--glow:var(--foreground)] dark:[--glow-strength:0.14] dark:[--warm:color-mix(in_oklab,var(--foreground)_90%,var(--danger))]"
+        className="relative h-[360px] w-full overflow-hidden rounded-3xl bg-surface shadow-raised [--glow:var(--background)] [--glow-strength:1] dark:[--glow:var(--foreground)] dark:[--glow-strength:0.14]"
       >
         {/* The room dims with the lamp off. Switching off fades slower, the
             way a filament cools rather than cutting out. */}
@@ -360,9 +369,19 @@ export function PullCordSwitch({
                 <stop offset="1" style={{ stopColor: "var(--glow)", stopOpacity: 0 }} />
               </radialGradient>
               <radialGradient id={`${id}-halo`}>
-                <stop offset="0.3" style={{ stopColor: "var(--warm)", stopOpacity: 0.9 }} />
-                <stop offset="1" style={{ stopColor: "var(--warm)", stopOpacity: 0 }} />
+                <stop offset="0.3" stopColor={WARM} stopOpacity={0.85} />
+                <stop offset="1" stopColor={WARM} stopOpacity={0} />
               </radialGradient>
+              {/* Enamelled steel, lit from above. */}
+              <linearGradient id={`${id}-shade`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor={ENAMEL_LIT} />
+                <stop offset="1" stopColor={ENAMEL} />
+              </linearGradient>
+              <linearGradient id={`${id}-brass`} x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="oklch(0.62 0.09 75)" />
+                <stop offset="0.45" stopColor="oklch(0.86 0.1 85)" />
+                <stop offset="1" stopColor="oklch(0.58 0.09 70)" />
+              </linearGradient>
             </defs>
 
             <g
@@ -377,26 +396,50 @@ export function PullCordSwitch({
               <circle cx={LAMP_X} cy={160} r={46} fill={`url(#${id}-halo)`} />
             </g>
 
-            {/* Flex from the ceiling. */}
-            <line x1={LAMP_X} y1={0} x2={LAMP_X} y2={100} strokeWidth={1.5} className="stroke-foreground/60" />
-            <rect x={LAMP_X - 7} y={86} width={14} height={16} rx={3} className="fill-foreground" />
+            {/* A ceiling rose, and the braided flex down to a brass cap. */}
+            <ellipse cx={LAMP_X} cy={0} rx={20} ry={7} fill={`url(#${id}-shade)`} />
+            <line x1={LAMP_X} y1={4} x2={LAMP_X} y2={90} strokeWidth={2} stroke={FLEX} />
+            <rect x={LAMP_X - 8} y={84} width={16} height={18} rx={3} fill={`url(#${id}-brass)`} />
 
-            <circle cx={LAMP_X} cy={158} r={13} strokeWidth={1} className="fill-surface stroke-foreground/25" />
+            {/* The bulb hangs just below the rim: clear glass when off. */}
+            <circle
+              cx={LAMP_X}
+              cy={160}
+              r={15}
+              // Unlit glass reads paler than the room: dimmer in the dark.
+              style={{ fill: "light-dark(oklch(0.95 0.01 85 / 0.85), oklch(0.62 0.01 85))" }}
+              stroke="oklch(0 0 0 / 0.18)"
+            />
             {/* The lit filament is its own layer so it can flicker on with the glow. */}
             <circle
               ref={filamentRef}
               cx={LAMP_X}
-              cy={158}
-              r={13.5}
+              cy={160}
+              r={15.5}
+              fill={WARM}
               className={cn(
-                "fill-[var(--warm)] transition-opacity ease-out",
+                "transition-opacity ease-out",
                 checked ? "opacity-100 duration-150" : "opacity-0 duration-[350ms]",
               )}
             />
 
-            <path d="M128 152C128 119 158 98 200 98C242 98 272 119 272 152Z" className="fill-foreground" />
-            {/* The rolled rim catches a little light. */}
-            <path d="M128 151.5H272" strokeWidth={1} className="stroke-background/20" />
+            <path d="M128 152C128 119 158 98 200 98C242 98 272 119 272 152Z" fill={`url(#${id}-shade)`} />
+            {/* A highlight along the crown, and the rolled rim, whose white
+                enamel inside glows when the bulb is lit. */}
+            <path d="M146 128C156 112 176 104 200 103" fill="none" stroke="oklch(1 0 0 / 0.28)" strokeWidth={2} strokeLinecap="round" />
+            <rect x={126} y={149} width={148} height={5} rx={2.5} fill={ENAMEL} />
+            <rect
+              x={130}
+              y={151.5}
+              width={140}
+              height={2}
+              rx={1}
+              fill={WARM}
+              className={cn(
+                "transition-opacity ease-out",
+                checked ? "opacity-100 duration-150" : "opacity-0 duration-[350ms]",
+              )}
+            />
 
             {/* The plunger rod that the chain draws out of the socket. */}
             <line
@@ -407,7 +450,7 @@ export function PullCordSwitch({
               y2={ANCHOR_Y}
               strokeWidth={2.5}
               strokeLinecap="round"
-              className="stroke-foreground/70"
+              stroke={NICKEL}
             />
             {/* Zero-length dashes with round caps draw a ball chain. */}
             <path
@@ -418,7 +461,7 @@ export function PullCordSwitch({
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray="0 4.5"
-              className="stroke-foreground/70"
+              stroke={NICKEL}
             />
           </svg>
 
@@ -428,7 +471,7 @@ export function PullCordSwitch({
             role="switch"
             aria-checked={checked}
             aria-label={label}
-            className="absolute top-0 left-0 flex cursor-grab touch-none justify-center rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-foreground active:cursor-grabbing"
+            className="absolute top-0 left-0 flex cursor-grab touch-none justify-center rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:cursor-grabbing"
             style={{ width: HIT, height: HIT, transform: INITIAL_KNOB, transformOrigin: `${HIT / 2}px 4px` }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
@@ -440,7 +483,14 @@ export function PullCordSwitch({
               if (e.detail === 0) pullOnce();
             }}
           >
-            <span className="mt-1 h-6 w-3.5 rounded-full bg-foreground shadow-raised" />
+            {/* A turned brass pull, heavier at the bottom like a plumb bob. */}
+            <span
+              className="mt-1 h-[26px] w-4 rounded-t-[6px] rounded-b-full shadow-[0_2px_4px_oklch(0_0_0/0.3),inset_0_-2px_3px_oklch(0_0_0/0.2)]"
+              style={{
+                background:
+                  "linear-gradient(90deg, oklch(0.6 0.09 72), oklch(0.88 0.1 86) 45%, oklch(0.56 0.09 68))",
+              }}
+            />
           </button>
         </div>
       </div>

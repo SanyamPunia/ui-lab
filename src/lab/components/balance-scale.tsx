@@ -41,6 +41,16 @@ const BLOCK_H: Record<Weight, number> = { 1: 10, 2: 14, 3: 18 };
 const DISH_Y = 80;
 const STRING_X = 46;
 
+// The scale is brass, a physical material: a bright edge where the light
+// catches, the body, and the shade. Dimmed a step in dark mode so it sits
+// in the page instead of glowing.
+const BRASS_HI = "light-dark(#f2dc9b, #dcc47e)";
+const BRASS = "light-dark(#c9a14a, #b08c3e)";
+const BRASS_LO = "light-dark(#8c6b2b, #6e5322)";
+// Cast iron weights: near black in both themes, lifted a little in dark
+// mode so they still read against the page.
+const IRON = "light-dark(#262626, #4d4d4d)";
+
 function total(items: Reason[]) {
   return items.reduce((sum, item) => sum + item.weight, 0);
 }
@@ -81,6 +91,7 @@ function pack(items: Reason[]) {
 
 function Scale({ ledger }: { ledger: Ledger }) {
   const reduceMotion = useReducedMotion();
+  const gid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const beamRef = useRef<SVGGElement>(null);
   const leftRef = useRef<SVGGElement>(null);
   const rightRef = useRef<SVGGElement>(null);
@@ -134,7 +145,10 @@ function Scale({ ledger }: { ledger: Ledger }) {
       s.angle += s.vel * dt;
       s.swingVel +=
         (-PAN_K * s.swing - PAN_C * s.swingVel - PAN_COUPLING * accel) * dt;
-      s.swing = Math.max(-PAN_MAX, Math.min(PAN_MAX, s.swing + s.swingVel * dt));
+      s.swing = Math.max(
+        -PAN_MAX,
+        Math.min(PAN_MAX, s.swing + s.swingVel * dt),
+      );
       paint();
       const still =
         Math.abs(s.angle - s.target) < REST &&
@@ -198,11 +212,19 @@ function Scale({ ledger }: { ledger: Ledger }) {
 
   const pan = (side: Side) => (
     <>
-      <circle r={3.5} className="fill-background stroke-foreground" strokeWidth={1.5} />
+      {/* Fine chains: dashes read as links at this size. */}
       <path
         d={`M0 3L${-STRING_X} ${DISH_Y}M0 3L${STRING_X} ${DISH_Y}`}
-        className="stroke-foreground/40"
-        strokeWidth={1.25}
+        style={{ stroke: BRASS_LO }}
+        strokeWidth={1.5}
+        strokeDasharray="2.5 1.5"
+        strokeLinecap="butt"
+      />
+      <circle
+        r={4}
+        fill={`url(#${gid}-knob)`}
+        style={{ stroke: BRASS_LO }}
+        strokeWidth={1}
       />
       <AnimatePresence initial={false}>
         {pack(ledger[side]).map(({ item, x, y }) => {
@@ -213,7 +235,10 @@ function Scale({ ledger }: { ledger: Ledger }) {
               key={item.id}
               initial={reduceMotion ? false : { x, y: y - 36, opacity: 0 }}
               animate={{ x, y, opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeOut" } }}
+              exit={{
+                opacity: 0,
+                transition: { duration: 0.15, ease: "easeOut" },
+              }}
               transition={{
                 // A drop accelerates, so this one curve is ease-in on purpose.
                 y: { duration: 0.26, ease: [0.55, 0, 1, 0.45] },
@@ -227,7 +252,8 @@ function Scale({ ledger }: { ledger: Ledger }) {
                 animate={{ attrX: -w / 2, attrY: -h, width: w, height: h }}
                 transition={{ type: "spring", duration: 0.3, bounce: 0 }}
                 rx={2}
-                className="fill-foreground stroke-background"
+                style={{ fill: IRON }}
+                className="stroke-background"
                 strokeWidth={1.5}
               />
               {/* The lifting knob that makes a block read as a weight. */}
@@ -239,15 +265,24 @@ function Scale({ ledger }: { ledger: Ledger }) {
                 width={6}
                 height={4}
                 rx={1.5}
-                className="fill-foreground"
+                style={{ fill: IRON }}
               />
             </motion.g>
           );
         })}
       </AnimatePresence>
+      {/* The dish: a shallow brass bowl with a bright rolled rim. */}
       <path
-        d={`M-54 ${DISH_Y}H54Q44 ${DISH_Y + 14} 0 ${DISH_Y + 14}Q-44 ${DISH_Y + 14} -54 ${DISH_Y}Z`}
-        className="fill-foreground"
+        d={`M-54 ${DISH_Y}H54Q44 ${DISH_Y + 15} 0 ${DISH_Y + 15}Q-44 ${DISH_Y + 15} -54 ${DISH_Y}Z`}
+        fill={`url(#${gid}-dish)`}
+      />
+      <rect
+        x={-55}
+        y={DISH_Y - 1.5}
+        width={110}
+        height={3}
+        rx={1.5}
+        style={{ fill: BRASS_HI }}
       />
     </>
   );
@@ -260,6 +295,28 @@ function Scale({ ledger }: { ledger: Ledger }) {
       strokeLinecap="round"
       aria-hidden
     >
+      <defs>
+        {/* Beam and base: lit from above. */}
+        <linearGradient id={`${gid}-bar`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" style={{ stopColor: BRASS_HI }} />
+          <stop offset="0.45" style={{ stopColor: BRASS }} />
+          <stop offset="1" style={{ stopColor: BRASS_LO }} />
+        </linearGradient>
+        {/* The column is a cylinder: bright a little left of center. */}
+        <linearGradient id={`${gid}-post`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" style={{ stopColor: BRASS_LO }} />
+          <stop offset="0.35" style={{ stopColor: BRASS_HI }} />
+          <stop offset="1" style={{ stopColor: BRASS_LO }} />
+        </linearGradient>
+        <linearGradient id={`${gid}-dish`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" style={{ stopColor: BRASS }} />
+          <stop offset="1" style={{ stopColor: BRASS_LO }} />
+        </linearGradient>
+        <radialGradient id={`${gid}-knob`} cx="0.35" cy="0.35" r="0.7">
+          <stop offset="0" style={{ stopColor: BRASS_HI }} />
+          <stop offset="1" style={{ stopColor: BRASS }} />
+        </radialGradient>
+      </defs>
       {/* Dial behind the pivot, read by the needle. */}
       <path
         d={`M${PIVOT_X - 28} ${PIVOT_Y - 12}A30 30 0 0 1 ${PIVOT_X + 28} ${PIVOT_Y - 12}`}
@@ -281,23 +338,40 @@ function Scale({ ledger }: { ledger: Ledger }) {
           />
         );
       })}
+      {/* Column, a collar where it meets the base, and a two-step base. */}
       <rect
-        x={PIVOT_X - 3.5}
+        x={PIVOT_X - 4.5}
         y={PIVOT_Y}
-        width={7}
-        height={VIEW_H - 14 - PIVOT_Y}
-        rx={2}
-        className="fill-foreground/85"
+        width={9}
+        height={VIEW_H - 22 - PIVOT_Y}
+        fill={`url(#${gid}-post)`}
       />
       <rect
-        x={PIVOT_X - 60}
-        y={VIEW_H - 16}
-        width={120}
+        x={PIVOT_X - 9}
+        y={VIEW_H - 28}
+        width={18}
+        height={8}
+        rx={2}
+        fill={`url(#${gid}-post)`}
+      />
+      <rect
+        x={PIVOT_X - 38}
+        y={VIEW_H - 21}
+        width={76}
+        height={7}
+        rx={3}
+        fill={`url(#${gid}-bar)`}
+      />
+      <rect
+        x={PIVOT_X - 62}
+        y={VIEW_H - 15}
+        width={124}
         height={10}
         rx={5}
-        className="fill-foreground"
+        fill={`url(#${gid}-bar)`}
       />
       <g ref={beamRef} transform={initial.beam}>
+        {/* The needle: dark steel, so it reads against the dial. */}
         <line
           x1={PIVOT_X}
           y1={PIVOT_Y}
@@ -306,21 +380,21 @@ function Scale({ ledger }: { ledger: Ledger }) {
           className="stroke-foreground"
           strokeWidth={1.5}
         />
-        <rect
-          x={PIVOT_X - ARM - 4}
-          y={PIVOT_Y - 3}
-          width={ARM * 2 + 8}
-          height={6}
-          rx={3}
-          className="fill-foreground"
+        {/* Beam: thicker at the pivot, tapering to each end. */}
+        <path
+          d={`M${PIVOT_X - ARM - 4} ${PIVOT_Y - 2.5} L${PIVOT_X} ${PIVOT_Y - 5} L${PIVOT_X + ARM + 4} ${PIVOT_Y - 2.5} L${PIVOT_X + ARM + 4} ${PIVOT_Y + 2.5} L${PIVOT_X} ${PIVOT_Y + 5} L${PIVOT_X - ARM - 4} ${PIVOT_Y + 2.5} Z`}
+          fill={`url(#${gid}-bar)`}
+          strokeLinejoin="round"
         />
         <circle
           cx={PIVOT_X}
           cy={PIVOT_Y}
-          r={6}
-          className="fill-background stroke-foreground"
-          strokeWidth={2}
+          r={7}
+          fill={`url(#${gid}-knob)`}
+          style={{ stroke: BRASS_LO }}
+          strokeWidth={1}
         />
+        <circle cx={PIVOT_X} cy={PIVOT_Y} r={2} style={{ fill: BRASS_LO }} />
         <g ref={leftRef} transform={initial.left}>
           {pan("pros")}
         </g>
@@ -347,7 +421,11 @@ function WeightDots({
     refs.current[next - 1]?.focus();
   };
   return (
-    <div role="radiogroup" aria-label={`Weight of ${label}`} className="flex shrink-0">
+    <div
+      role="radiogroup"
+      aria-label={`Weight of ${label}`}
+      className="flex shrink-0"
+    >
       {([1, 2, 3] as const).map((n) => (
         <button
           key={n}
@@ -371,7 +449,7 @@ function WeightDots({
             e.preventDefault();
             choose(Math.min(3, Math.max(1, value + step)) as Weight);
           }}
-          className="grid size-7 touch-manipulation place-items-center rounded-full outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+          className="grid size-7 touch-manipulation place-items-center rounded-full outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
         >
           {/* Bigger dot, heavier weight: the row reads like the pan. */}
           <span
@@ -413,7 +491,9 @@ function Column({
       </h3>
       <ul
         ref={listRef}
-        className="relative h-[168px] overflow-y-auto overscroll-contain"
+        // Stacked on a phone, a shorter list keeps both sides near the
+        // scale; the half row showing says there is more to scroll.
+        className="relative h-[140px] overflow-y-auto overscroll-contain sm:h-[168px]"
       >
         <AnimatePresence initial={false} mode="popLayout">
           {items.map((item) => (
@@ -422,7 +502,10 @@ function Column({
               layout="position"
               initial={{ opacity: 0, y: 4, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, transition: { duration: 0.12, ease: "easeOut" } }}
+              exit={{
+                opacity: 0,
+                transition: { duration: 0.12, ease: "easeOut" },
+              }}
               transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
               className="flex h-10 items-center gap-0.5 rounded-lg pl-1"
             >
@@ -445,7 +528,7 @@ function Column({
                   onChange(items.filter((r) => r.id !== item.id));
                   inputRef.current?.focus();
                 }}
-                className="grid size-7 shrink-0 touch-manipulation place-items-center rounded-full text-muted outline-hidden transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+                className="grid size-7 shrink-0 touch-manipulation place-items-center rounded-full text-muted outline-hidden transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
               >
                 <svg
                   viewBox="0 0 16 16"
@@ -543,7 +626,10 @@ export function BalanceScale({
             key={verdict}
             initial={{ opacity: 0, y: 4, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, transition: { duration: 0.12, ease: "easeOut" } }}
+            exit={{
+              opacity: 0,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             className="col-start-1 row-start-1"
           >
@@ -551,7 +637,9 @@ export function BalanceScale({
           </motion.span>
         </AnimatePresence>
       </p>
-      <div className="grid grid-cols-2 gap-4">
+      {/* Side by side from 640px; stacked on a phone, where two columns
+          would cut every reason down to a few letters. */}
+      <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
         {(["pros", "cons"] as const).map((side) => (
           <Column
             key={side}

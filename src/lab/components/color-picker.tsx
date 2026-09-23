@@ -318,7 +318,7 @@ export function ColorPicker({
         <label
           htmlFor={`${id}-hex`}
           className={cn(
-            "flex h-9 flex-1 cursor-text items-center rounded-lg border bg-background px-2.5 font-mono text-sm text-foreground transition-[border-color] duration-150 ease-out focus-within:outline-2 focus-within:-outline-offset-1",
+            "flex h-9 flex-1 cursor-text items-center rounded-lg border bg-background px-2.5 font-mono text-sm text-foreground transition-[border-color] duration-150 ease-out focus-within:outline-2 focus-within:outline-solid focus-within:-outline-offset-1",
             invalid
               ? "border-danger focus-within:outline-danger"
               : "border-border focus-within:outline-foreground",
@@ -410,7 +410,7 @@ export function ColorPicker({
                   setInvalid(false);
                 }}
                 className={cn(
-                  "relative size-7 shrink-0 touch-manipulation rounded-full ring-offset-2 ring-offset-background outline-hidden transition-[scale,box-shadow] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[box-shadow]",
+                  "relative size-7 shrink-0 touch-manipulation rounded-full ring-offset-2 ring-offset-background outline-hidden transition-[scale,box-shadow] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[box-shadow]",
                   // A 36px hit area; with the 8px gap neighbours meet but
                   // never overlap.
                   "after:absolute after:-inset-1 after:rounded-full",
@@ -496,7 +496,7 @@ function Pad({
         if (dirty.current) onCommit();
         dirty.current = false;
       }}
-      className="group relative h-44 cursor-crosshair touch-none rounded-lg outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="group relative h-44 cursor-crosshair touch-none rounded-lg outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
       style={{
         backgroundColor: hueColor,
         backgroundImage:
@@ -573,7 +573,7 @@ function Channel({
         if (dirty.current) onCommit();
         dirty.current = false;
       }}
-      className="group relative h-7 cursor-pointer touch-none rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-foreground"
+      className="group relative h-7 cursor-pointer touch-none rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-foreground"
     >
       <span
         className="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 overflow-hidden rounded-full"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   motion,
   useReducedMotion,
@@ -33,6 +33,24 @@ const SHADOW_GROWTH = 0.3;
 // Stiff and fully damped: the sun clicks into each 15 minute detent
 // without overshooting past the time you chose.
 const DETENT = { stiffness: 420, damping: 40 };
+
+// Sky, sun and bronze are natural light and material, so they carry their
+// own colours, each with a darker twin for the dark theme via light-dark().
+// The sky at the horizon: peach at dawn and dusk, a pale blue by day.
+const DUSK_SKY =
+  "linear-gradient(180deg, light-dark(oklch(0.88 0.04 290), oklch(0.2 0.04 285)), light-dark(oklch(0.9 0.08 55), oklch(0.33 0.08 40)) 61%)";
+const DAY_SKY =
+  "linear-gradient(180deg, light-dark(oklch(0.9 0.045 235), oklch(0.25 0.045 245)), light-dark(oklch(0.97 0.015 220), oklch(0.32 0.03 230)) 61%)";
+const SUN_LOW = "oklch(0.72 0.17 45)";
+const SUN_HIGH = "oklch(0.88 0.15 88)";
+const SUN_GLOW = "oklch(0.9 0.14 80)";
+// A cast bronze plate: a lit face, a darker rim showing its thickness, and
+// engraving cut darker still.
+const BRONZE = "oklch(0.7 0.08 72)";
+const BRONZE_EDGE = "oklch(0.5 0.07 60)";
+const ENGRAVE = "oklch(0.38 0.05 55)";
+// Ground under the dial, a stone terrace.
+const GROUND = "light-dark(oklch(0.9 0.012 80), oklch(0.22 0.01 70))";
 
 const clamp = (v: number, lo = 0, hi = 1) => Math.min(Math.max(v, lo), hi);
 const toT = (minutes: number) => (minutes - START) / (END - START);
@@ -161,7 +179,7 @@ export function SundialPicker({
         aria-valuenow={value}
         aria-valuetext={formatTime(value)}
         data-dragging={dragging || undefined}
-        className="group relative cursor-grab touch-none overflow-hidden rounded-[24px] bg-surface outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:cursor-grabbing"
+        className="group relative cursor-grab touch-none overflow-hidden rounded-[24px] bg-surface outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:cursor-grabbing"
         style={{ aspectRatio: `${VB_W} / ${VB_H}` }}
         onPointerDown={(e) => {
           if (e.button !== 0 || drag.current !== null) return;
@@ -233,7 +251,7 @@ export function SundialPicker({
             y={ARC.y}
             width={VB_W}
             height={VB_H - ARC.y}
-            className="fill-surface"
+            style={{ fill: GROUND }}
           />
           <line
             x1={0}
@@ -265,11 +283,14 @@ function Sky({ sun }: { sun: MotionValue<number> }) {
   // fully "day" for most of the middle of the arc.
   const day = useTransform(sun, (t) => clamp(Math.sin(Math.PI * t) * 1.6));
   return (
-    <motion.div
-      aria-hidden
-      className="absolute inset-0 bg-background"
-      style={{ opacity: day }}
-    />
+    <>
+      <div aria-hidden className="absolute inset-0" style={{ background: DUSK_SKY }} />
+      <motion.div
+        aria-hidden
+        className="absolute inset-0"
+        style={{ background: DAY_SKY, opacity: day }}
+      />
+    </>
   );
 }
 
@@ -287,7 +308,8 @@ function Stars({ sun }: { sun: MotionValue<number> }) {
           cx={x}
           cy={y}
           r={r}
-          className="fill-foreground"
+          // Starlight is white against the violet dusk in either theme.
+          fill="oklch(1 0 0)"
         />
       ))}
     </motion.g>
@@ -301,16 +323,29 @@ function Sun({ sun }: { sun: MotionValue<number> }) {
   const cy = useTransform(sun, (t) =>
     r2(ARC.y - ARC.r * Math.sin(Math.PI * t)),
   );
+  // Low sun burns orange, high sun turns pale gold, as real light does.
+  const high = useTransform(sun, (t) => clamp(Math.sin(Math.PI * t) * 2.2));
+  const glowId = useId();
   return (
     <>
+      <defs>
+        <radialGradient id={glowId}>
+          <stop offset="0.3" stopColor={SUN_GLOW} stopOpacity={0.55} />
+          <stop offset="1" stopColor={SUN_GLOW} stopOpacity={0} />
+        </radialGradient>
+      </defs>
+      <motion.circle cx={cx} cy={cy} r={42} fill={`url(#${glowId})`} />
       {/* A grab ring that shows while the sun is held. */}
       <motion.circle
         cx={cx}
         cy={cy}
         r={22}
-        className="fill-foreground/5 stroke-foreground/15 opacity-0 transition-opacity duration-150 ease-out group-data-dragging:opacity-100"
+        fill="none"
+        strokeWidth={1.5}
+        className="stroke-foreground/25 opacity-0 transition-opacity duration-150 ease-out group-data-dragging:opacity-100"
       />
-      <motion.circle cx={cx} cy={cy} r={13} className="fill-foreground" />
+      <motion.circle cx={cx} cy={cy} r={14} fill={SUN_LOW} />
+      <motion.circle cx={cx} cy={cy} r={14} fill={SUN_HIGH} style={{ opacity: high }} />
     </>
   );
 }
@@ -337,20 +372,19 @@ function Dial({ sun }: { sun: MotionValue<number> }) {
 
   return (
     <g>
-      <ellipse
-        cx={DIAL.x}
-        cy={DIAL.y}
-        rx={DIAL.rx}
-        ry={DIAL.ry}
-        className="fill-background stroke-foreground/15"
-      />
+      {/* Contact shadow on the terrace, then the plate's edge, then its
+          face: three ellipses give the bronze real thickness. */}
+      <ellipse cx={DIAL.x} cy={DIAL.y + 9} rx={DIAL.rx + 6} ry={DIAL.ry + 3} fill="oklch(0 0 0 / 0.14)" />
+      <ellipse cx={DIAL.x} cy={DIAL.y + 5} rx={DIAL.rx} ry={DIAL.ry} fill={BRONZE_EDGE} />
+      <ellipse cx={DIAL.x} cy={DIAL.y} rx={DIAL.rx} ry={DIAL.ry} fill={BRONZE} />
       <ellipse
         cx={DIAL.x}
         cy={DIAL.y}
         rx={DIAL.rx * 0.82}
         ry={DIAL.ry * 0.82}
         fill="none"
-        className="stroke-foreground/10"
+        stroke={ENGRAVE}
+        strokeOpacity={0.45}
       />
       {HOURS.map((h) => {
         const psi = shadowAngle(h * 60);
@@ -365,9 +399,8 @@ function Dial({ sun }: { sun: MotionValue<number> }) {
               y1={a.y}
               x2={b.x}
               y2={b.y}
-              className={
-                major ? "stroke-foreground/25" : "stroke-foreground/10"
-              }
+              stroke={ENGRAVE}
+              strokeOpacity={major ? 0.75 : 0.35}
             />
             {major && (
               <text
@@ -376,7 +409,9 @@ function Dial({ sun }: { sun: MotionValue<number> }) {
                 textAnchor="middle"
                 dominantBaseline="central"
                 fontSize={12}
-                className="fill-muted font-sans"
+                fontWeight={600}
+                fill={ENGRAVE}
+                className="font-serif"
               >
                 {ROMAN[h % 12]}
               </text>
@@ -386,17 +421,18 @@ function Dial({ sun }: { sun: MotionValue<number> }) {
       })}
       <motion.path
         d={shadow}
-        className="fill-foreground/50"
+        // A shadow is dark in either theme.
+        fill="oklch(0.22 0.03 55 / 0.6)"
         style={{ opacity: strength }}
       />
       {/* Gnomon: a thin blade with its lit face and a darker side. */}
       <path
         d={`M${DIAL.x - 2} ${DIAL.y + 3}L${DIAL.x} ${DIAL.y - 30}L${DIAL.x + 2} ${DIAL.y + 3}Z`}
-        className="fill-foreground/80"
+        fill={BRONZE_EDGE}
       />
       <path
         d={`M${DIAL.x} ${DIAL.y - 30}L${DIAL.x + 2} ${DIAL.y + 3}L${DIAL.x + 5} ${DIAL.y + 1}Z`}
-        className="fill-foreground/40"
+        fill="oklch(0.82 0.08 80)"
       />
     </g>
   );

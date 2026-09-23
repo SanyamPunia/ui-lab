@@ -110,7 +110,7 @@ export function Carousel3D({
         aria-label={label}
         tabIndex={0}
         // pan-y: a vertical swipe still scrolls the page on touch screens.
-        className="relative h-[260px] w-full cursor-grab touch-pan-y overflow-hidden rounded-2xl outline-hidden select-none focus-visible:outline-2 focus-visible:outline-foreground active:cursor-grabbing"
+        className="relative h-[260px] w-full cursor-grab touch-pan-y overflow-hidden rounded-2xl outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:cursor-grabbing"
         style={{ perspective: PERSPECTIVE }}
         onKeyDown={(e) => {
           if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
@@ -312,7 +312,7 @@ function RingButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex size-11 items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+      className="flex size-11 items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
     >
       <svg
         viewBox="0 0 16 16"

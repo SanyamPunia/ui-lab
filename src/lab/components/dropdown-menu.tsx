@@ -229,7 +229,7 @@ export function DropdownMenu({
             openMenu("last");
           }
         }}
-        className="flex h-9 touch-manipulation items-center gap-1.5 rounded-lg bg-surface pr-2.5 pl-3.5 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="flex h-9 touch-manipulation items-center gap-1.5 rounded-lg bg-surface pr-2.5 pl-3.5 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         {label}
         <svg

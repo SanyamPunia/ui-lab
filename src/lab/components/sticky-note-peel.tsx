@@ -11,9 +11,26 @@ import {
   type AnimationPlaybackControls,
   type MotionValue,
 } from "motion/react";
+import { Caveat } from "next/font/google";
 import { cn } from "@/lib/cn";
 
-export type Reminder = { id: number; title: string; detail: string };
+// A marker hand for what is written on the notes. Only the note text uses
+// it; the Done button stays in the interface font because it is chrome.
+// Not preloaded: the index bundles every preview, and other pages should
+// not fetch a font they never draw. The browser loads it on first use.
+const hand = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  preload: false,
+});
+
+export type Reminder = {
+  id: number;
+  title: string;
+  detail: string;
+  // A short scribble in the top corner, like "Fri" or "9am".
+  due?: string;
+};
 
 type Pt = { x: number; y: number };
 type Flight = {
@@ -29,7 +46,7 @@ type Flight = {
 };
 
 // A permanent dog-ear on the top note says "this corner lifts".
-const REST = 10;
+const REST = 14;
 // Hovering the corner lifts it a little further, as if your thumb found it.
 const HOVER = 22;
 // Released past this share of the diagonal, the note comes away.
@@ -51,11 +68,18 @@ const SHOWN_BEHIND = 3;
 
 // Each note sits slightly askew, like a real pad that has been handled.
 const TILTS = [-1.2, 1.4, -0.6, 2, -1.8];
-const TONES = [
-  "bg-[color-mix(in_oklch,var(--foreground)_3%,var(--surface))]",
-  "bg-surface",
-  "bg-[color-mix(in_oklch,var(--foreground)_5%,var(--surface))]",
+// Sticky-note paper is a physical material, so these are raw colors on
+// purpose: the classic canary, then pink, mint, sky and peach pads. The dark
+// theme gets the same paper under dimmer light instead of a glaring pastel.
+const PAPERS = [
+  "light-dark(oklch(0.95 0.105 99), oklch(0.83 0.1 96))",
+  "light-dark(oklch(0.91 0.065 8), oklch(0.8 0.065 8))",
+  "light-dark(oklch(0.93 0.07 158), oklch(0.81 0.065 158))",
+  "light-dark(oklch(0.92 0.05 232), oklch(0.8 0.05 232))",
+  "light-dark(oklch(0.93 0.075 62), oklch(0.82 0.075 62))",
 ];
+// Ballpoint ink. The paper is light in both themes, so the ink is too.
+const INK = "oklch(0.29 0.045 262)";
 const tiltOf = (i: number) => TILTS[i % TILTS.length];
 
 const dot = (a: Pt, b: Pt) => a.x * b.x + a.y * b.y;
@@ -248,16 +272,18 @@ export function StickyNotePeel({
   };
 
   return (
-    <div className={cn("flex w-[min(300px,100%)] flex-col gap-4", className)}>
+    <div className={cn("flex w-[min(320px,100%)] flex-col gap-5", className)}>
       <div ref={root} className="relative aspect-square w-full">
         {notes.length === 0 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[4px] border border-dashed border-border text-center transition-[opacity,filter] duration-300 ease-out starting:opacity-0 starting:blur-[4px]">
-            <p className="text-sm text-muted">All caught up.</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-[4px] border-2 border-dashed border-foreground/10 text-center transition-[opacity,filter] duration-300 ease-out starting:opacity-0 starting:blur-[4px]">
+            <p className={cn(hand.className, "text-[28px] leading-none font-semibold text-muted")}>
+              All caught up
+            </p>
             <button
               type="button"
               data-next-focus
               onClick={() => setNotes(initial)}
-              className="h-9 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+              className="h-9 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
             >
               Restore notes
             </button>
@@ -359,7 +385,7 @@ function Sheet({
   style?: React.ComponentProps<typeof motion.div>["style"];
 }) {
   const { flat, back, matrix, crease } = usePeel(dx, dy, w, h);
-  const tone = TONES[index % TONES.length];
+  const paper = PAPERS[index % PAPERS.length];
 
   return (
     <motion.div
@@ -371,21 +397,64 @@ function Sheet({
       className="absolute inset-0"
     >
       {/* Shadow as a filter on a wrapper, so it follows the clipped shape
-          instead of being cut away with it. */}
-      <div className="absolute inset-0 [filter:drop-shadow(0_1px_1px_oklch(0_0_0/0.08))_drop-shadow(0_6px_12px_oklch(0_0_0/0.08))] dark:[filter:drop-shadow(0_0_0.75px_oklch(1_0_0/0.14))_drop-shadow(0_6px_12px_oklch(0_0_0/0.5))]">
+          instead of being cut away with it. Only the adhesive strip is
+          stuck down, so the free bottom edge lifts and throws a longer
+          shadow than the top. */}
+      <div className="absolute inset-0 [filter:drop-shadow(0_1px_1px_oklch(0_0_0/0.1))_drop-shadow(0_10px_10px_oklch(0_0_0/0.09))] dark:[filter:drop-shadow(0_1px_1px_oklch(0_0_0/0.5))_drop-shadow(0_10px_14px_oklch(0_0_0/0.55))]">
         <motion.div
-          style={{ clipPath: flat }}
-          className={cn("absolute inset-0 flex flex-col p-6 pt-10", tone)}
+          style={{ clipPath: flat, backgroundColor: paper, color: INK }}
+          className="absolute inset-0 flex flex-col p-6 pt-9"
         >
-          {/* The adhesive band along the top edge. */}
+          {/* The adhesive strip reads as a slightly glossier band, and the
+              lifted bottom edge catches a little less light. */}
           <span
             aria-hidden
-            className="absolute inset-x-0 top-0 h-7 bg-foreground/[0.035]"
+            className="absolute inset-x-0 top-0 h-8 bg-linear-to-b from-black/[0.045] to-black/[0.015]"
           />
-          <p className="text-lg font-medium tracking-tight text-balance text-foreground">
+          <span
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/[0.05] to-transparent"
+          />
+          {note.due && (
+            <span
+              className={cn(
+                hand.className,
+                "absolute top-9 right-5 grid h-11 min-w-16 place-items-center px-2 text-[22px] leading-none font-semibold",
+              )}
+            >
+              {/* Circled in red marker, the way you flag the one that is
+                  due. Red marker is a physical ink, so it is a raw color. */}
+              <svg
+                aria-hidden
+                viewBox="0 0 64 44"
+                preserveAspectRatio="none"
+                className="absolute inset-0 size-full overflow-visible"
+                fill="none"
+                stroke="oklch(0.56 0.19 27)"
+                strokeWidth={1.8}
+                strokeLinecap="round"
+              >
+                <path d="M40 5C22 2 5 9 4 22c-1 12 16 19 32 17 15-2 25-9 24-19C59 10 47 4 30 6" />
+              </svg>
+              <span className="sr-only">Due </span>
+              {note.due}
+            </span>
+          )}
+          <p
+            className={cn(
+              hand.className,
+              "relative text-[30px] leading-[1.05] font-semibold text-balance",
+              note.due && "pr-16",
+            )}
+          >
             {note.title}
           </p>
-          <p className="mt-2 text-[15px] text-pretty text-muted">
+          <p
+            className={cn(
+              hand.className,
+              "relative mt-2.5 text-[22px] leading-[1.15] font-medium text-pretty opacity-75",
+            )}
+          >
             {note.detail}
           </p>
           {!buried && (
@@ -393,14 +462,14 @@ function Sheet({
               type="button"
               data-next-focus
               onClick={onDone}
-              className="mt-auto flex h-9 w-fit touch-manipulation items-center gap-2 rounded-full bg-background/70 pr-4 pl-3 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+              className="relative mt-auto flex h-9 w-fit touch-manipulation items-center gap-2 rounded-full bg-black/[0.07] pr-4 pl-3 text-sm font-medium outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-black/[0.11] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-current active:scale-[0.96] motion-reduce:transition-none"
             >
               <svg
                 viewBox="0 0 16 16"
                 className="size-4"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth={1.5}
+                strokeWidth={1.75}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden
@@ -413,20 +482,26 @@ function Sheet({
         </motion.div>
       </div>
 
-      {/* The flap: the same sheet mirrored across the fold, back side up. It
-          lifts off the page, so it casts its own tighter shadow. */}
+      {/* The flap: the same sheet mirrored across the fold, back side up. The
+          back of sticky paper is the same color, only matte and in its own
+          shade. It lifts off the page, so it casts its own tighter shadow. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 [filter:drop-shadow(-1px_2px_2px_oklch(0_0_0/0.16))] dark:[filter:drop-shadow(-1px_2px_3px_oklch(0_0_0/0.6))]"
+        className="pointer-events-none absolute inset-0 [filter:drop-shadow(-1px_2px_2px_oklch(0_0_0/0.18))] dark:[filter:drop-shadow(-1px_2px_3px_oklch(0_0_0/0.6))]"
       >
         <motion.div
-          style={{ clipPath: back, transform: matrix }}
-          className="absolute inset-0 origin-top-left overflow-hidden bg-[color-mix(in_oklch,var(--foreground)_9%,var(--surface))]"
+          style={{
+            clipPath: back,
+            transform: matrix,
+            backgroundColor: `color-mix(in oklch, ${paper} 90%, oklch(0.4 0.02 80))`,
+          }}
+          className="absolute inset-0 origin-top-left overflow-hidden"
         >
           <motion.span
             style={{ transform: crease }}
-            className="absolute top-0 left-0 h-8 w-[1200px] origin-top-left bg-linear-to-b from-foreground/15 to-transparent"
+            className="absolute top-0 left-0 h-10 w-[1200px] origin-top-left bg-linear-to-b from-black/[0.14] to-transparent"
           />
+          <span className="absolute inset-0 bg-linear-to-br from-white/25 to-transparent" />
         </motion.div>
       </div>
 
@@ -549,9 +624,11 @@ function Leaving({
     const all = [
       animate(dx, dir.x * reach, { ...PEEL_AWAY, velocity: flight.vx }),
       animate(dy, dir.y * reach, { ...PEEL_AWAY, velocity: flight.vy }),
-      animate(y, 56, { duration: 0.5, ease: FALL }),
-      animate(rotate, rotate.get() - 7, { duration: 0.5, ease: EASE_OUT }),
-      animate(opacity, 0, { duration: 0.28, delay: 0.2, ease: EASE_OUT }),
+      animate(y, 90, { duration: 0.5, ease: FALL }),
+      animate(rotate, rotate.get() - 9, { duration: 0.5, ease: EASE_OUT }),
+      // Paper is opaque: it only fades once it is mostly clear of the pad,
+      // so it never reads as a ghost over the next note.
+      animate(opacity, 0, { duration: 0.2, delay: 0.3, ease: EASE_OUT }),
     ];
     all[4].then(() => gone.current());
     return () => all.forEach((c) => c.stop());
@@ -579,10 +656,10 @@ function Leaving({
 }
 
 const NOTES: Reminder[] = [
-  { id: 1, title: "Call the landlord", detail: "Ask about the radiator before Friday." },
+  { id: 1, title: "Call the landlord", detail: "Ask about the radiator before it gets cold.", due: "Fri" },
   { id: 2, title: "Renew passport", detail: "The photos are in the top drawer." },
-  { id: 3, title: "Water the fern", detail: "Twice a week, not every day." },
-  { id: 4, title: "Send invoice 118", detail: "Net 30. Attach the timesheet." },
+  { id: 3, title: "Water the fern", detail: "Twice a week, not every day.", due: "Sun" },
+  { id: 4, title: "Send invoice 118", detail: "Net 30. Attach the timesheet.", due: "Mon" },
   { id: 5, title: "Book the dentist", detail: "A morning slot, any day next week." },
 ];
 

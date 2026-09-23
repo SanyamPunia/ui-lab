@@ -20,6 +20,23 @@ const INFLATE = { type: "spring", duration: 0.4, bounce: 0.35 } as const;
 // Reset ripples diagonally from the top left corner.
 const WAVE_STEP = 0.03;
 
+// Clear plastic is a physical material, so the dome is built from light
+// rather than a fill colour: a hard specular glint up top left, a softer
+// reflection low on the right, a bright rim where the film curves away, and
+// a shadow side. White and black at low alpha read as clear plastic on
+// either theme's surface.
+const DOME = [
+  "radial-gradient(ellipse 24% 14% at 36% 25%, light-dark(oklch(1 0 0 / 0.95), oklch(1 0 0 / 0.55)), oklch(1 0 0 / 0) 100%)",
+  "radial-gradient(ellipse 30% 9% at 58% 83%, light-dark(oklch(1 0 0 / 0.7), oklch(1 0 0 / 0.14)), oklch(1 0 0 / 0) 100%)",
+  "radial-gradient(circle at 40% 35%, light-dark(oklch(1 0 0 / 0.6), oklch(1 0 0 / 0.08)), light-dark(oklch(0 0 0 / 0.05), oklch(1 0 0 / 0.02)) 78%)",
+].join(", ");
+const DOME_EDGE = [
+  "inset 0 0 0 1px light-dark(oklch(0 0 0 / 0.09), oklch(1 0 0 / 0.14))",
+  "inset -3px -5px 9px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.55))",
+  "inset 2px 3px 5px light-dark(oklch(1 0 0 / 1), oklch(1 0 0 / 0.07))",
+  "0 5px 9px -4px light-dark(oklch(0 0 0 / 0.22), oklch(0 0 0 / 0.8))",
+].join(", ");
+
 type Cell = { row: number; col: number; x: number; y: number };
 
 function layout(rows: number, cols: number) {
@@ -181,7 +198,7 @@ export function BubbleWrap({
           type="button"
           onClick={reset}
           disabled={count === 0}
-          className="h-9 rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100"
+          className="h-9 rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100"
         >
           Reset
         </button>
@@ -285,7 +302,7 @@ const Bubble = memo(function Bubble({
       onKeyDown={(e) => {
         if (onMove(index, e.key)) e.preventDefault();
       }}
-      className="absolute cursor-pointer rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="absolute cursor-pointer rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
       style={{
         left: `${left * 100}%`,
         top: `${top * 100}%`,
@@ -307,7 +324,8 @@ const Bubble = memo(function Bubble({
         transition={squash}
       >
         <motion.span
-          className="absolute inset-0 rounded-full bg-background shadow-[inset_-3px_-5px_10px_color-mix(in_oklab,var(--foreground)_10%,transparent),0_1px_2px_color-mix(in_oklab,var(--foreground)_14%,transparent)] dark:bg-foreground/[0.08] dark:shadow-[inset_-3px_-5px_10px_color-mix(in_oklab,var(--background)_60%,transparent),0_1px_2px_color-mix(in_oklab,var(--background)_80%,transparent)]"
+          className="absolute inset-0 rounded-full"
+          style={{ background: DOME, boxShadow: DOME_EDGE }}
           initial={false}
           animate={{ opacity: popped ? 0 : 1 }}
           // Air leaves fast; the dome refills over the same wave as the scale.
@@ -320,9 +338,7 @@ const Bubble = memo(function Bubble({
                   delay: reduceMotion ? 0 : delay,
                 }
           }
-        >
-          <span className="absolute top-[17%] left-[24%] h-[14%] w-[26%] -rotate-[30deg] rounded-full bg-background/90 blur-[1px] dark:bg-foreground/10" />
-        </motion.span>
+        />
         <motion.svg
           viewBox="0 0 48 48"
           className="absolute inset-0 size-full"

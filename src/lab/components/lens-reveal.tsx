@@ -127,7 +127,7 @@ export function LensReveal({
       className={cn(
         // touch-none: a finger on the surface steers the lens, so the page
         // shouldn't scroll out from under it.
-        "relative h-[300px] w-[min(480px,100%)] touch-none overflow-hidden rounded-2xl shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative h-[300px] w-[min(480px,100%)] touch-none overflow-hidden rounded-2xl shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
         className,
       )}
       onPointerEnter={(e) => {

@@ -249,7 +249,7 @@ export function NumberStepper({
     // 22px radius around 4px padding keeps the 36px buttons concentric.
     <div
       className={cn(
-        "inline-flex h-11 items-center rounded-full bg-surface p-1 shadow-raised outline-offset-2 outline-foreground has-[input:focus-visible]:outline-2",
+        "inline-flex h-11 items-center rounded-full bg-surface p-1 shadow-raised outline-offset-2 outline-foreground has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-solid",
         className,
       )}
     >

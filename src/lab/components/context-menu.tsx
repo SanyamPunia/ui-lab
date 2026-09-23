@@ -133,7 +133,7 @@ export function ContextMenuArea({
       onPointerUp={cancelPress}
       onPointerCancel={cancelPress}
       className={cn(
-        "relative flex h-[320px] w-[min(520px,100%)] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-3xl px-6 text-center border border-dashed border-border outline-hidden select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative flex h-[320px] w-[min(520px,100%)] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-3xl px-6 text-center border border-dashed border-border outline-hidden select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
         className,
       )}
     >

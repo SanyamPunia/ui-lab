@@ -265,7 +265,7 @@ function ThumbHandle({
         data-dragging={dragging || undefined}
         className={cn(
           "group pointer-events-auto absolute top-1/2 left-0 size-5 -translate-x-1/2 -translate-y-1/2 touch-none rounded-full bg-background shadow-raised outline-hidden",
-          "transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:scale-[0.96] motion-reduce:transition-none",
+          "transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:scale-[0.96] motion-reduce:transition-none",
           // A 44px hit area around the 20px knob.
           "after:absolute after:-inset-3 after:rounded-full",
         )}
@@ -315,7 +315,7 @@ function ValueField({
   return (
     <label
       htmlFor={id}
-      className="flex h-10 flex-1 cursor-text items-center gap-1.5 rounded-lg bg-surface px-3 text-sm shadow-raised outline-offset-2 outline-foreground has-[:focus-visible]:outline-2"
+      className="flex h-10 flex-1 cursor-text items-center gap-1.5 rounded-lg bg-surface px-3 text-sm shadow-raised outline-offset-2 outline-foreground has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid"
     >
       <span className="text-muted">{label}</span>
       <span className="ml-auto text-muted" aria-hidden>

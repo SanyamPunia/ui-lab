@@ -93,7 +93,7 @@ export function Sparkline({
         aria-label={`${title}, ${data.length} points. Use arrow keys to read values.`}
         // pan-y leaves vertical scrolling to the page and hands sideways
         // drags to the scrubber.
-        className="relative mt-12 aspect-[520/160] w-full touch-pan-y rounded-sm outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+        className="relative mt-12 aspect-[520/160] w-full touch-pan-y rounded-sm outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground"
         onPointerDown={(e) => {
           if (e.pointerType !== "touch") return;
           setIndex(nearest(e.clientX));
@@ -193,7 +193,10 @@ export function Sparkline({
       <span className="sr-only" aria-live="polite">
         {announcement}
       </span>
-      <table className="sr-only">
+      {/* sr-only on a wrapper: a table ignores the 1px height it sets and
+          stays full height, stretching the page below it. */}
+      <div className="sr-only">
+      <table>
         <caption>{title}</caption>
         <thead>
           <tr>
@@ -210,6 +213,7 @@ export function Sparkline({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

@@ -117,7 +117,7 @@ export function LikeButton({
       onPointerCancel={release}
       onClick={toggle}
       className={cn(
-        "group flex h-9 touch-manipulation items-center gap-1.5 rounded-full bg-surface pr-3.5 pl-3 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none",
+        "group flex h-9 touch-manipulation items-center gap-1.5 rounded-full bg-surface pr-3.5 pl-3 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none",
         className,
       )}
     >

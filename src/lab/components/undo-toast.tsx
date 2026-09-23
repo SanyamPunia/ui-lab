@@ -214,7 +214,7 @@ export function UndoToast({
                   type="button"
                   aria-label={`Delete ${item.name}`}
                   onClick={() => remove(item)}
-                  className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+                  className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
                 >
                   <svg
                     viewBox="0 0 16 16"
@@ -248,7 +248,7 @@ export function UndoToast({
               <button
                 type="button"
                 onClick={() => setGone([])}
-                className="h-9 touch-manipulation rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+                className="h-9 touch-manipulation rounded-full bg-background px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
               >
                 Restore demo
               </button>
@@ -332,7 +332,7 @@ export function UndoToast({
                 type="button"
                 onClick={undo}
                 aria-keyshortcuts="Control+Z Meta+Z"
-                className="h-9 shrink-0 touch-manipulation rounded-full px-3.5 text-[15px] font-semibold outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-background/15 focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
+                className="h-9 shrink-0 touch-manipulation rounded-full px-3.5 text-[15px] font-semibold outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-background/15 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
               >
                 Undo
               </button>

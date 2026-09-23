@@ -145,7 +145,7 @@ export function DownloadButton({
           // Fixed width: every state fits inside, so nothing around it moves.
           "group relative isolate inline-flex h-11 w-[168px] max-w-full touch-manipulation items-center justify-center overflow-hidden rounded-full bg-surface text-[15px] font-medium text-foreground shadow-raised outline-hidden select-none",
           "transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
           status === "done" && "cursor-default",
         )}
       >

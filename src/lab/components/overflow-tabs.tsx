@@ -249,7 +249,7 @@ export function OverflowTabs({
                     tabIndex={selected ? 0 : -1}
                     onClick={() => onChange(tab.id)}
                     className={cn(
-                      "group relative flex h-11 shrink-0 touch-manipulation items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted outline-hidden transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-foreground",
+                      "group relative flex h-11 shrink-0 touch-manipulation items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted outline-hidden transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-4 focus-visible:outline-foreground",
                       selected && "text-foreground",
                     )}
                   >
@@ -300,7 +300,7 @@ export function OverflowTabs({
               initial="enter"
               animate="center"
               exit="exit"
-              className="col-start-1 row-start-1 rounded-lg px-3 pt-5 pb-1 text-[15px] leading-relaxed text-pretty text-muted outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+              className="col-start-1 row-start-1 rounded-lg px-3 pt-5 pb-1 text-[15px] leading-relaxed text-pretty text-muted outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
             >
               {active.content}
             </motion.div>

@@ -344,7 +344,7 @@ export function DateRangePicker({
                 onClick={() => setRange(chip.range)}
                 className={cn(
                   "h-9 shrink-0 rounded-full px-3.5 text-sm whitespace-nowrap outline-hidden select-none",
-                  "transition-[scale,color,background-color,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
+                  "transition-[scale,color,background-color,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
                   active
                     ? "bg-foreground text-background"
                     : "text-muted shadow-[inset_0_0_0_1px_var(--border)] hover:bg-foreground/[0.04] hover:text-foreground",
@@ -424,7 +424,7 @@ export function DateRangePicker({
             inert={!start}
             className={cn(
               "h-9 rounded-full px-3.5 text-sm text-muted outline-hidden select-none",
-              "transition-[scale,color,background-color,opacity] duration-150 ease-out hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,opacity]",
+              "transition-[scale,color,background-color,opacity] duration-150 ease-out hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,opacity]",
               !start && "opacity-40",
             )}
           >
@@ -443,7 +443,7 @@ export function DateRangePicker({
             }}
             className={cn(
               "flex h-9 items-center gap-1.5 rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden select-none",
-              "transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:opacity-40 motion-reduce:transition-[opacity]",
+              "transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:opacity-40 motion-reduce:transition-[opacity]",
             )}
           >
             {/* Both labels share a cell, so the button keeps one width. */}
@@ -640,7 +640,7 @@ function MonthGrid({
                       className={cn(
                         "relative mx-auto flex size-9 touch-manipulation items-center justify-center rounded-full text-sm tabular-nums outline-hidden select-none",
                         "transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none",
-                        "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-foreground",
+                        "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-foreground",
                         committed
                           ? "bg-foreground text-background"
                           : isEdge && hover
@@ -682,7 +682,7 @@ function NavButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="pointer-events-auto flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden select-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+      className="pointer-events-auto flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden select-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
     >
       <svg aria-hidden {...STROKE} className="size-4">
         {children}

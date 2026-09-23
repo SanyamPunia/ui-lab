@@ -91,7 +91,7 @@ export function StoryProgress({
       aria-label="Stories"
       tabIndex={0}
       className={cn(
-        "relative flex h-[480px] w-[min(320px,100%)] touch-manipulation flex-col overflow-hidden rounded-3xl bg-surface text-foreground shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative flex h-[480px] w-[min(320px,100%)] touch-manipulation flex-col overflow-hidden rounded-3xl bg-surface text-foreground shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
         className,
       )}
       onPointerDown={(e) => {
@@ -140,7 +140,7 @@ export function StoryProgress({
         <button
           type="button"
           aria-label={toggled ? "Play" : "Pause"}
-          className="relative -mr-2 grid size-10 place-items-center rounded-full text-muted transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+          className="relative -mr-2 grid size-10 place-items-center rounded-full text-muted transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
           onKeyDown={(e) => {

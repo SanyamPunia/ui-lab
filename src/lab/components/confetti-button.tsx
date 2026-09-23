@@ -234,7 +234,7 @@ export function ConfettiButton({
         ref={buttonRef}
         type="button"
         onClick={celebrate}
-        className="relative h-10 touch-manipulation rounded-full bg-foreground px-5 text-sm font-medium text-background shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="relative h-10 touch-manipulation rounded-full bg-foreground px-5 text-sm font-medium text-background shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         {/* Both states share one grid cell, so the swap never resizes it. */}
         <span className="grid">

@@ -34,9 +34,16 @@ function mod(n: number, m: number) {
   return ((n % m) + m) % m;
 }
 
+// Rounded to a hundredth: the server and the browser disagree on the last
+// float digits of sin and cos, which is a hydration mismatch otherwise.
+const round = (v: number) => Math.round(v * 100) / 100;
+
 function polar(radius: number, degrees: number) {
   const a = (degrees * Math.PI) / 180;
-  return [C + radius * Math.sin(a), C - radius * Math.cos(a)] as const;
+  return [
+    round(C + radius * Math.sin(a)),
+    round(C - radius * Math.cos(a)),
+  ] as const;
 }
 
 // Numbers are printed clockwise, so turning right brings smaller ones to
@@ -302,101 +309,144 @@ export function CombinationLock({
       : `Turn ${EXPECT[lock.index] === 1 ? "right" : "left"} to the ${ORDINAL[lock.index]} number`;
 
   return (
-    <div className={cn("flex w-[440px] max-w-full flex-col items-center gap-7", className)}>
-      <div ref={slotsRef} className="flex gap-3">
-        {lock.slots.map((n, i) => {
-          const active = !open && lock.index === i;
-          const live = active && lock.progressed ? lock.live : null;
-          return (
-            <div key={i} className="flex flex-col items-center gap-1.5">
-              <div
-                className={cn(
-                  "flex h-14 w-16 items-center justify-center rounded-xl bg-surface text-2xl font-medium tabular-nums shadow-raised transition-[box-shadow] duration-150 ease-out",
-                  active && "ring-1 ring-foreground/40",
-                )}
-              >
-                {n !== null ? (
-                  <motion.span
-                    key={`set-${n}`}
-                    initial={{ opacity: 0, filter: "blur(4px)", y: reduceMotion ? 0 : 4 }}
-                    animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                    transition={{ duration: 0.2, ease: EASE_OUT }}
-                  >
-                    {n}
-                  </motion.span>
-                ) : live !== null ? (
-                  <span className="text-muted">{live}</span>
-                ) : (
-                  <span className="h-0.5 w-4 rounded-full bg-border" />
-                )}
-              </div>
-              <span className={cn("flex items-center gap-1 text-xs", active ? "text-foreground" : "text-muted")}>
-                <svg
-                  viewBox="0 0 16 16"
-                  className={cn("size-3", EXPECT[i] === -1 && "-scale-x-100")}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <path d="M13 8a5 5 0 1 1-1.5-3.5M13 2v3h-3" />
-                </svg>
-                {EXPECT[i] === 1 ? "Right" : "Left"}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex w-full items-center justify-center gap-8">
-        <div
-          role="slider"
-          tabIndex={0}
-          aria-label="Combination dial"
-          aria-valuemin={0}
-          aria-valuemax={NUMBERS - 1}
-          aria-valuenow={current}
-          aria-valuetext={`${current}`}
-          aria-describedby={`${id}-keys`}
-          className="relative aspect-square w-[260px] max-w-[calc(100%-120px)] min-w-0 cursor-grab touch-none rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:cursor-grabbing"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerEnd}
-          onPointerCancel={onPointerEnd}
-          onKeyDown={onKeyDown}
-        >
-          <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full" aria-hidden>
-            <circle cx={C} cy={C} r={C - 1} strokeWidth={1} className="fill-surface stroke-border" />
-          </svg>
-          <motion.div className="absolute inset-0" style={{ rotate: shown }}>
-            <DialFace id={id} />
-          </motion.div>
-          <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="pointer-events-none absolute inset-0 size-full" aria-hidden>
-            {/* The index the numbers are read against. */}
-            <path ref={indexRef} d={`M${C - 6} 1L${C + 6} 1L${C} 10Z`} className="fill-danger" />
-          </svg>
-        </div>
-
-        <button
-          type="button"
-          aria-label={open ? "Turn handle to lock" : "Turn handle to open"}
-          aria-pressed={open}
-          onClick={tryOpen}
-          className="relative flex h-28 w-[88px] shrink-0 items-start justify-center rounded-2xl outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
-        >
-          <motion.span
+    <div className={cn("flex w-[452px] max-w-full flex-col items-center gap-6", className)}>
+      {/* The safe door. The wrapper leaves 12px on the right for the bolts
+          that stick out of its edge while it is locked. */}
+      <div className="relative w-full pr-3">
+        {/* Steel bolts are a physical material, so they are raw colors in
+            both themes. They sit under the door and slide back into it
+            when the right combination turns the handle. */}
+        {[0.24, 0.5, 0.76].map((at, i) => (
+          <span
+            key={at}
             aria-hidden
-            className="absolute top-6 left-1/2 -ml-[22px] size-11"
-            style={{ rotate: handle, transformOrigin: "22px 22px" }}
-          >
-            {/* Short enough that, swung open toward the dial, it clears it. */}
-            <span className="absolute top-[14px] left-[16px] h-16 w-3 rounded-full bg-foreground shadow-raised" />
-            <span className="absolute inset-0 rounded-full bg-foreground shadow-raised" />
-            <span className="absolute inset-[15px] rounded-full bg-background/20" />
-          </motion.span>
-        </button>
+            className="absolute right-0 h-4 w-8 -translate-y-1/2 rounded-r-[4px] shadow-[0_1px_2px_oklch(0_0_0/0.3)] transition-transform duration-300 ease-[cubic-bezier(0.77,0,0.175,1)] motion-reduce:transition-none"
+            style={{
+              top: `${at * 100}%`,
+              background:
+                "linear-gradient(to bottom, oklch(0.9 0.005 250), oklch(0.68 0.01 250) 55%, oklch(0.6 0.01 250))",
+              // 18px pulls the whole visible stub back under the door.
+              transform: open ? "translate(-18px, -50%)" : "translate(0, -50%)",
+              transitionDelay: `${i * 40}ms`,
+            }}
+          />
+        ))}
+        <div className="relative flex flex-col items-center gap-6 rounded-[28px] bg-surface px-5 py-6 shadow-raised sm:px-7">
+          {/* Rivets in the door's corners. */}
+          {["top-3.5 left-3.5", "top-3.5 right-3.5", "bottom-3.5 left-3.5", "bottom-3.5 right-3.5"].map((at) => (
+            <span
+              key={at}
+              aria-hidden
+              className={cn(
+                "absolute size-2.5 rounded-full bg-foreground/10 shadow-[inset_0_-1px_1px_oklch(1_0_0/0.35),0_1px_1px_oklch(0_0_0/0.15)] dark:shadow-[inset_0_-1px_1px_oklch(1_0_0/0.08),0_1px_1px_oklch(0_0_0/0.6)]",
+                at,
+              )}
+            />
+          ))}
+
+          <div ref={slotsRef} className="flex gap-3">
+            {lock.slots.map((n, i) => {
+              const active = !open && lock.index === i;
+              const live = active && lock.progressed ? lock.live : null;
+              return (
+                <div key={i} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className={cn(
+                      "flex h-14 w-16 items-center justify-center rounded-xl bg-background text-2xl font-medium tabular-nums shadow-wheel transition-[box-shadow] duration-150 ease-out",
+                      active && "shadow-[inset_0_0_0_1.5px_var(--foreground)]",
+                    )}
+                  >
+                    {n !== null ? (
+                      <motion.span
+                        key={`set-${n}`}
+                        initial={{ opacity: 0, filter: "blur(4px)", y: reduceMotion ? 0 : 4 }}
+                        animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                        transition={{ duration: 0.2, ease: EASE_OUT }}
+                      >
+                        {n}
+                      </motion.span>
+                    ) : live !== null ? (
+                      <span className="text-muted">{live}</span>
+                    ) : (
+                      <span className="h-0.5 w-4 rounded-full bg-border" />
+                    )}
+                  </div>
+                  <span className={cn("flex items-center gap-1 text-xs", active ? "text-foreground" : "text-muted")}>
+                    <svg
+                      viewBox="0 0 16 16"
+                      className={cn("size-3", EXPECT[i] === -1 && "-scale-x-100")}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      <path d="M13 8a5 5 0 1 1-1.5-3.5M13 2v3h-3" />
+                    </svg>
+                    {EXPECT[i] === 1 ? "Right" : "Left"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex w-full items-center justify-center gap-4 sm:gap-8">
+            <div
+              role="slider"
+              tabIndex={0}
+              aria-label="Combination dial"
+              aria-valuemin={0}
+              aria-valuemax={NUMBERS - 1}
+              aria-valuenow={current}
+              aria-valuetext={`${current}`}
+              aria-describedby={`${id}-keys`}
+              className="relative aspect-square w-[260px] max-w-[calc(100%-92px)] min-w-0 cursor-grab touch-none rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground active:cursor-grabbing"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerEnd}
+              onPointerCancel={onPointerEnd}
+              onKeyDown={onKeyDown}
+            >
+              {/* The recessed collar the dial turns in. */}
+              <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full" aria-hidden>
+                <circle cx={C} cy={C} r={C - 1} strokeWidth={1} className="fill-background stroke-border" />
+              </svg>
+              <motion.div className="absolute inset-0" style={{ rotate: shown }}>
+                <DialFace id={id} />
+              </motion.div>
+              <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="pointer-events-none absolute inset-0 size-full" aria-hidden>
+                {/* The index the numbers are read against. */}
+                <path ref={indexRef} d={`M${C - 6} 1L${C + 6} 1L${C} 10Z`} className="fill-danger" />
+              </svg>
+            </div>
+
+            <button
+              type="button"
+              aria-label={open ? "Turn handle to lock" : "Turn handle to open"}
+              aria-pressed={open}
+              onClick={tryOpen}
+              className="relative flex h-32 w-[76px] shrink-0 items-start justify-center rounded-2xl outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] sm:w-[88px]"
+            >
+              {/* The spindle plate the handle turns on. */}
+              <span aria-hidden className="absolute top-3 left-1/2 size-[72px] -translate-x-1/2 rounded-full bg-background shadow-wheel" />
+              <motion.span
+                aria-hidden
+                className="absolute top-6 left-1/2 -ml-6 size-12"
+                style={{ rotate: handle, transformOrigin: "24px 24px" }}
+              >
+                {/* The lever and its grip. Short enough that, swung open
+                    toward the dial, it clears it. */}
+                <span className="absolute top-6 left-[17px] h-[62px] w-3.5 rounded-full bg-foreground shadow-raised" />
+                <span className="absolute top-[74px] left-3.5 size-5 rounded-full bg-foreground shadow-raised" />
+                {/* The hub, with a turned ring and a cap catching light. */}
+                <span className="absolute inset-0 rounded-full bg-foreground shadow-raised" />
+                <span className="absolute inset-[6px] rounded-full border border-background/20" />
+                <span className="absolute inset-[17px] rounded-full bg-background/25" />
+              </motion.span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col items-center gap-1 text-center">

@@ -330,7 +330,7 @@ export function SelectionToolbar({
           if (typing && openRef.current) show(false, true);
         }}
         dangerouslySetInnerHTML={{ __html: html }}
-        className="h-full overflow-y-auto rounded-lg text-[15px] leading-relaxed text-pretty text-muted caret-foreground outline-hidden selection:bg-foreground/15 selection:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-foreground/40 [&_a]:underline-offset-4 [&_em]:text-foreground [&_mark]:rounded-sm [&_mark]:bg-foreground/15 [&_mark]:text-foreground [&_p+p]:mt-3 [&_strong]:font-semibold [&_strong]:text-foreground"
+        className="h-full overflow-y-auto rounded-lg text-[15px] leading-relaxed text-pretty text-muted caret-foreground outline-hidden selection:bg-foreground/15 selection:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-foreground/40 [&_a]:underline-offset-4 [&_em]:text-foreground [&_mark]:rounded-sm [&_mark]:bg-foreground/15 [&_mark]:text-foreground [&_p+p]:mt-3 [&_strong]:font-semibold [&_strong]:text-foreground"
       />
 
       <motion.div
@@ -398,7 +398,7 @@ export function SelectionToolbar({
                 onFocus={() => setFocusIndex(i)}
                 onClick={() => (isCopy ? copy() : toggle(action))}
                 className={cn(
-                  "flex size-9 touch-manipulation items-center justify-center rounded-lg text-muted outline-hidden transition-[color,background-color,scale] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                  "flex size-9 touch-manipulation items-center justify-center rounded-lg text-muted outline-hidden transition-[color,background-color,scale] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                   on && "bg-foreground/[0.08] text-foreground hover:bg-foreground/[0.1]",
                 )}
               >

@@ -162,7 +162,7 @@ function Row({
         "group relative flex min-h-11 cursor-pointer touch-manipulation gap-3 rounded-[14px] px-3 py-2.5 select-none",
         description ? "items-start" : "items-center",
         "transition-[background-color] duration-150 ease-out hover:bg-surface",
-        "has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-foreground",
+        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-foreground",
       )}
     >
       <input

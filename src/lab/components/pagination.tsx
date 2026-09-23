@@ -52,7 +52,7 @@ const TOUCH_SETTLE_MS = 450;
 const slotBox = "relative flex size-9 items-center justify-center sm:size-10";
 
 const control =
-  "relative flex size-9 touch-manipulation items-center justify-center rounded-full text-sm font-medium tabular-nums outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground sm:size-10 motion-reduce:transition-[color,background-color]";
+  "relative flex size-9 touch-manipulation items-center justify-center rounded-full text-sm font-medium tabular-nums outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground sm:size-10 motion-reduce:transition-[color,background-color]";
 
 export function Pagination({
   page,

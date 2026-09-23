@@ -60,7 +60,7 @@ export function RadioCards({
                   // 0.98 rather than the usual 0.96: on a card this wide, 4%
                   // moves its edges nearly 10px and reads as a lurch.
                   "transition-[scale,background-color] duration-150 ease-out hover:bg-surface active:scale-[0.98] motion-reduce:transition-[background-color]",
-                  "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
+                  "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
                   // The ring lives in the selected card, so lifting that card
                   // keeps the ring above its neighbours as it slides across
                   // them, even while the press scale traps it in this card.

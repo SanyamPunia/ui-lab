@@ -255,7 +255,7 @@ export function SnapCarousel({
       </style>
       {/* The focus ring lives on the wrapper so the edge mask below fades
           only the cards, not the outline. */}
-      <div className="w-full rounded-3xl has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground">
+      <div className="w-full rounded-3xl has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground">
         {/* Native scroll-snap, so touch, trackpad momentum and arrow keys all
             behave like the platform. Inline padding of (container - 280px)
             / 2, 120px at full width, lets the first and last cards reach the
@@ -352,7 +352,7 @@ function Arrow({
         if (!disabled) onClick();
       }}
       className={cn(
-        "flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-[opacity]",
+        "flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-[opacity]",
         disabled ? "cursor-default opacity-40" : "active:scale-[0.96]",
       )}
     >

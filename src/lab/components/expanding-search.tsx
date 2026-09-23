@@ -112,7 +112,7 @@ export function ExpandingSearch({
         }}
         className={cn(
           "relative h-10 shrink-0 overflow-hidden rounded-full bg-surface text-foreground shadow-raised transition-[scale] duration-150 ease-out motion-reduce:transition-none",
-          "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
+          "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
           "[&:has(>[data-trigger]:active)]:scale-[0.96]",
         )}
       >
@@ -207,7 +207,7 @@ export function ExpandingSearch({
                 setQuery("");
                 inputRef.current?.focus();
               }}
-              className="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full text-muted outline-hidden transition-[color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+              className="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full text-muted outline-hidden transition-[color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
             >
               <svg
                 viewBox="0 0 16 16"

@@ -377,7 +377,7 @@ function Tile({ name, Loader }: (typeof TILES)[number]) {
         onClick={() => {
           if (!done) setDone(true);
         }}
-        className="absolute inset-0 rounded-2xl outline-hidden focus-visible:outline-2 focus-visible:outline-foreground aria-disabled:cursor-default"
+        className="absolute inset-0 rounded-2xl outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground aria-disabled:cursor-default"
       />
     </li>
   );

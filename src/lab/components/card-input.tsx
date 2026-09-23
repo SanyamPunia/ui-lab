@@ -230,7 +230,7 @@ export function CardInput({
     onFocus: () => setFocused(field),
     onBlur: () => blur(field),
     className: cn(
-      "h-11 w-full rounded-xl border bg-background px-3.5 text-[15px] text-foreground tabular-nums outline-hidden transition-[border-color] duration-150 ease-out placeholder:text-muted/70 focus-visible:outline-2 focus-visible:-outline-offset-1",
+      "h-11 w-full rounded-xl border bg-background px-3.5 text-[15px] text-foreground tabular-nums outline-hidden transition-[border-color] duration-150 ease-out placeholder:text-muted/70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-1",
       errors[field]
         ? "border-danger focus-visible:outline-danger"
         : "border-border focus-visible:outline-foreground",
@@ -338,7 +338,7 @@ export function CardInput({
       <div className="flex flex-col gap-2.5">
         <button
           type="submit"
-          className="relative h-11 touch-manipulation rounded-xl bg-foreground text-[15px] font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="relative h-11 touch-manipulation rounded-xl bg-foreground text-[15px] font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           {/* Both labels share one cell so the button never changes size. */}
           <span className="grid">

@@ -14,7 +14,7 @@ import { cn } from "@/lib/cn";
 // Pixels per centimetre. Wide enough that a 1mm step is still a whole pixel
 // under the finger, so fine adjustments are actually reachable.
 const SCALE = 10;
-const CASE_W = 120;
+const CASE_W = 132;
 const BLADE_H = 26;
 // The tab is only grabbable near its own edge; this is the reach past it.
 const TAB_REACH = 28;
@@ -29,6 +29,18 @@ const SLIDE = { type: "spring", stiffness: 500, damping: 45 } as const;
 const RETRACT = { type: "spring", stiffness: 380, damping: 28 } as const;
 // The largest jolt the case takes from the tab hitting it, in px.
 const MAX_JOLT = 8;
+
+// A tape measure is a physical object: it keeps its own materials in both
+// themes. Safety-yellow housing and blade, black rubber, plated steel, and
+// a red lock so you can see at a glance whether it is set.
+const HOUSING = "linear-gradient(170deg, oklch(0.87 0.16 88), oklch(0.78 0.16 78))";
+const RUBBER = "oklch(0.22 0.005 60)";
+const STEEL = "linear-gradient(135deg, oklch(0.93 0 0), oklch(0.66 0 0) 55%, oklch(0.82 0 0))";
+const RIVET = "oklch(0.5 0 0)";
+const LOCK = "oklch(0.58 0.2 28)";
+const BLADE = "oklch(0.9 0.15 95)";
+const BLADE_INK = "oklch(0.2 0.01 60)";
+const BLADE_RED = "oklch(0.52 0.2 28)";
 
 function detent(raw: number) {
   const whole = Math.round(raw);
@@ -209,10 +221,17 @@ export function TapeMeasure({
             <span className="text-lg text-muted">cm</span>
           </span>
         </div>
-        <span className="pb-1 text-sm text-muted">{locked ? "Locked" : "Free"}</span>
+        <span className="mb-1 flex h-7 items-center gap-1.5 rounded-full bg-surface px-2.5 text-[13px] text-muted">
+          <span
+            aria-hidden
+            className="size-1.5 rounded-full transition-[background-color] duration-150 ease-out"
+            style={{ background: locked ? LOCK : "var(--muted)" }}
+          />
+          {locked ? "Locked" : "Free"}
+        </span>
       </div>
 
-      <div className="relative h-[120px] w-full">
+      <div className="relative h-[124px] w-full">
         <motion.div className="absolute inset-0" style={{ x: jolt }}>
           <div
             ref={sliderRef}
@@ -224,7 +243,7 @@ export function TapeMeasure({
             aria-valuenow={Number(initial)}
             aria-valuetext={`${initial} centimetres`}
             aria-describedby={`${id}-hint`}
-            className="absolute top-[72px] right-0 h-12 cursor-grab touch-none overflow-hidden outline-hidden select-none [mask-image:linear-gradient(to_right,black_calc(100%_-_48px),transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing"
+            className="absolute top-[72px] right-0 h-12 cursor-grab touch-none overflow-hidden outline-hidden select-none [mask-image:linear-gradient(to_right,black_calc(100%_-_48px),transparent)] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing"
             style={{ left: CASE_W }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
@@ -235,37 +254,85 @@ export function TapeMeasure({
             <motion.div className="absolute top-2 left-0" style={{ x: stripX }}>
               <Blade max={max} />
             </motion.div>
-            {/* The hook: a bent tab that stands proud of the blade. */}
-            <motion.div
-              className="absolute top-0.5 left-0 h-[42px] w-[7px] rounded-[3px] bg-foreground shadow-raised"
-              style={{ x: tabX }}
-            />
+            {/* The hook: a riveted plate on the blade's end, bent up into
+                a tab that stands proud of the blade on both sides. */}
+            <motion.div className="absolute top-0 left-0" style={{ x: tabX }}>
+              <span
+                className="absolute top-[10px] -left-[13px] flex h-[24px] w-[14px] flex-col items-center justify-center gap-[7px] rounded-l-[2px]"
+                style={{ background: STEEL }}
+              >
+                <span className="size-[4px] rounded-full" style={{ background: RIVET }} />
+                <span className="size-[4px] rounded-full" style={{ background: RIVET }} />
+              </span>
+              <span
+                className="absolute top-[2px] left-0 h-[42px] w-[6px] rounded-[2px] shadow-[1px_1px_2px_oklch(0_0_0/0.35)]"
+                style={{ background: STEEL }}
+              />
+            </motion.div>
           </div>
 
+          {/* The case: a moulded yellow housing with a rubber side panel
+              over the spring drum, a steel belt clip behind it, and the
+              thumb lock above the mouth. */}
           <div
-            className="absolute top-0 left-0 h-[112px] rounded-[30px] rounded-br-[10px] bg-foreground shadow-raised"
-            style={{ width: CASE_W }}
+            aria-hidden
+            className="absolute top-[14px] -left-[3px] h-[80px] w-[10px] rounded-[4px] shadow-[0_1px_2px_oklch(0_0_0/0.3)]"
+            style={{ background: STEEL }}
+          />
+          <div
+            className="absolute top-0 left-0 h-[120px] rounded-[34px] rounded-br-[12px] shadow-[inset_0_2px_0_oklch(1_0_0/0.45),inset_0_-3px_0_oklch(0_0_0/0.14),0_10px_22px_-8px_oklch(0_0_0/0.4),0_1px_2px_oklch(0_0_0/0.2)]"
+            style={{ width: CASE_W, background: HOUSING }}
           >
-            {/* Spring drum cover and its rivet. */}
-            <div className="absolute top-9 left-3.5 flex size-[58px] items-center justify-center rounded-full bg-background/5 ring-1 ring-background/15">
-              <div className="size-2.5 rounded-full bg-background/25" />
+            <div
+              aria-hidden
+              className="absolute top-[14px] left-[12px] flex size-[84px] items-center justify-center rounded-full shadow-[inset_0_2px_4px_oklch(0_0_0/0.5),0_1px_0_oklch(1_0_0/0.35)]"
+              style={{ background: RUBBER }}
+            >
+              {/* Grip ridges moulded into the rubber. */}
+              <span
+                className="absolute inset-[6px] rounded-full"
+                style={{
+                  background:
+                    "repeating-conic-gradient(oklch(1 0 0 / 0.06) 0deg 4deg, transparent 4deg 12deg)",
+                }}
+              />
+              <span
+                className="relative flex size-[30px] items-center justify-center rounded-full shadow-[0_1px_2px_oklch(0_0_0/0.5)]"
+                style={{ background: STEEL }}
+              >
+                <span className="size-[7px] rounded-full" style={{ background: RIVET }} />
+              </span>
             </div>
             {/* The mouth the blade feeds out of. */}
-            <div className="absolute top-[76px] right-0.5 h-[32px] w-px bg-background/25" />
+            <div
+              aria-hidden
+              className="absolute top-[78px] right-0 h-[32px] w-[5px] rounded-l-[2px]"
+              style={{ background: RUBBER }}
+            />
             <button
               type="button"
               aria-label="Tape lock"
               aria-pressed={locked}
               onClick={toggleLock}
-              className="absolute top-1.5 left-[70px] flex size-11 items-center justify-center rounded-full outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96]"
+              className="absolute top-[8px] right-[2px] flex h-[64px] w-11 items-start justify-center rounded-full pt-1.5 outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
             >
-              <span className="relative h-8 w-3.5 rounded-full bg-background/15">
+              {/* The slot, and the lock riding in it. Down is locked: the
+                  brake presses on the blade right above the mouth. */}
+              <span
+                className="relative h-[48px] w-[14px] rounded-full shadow-[inset_0_1px_3px_oklch(0_0_0/0.6)]"
+                style={{ background: RUBBER }}
+              >
                 <span
                   className={cn(
-                    "absolute top-0 left-0 size-3.5 rounded-full bg-background transition-[translate] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
-                    locked && "translate-y-[18px]",
+                    "absolute top-[1px] left-[1px] flex h-[22px] w-[12px] flex-col items-center justify-center gap-[3px] rounded-full shadow-[inset_0_1px_0_oklch(1_0_0/0.3),0_1px_2px_oklch(0_0_0/0.4)] transition-[translate] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+                    locked && "translate-y-[24px]",
                   )}
-                />
+                  style={{ background: LOCK }}
+                >
+                  <span className="h-px w-[6px] bg-black/30" />
+                  <span className="h-px w-[6px] bg-black/30" />
+                  <span className="h-px w-[6px] bg-black/30" />
+                </span>
               </span>
             </button>
           </div>
@@ -298,8 +365,9 @@ const Blade = memo(function Blade({ max }: { max: number }) {
         x={(max - cm) * SCALE}
         y={BLADE_H - 3}
         textAnchor="middle"
-        // Metre marks in ink red, as on a real blade.
-        className={cn("text-xs tabular-nums", cm % 100 === 0 ? "fill-danger" : "fill-foreground")}
+        // Metre marks in red, as printed on a real blade.
+        fill={cm % 100 === 0 ? BLADE_RED : BLADE_INK}
+        className="text-xs font-semibold tabular-nums"
       >
         {cm}
       </text>,
@@ -307,11 +375,12 @@ const Blade = memo(function Blade({ max }: { max: number }) {
   }
   return (
     <svg width={width} height={BLADE_H} viewBox={`0 0 ${width} ${BLADE_H}`} aria-hidden className="block">
-      <rect width={width} height={BLADE_H} className="fill-surface" />
-      {/* The blade is cupped; a hairline on each edge sells the curve. */}
-      <line x1={0} x2={width} y1={0.5} y2={0.5} className="stroke-foreground/20" />
-      <line x1={0} x2={width} y1={BLADE_H - 0.5} y2={BLADE_H - 0.5} className="stroke-foreground/10" />
-      <g className="stroke-foreground">{ticks}</g>
+      <rect width={width} height={BLADE_H} fill={BLADE} />
+      {/* The blade is cupped: its top edge falls into shadow, its bottom
+          edge catches the light. */}
+      <rect width={width} height={4} fill="oklch(0 0 0 / 0.12)" />
+      <line x1={0} x2={width} y1={BLADE_H - 0.5} y2={BLADE_H - 0.5} stroke="oklch(1 0 0 / 0.5)" />
+      <g stroke={BLADE_INK}>{ticks}</g>
       {labels}
     </svg>
   );

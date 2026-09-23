@@ -175,7 +175,7 @@ function Dot({
       onClick={() => onSelect(index)}
       // Reaches half the 6px gap past each side of its dot, so the hit areas
       // tile the row with no dead space between them.
-      className="group absolute inset-y-0 -ml-[3px] box-content flex touch-manipulation items-center rounded-full px-[3px] outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+      className="group absolute inset-y-0 -ml-[3px] box-content flex touch-manipulation items-center rounded-full px-[3px] outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground"
       style={{ left, width }}
     >
       <span className="h-1.5 w-full rounded-full bg-foreground/20 transition-[background-color,scale] duration-150 ease-out group-hover:bg-foreground/35 group-active:scale-[0.96]" />
@@ -337,7 +337,7 @@ export default function PageDotsDemo() {
         aria-live={running ? "off" : "polite"}
         // Keeps the horizontal swipe from also scrolling the page sideways
         // or triggering back navigation.
-        className="flex w-full snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain rounded-[20px] outline-hidden [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-scrollbar]:hidden"
+        className="flex w-full snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain rounded-[20px] outline-hidden [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-scrollbar]:hidden"
       >
         {PAGES.map((page, i) => (
           <div
@@ -373,7 +373,7 @@ export default function PageDotsDemo() {
           aria-label="Pause autoplay"
           aria-pressed={!playing}
           onClick={() => setChoice(!playing)}
-          className="relative flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color] after:absolute after:-inset-1.5 after:rounded-full"
+          className="relative flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color] after:absolute after:-inset-1.5 after:rounded-full"
         >
           <span className="grid" aria-hidden>
             <SwapIcon visible={playing} reduceMotion={reduceMotion}>

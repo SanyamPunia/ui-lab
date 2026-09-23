@@ -225,7 +225,7 @@ export function StackedDrawer({
           }}
           type="button"
           onClick={() => open(0)}
-          className="mt-auto h-11 touch-manipulation rounded-full bg-foreground text-[15px] font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="mt-auto h-11 touch-manipulation rounded-full bg-foreground text-[15px] font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           {trigger}
         </button>
@@ -393,7 +393,7 @@ function SheetLayer({
               ref={setNextRef}
               type="button"
               onClick={onNext}
-              className="h-11 touch-manipulation rounded-full bg-foreground text-[15px] font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+              className="h-11 touch-manipulation rounded-full bg-foreground text-[15px] font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
             >
               {sheet.next}
             </button>
@@ -401,7 +401,7 @@ function SheetLayer({
           <button
             type="button"
             onClick={() => onClose()}
-            className="h-11 touch-manipulation rounded-full bg-surface text-[15px] font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+            className="h-11 touch-manipulation rounded-full bg-surface text-[15px] font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
           >
             Done
           </button>

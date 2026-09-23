@@ -32,15 +32,22 @@ type Flight = {
 // Dragged up this far, the page tears; a flick does it sooner (px/s).
 const TEAR_DISTANCE = 80;
 const FLICK = 500;
-// How far above the pad a previous page waits to be pulled back down.
-const REATTACH = 48;
+// How far up a previous page waits to be pulled back down: the binding's
+// height, so it starts tucked entirely under the binding and slides out.
+const REATTACH = 32;
+// The top page lifts this much under a hovering mouse: a hint it moves.
+const HOVER_LIFT = -4;
 // Pulling down this far brings the previous page most of the way back.
 const PULL_RANGE = 90;
 // A page leans as it is torn, like one ripped from its right-hand corner.
 const LEAN = 0.05;
 const MAX_LEAN = 8;
 const SNAP_BACK = { type: "spring", stiffness: 520, damping: 34 } as const;
-const REATTACH_SPRING = { type: "spring", stiffness: 420, damping: 34 } as const;
+const REATTACH_SPRING = {
+  type: "spring",
+  stiffness: 420,
+  damping: 34,
+} as const;
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 const MS_PER_DAY = 86_400_000;
 
@@ -119,6 +126,12 @@ export function TearOffCalendar({
   const pull = useMotionValue(0);
   const ghostY = useTransform(pull, (p) => -(1 - p) * REATTACH);
   const ghostRotate = useTransform(pull, (p) => -(1 - p) * 3);
+  // Lifted, the top page rides over the binding; at rest it sits under
+  // the page being pulled back down.
+  const topZ = useTransform(y, (v): number => (v < 0 ? 3 : 0));
+  // Paper is opaque: the page turns solid almost as soon as it moves, so
+  // the two days never show through each other.
+  const ghostOpacity = useTransform(pull, (p) => Math.min(1, p * 6));
   // The raw finger travel, for release velocity.
   const travel = useMotionValue(0);
 
@@ -211,21 +224,28 @@ export function TearOffCalendar({
       )}
     >
       <div className="relative w-full">
-        {/* Page thickness under the pad. */}
+        {/* Page thickness under the pad: a year of days still to go. */}
         <span
           aria-hidden
-          className="absolute inset-x-3 -bottom-3 h-8 rounded-b-[16px] bg-background shadow-raised"
+          className="absolute inset-x-[18px] -bottom-[13px] h-8 rounded-b-[14px] bg-background shadow-raised"
         />
         <span
           aria-hidden
-          className="absolute inset-x-1.5 -bottom-1.5 h-8 rounded-b-[16px] bg-background shadow-raised"
+          className="absolute inset-x-3 -bottom-[9px] h-8 rounded-b-[16px] bg-background shadow-raised"
+        />
+        <span
+          aria-hidden
+          className="absolute inset-x-1.5 -bottom-[5px] h-8 rounded-b-[18px] bg-background shadow-raised"
         />
 
         <div className="relative rounded-[20px] bg-background shadow-raised">
-          {/* The binding. */}
-          <div className="relative flex h-8 items-center justify-center gap-24 rounded-t-[20px] bg-foreground">
-            <span className="size-2 rounded-full bg-background/30" />
-            <span className="size-2 rounded-full bg-background/30" />
+          {/* The binding. Above the pages, so a page pulled back down
+              slides out from under it; torn pages fly over it. */}
+          <div className="relative z-[2] flex h-8 items-center justify-center gap-24 rounded-t-[20px] bg-foreground">
+            {/* Two brass rivets: the binding's hardware, a physical metal,
+                the same in both themes. */}
+            <span className="size-2.5 rounded-full bg-[radial-gradient(circle_at_35%_35%,#f3dfae,#b8914a_60%,#7d6130)] shadow-[0_1px_1px_oklch(0_0_0/0.4)]" />
+            <span className="size-2.5 rounded-full bg-[radial-gradient(circle_at_35%_35%,#f3dfae,#b8914a_60%,#7d6130)] shadow-[0_1px_1px_oklch(0_0_0/0.4)]" />
           </div>
 
           <div
@@ -235,7 +255,7 @@ export function TearOffCalendar({
             aria-valuenow={day - todayDay}
             aria-valuetext={shown.full}
             aria-describedby={hintId}
-            className="relative h-[272px] cursor-grab touch-none rounded-b-[20px] outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:cursor-grabbing"
+            className="relative h-[272px] cursor-grab touch-none rounded-b-[20px] outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground active:cursor-grabbing"
             onKeyDown={(e) => {
               const step: Record<string, number> = {
                 ArrowUp: 1,
@@ -271,6 +291,18 @@ export function TearOffCalendar({
             }}
             onPointerUp={release}
             onPointerCancel={release}
+            onPointerEnter={(e) => {
+              if (e.pointerType !== "mouse" || drag.current || reduceMotion)
+                return;
+              stopAll();
+              running.current = [animate(y, HOVER_LIFT, SNAP_BACK)];
+            }}
+            onPointerLeave={(e) => {
+              if (e.pointerType !== "mouse" || drag.current || y.get() >= 0)
+                return;
+              stopAll();
+              running.current = [animate(y, 0, SNAP_BACK)];
+            }}
           >
             {/* Tomorrow, waiting underneath. */}
             <Page day={day + 1} />
@@ -279,6 +311,7 @@ export function TearOffCalendar({
               y={y}
               rotate={rotate}
               opacity={attach}
+              z={topZ}
               raised
             />
             {/* Yesterday, only there while you pull it back down. */}
@@ -286,17 +319,17 @@ export function TearOffCalendar({
               day={day - 1}
               y={ghostY}
               rotate={ghostRotate}
-              opacity={pull}
+              opacity={ghostOpacity}
               raised
+              className="z-[1]"
             />
             {flights.map((flight) => (
               <FlyingPage
+                className="z-[3]"
                 key={flight.key}
                 flight={flight}
                 onGone={() =>
-                  setFlights((list) =>
-                    list.filter((f) => f.key !== flight.key),
-                  )
+                  setFlights((list) => list.filter((f) => f.key !== flight.key))
                 }
               />
             ))}
@@ -326,7 +359,7 @@ export function TearOffCalendar({
           type="button"
           onClick={() => goTo(todayDay)}
           disabled={day === todayDay}
-          className="h-10 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-[opacity]"
+          className="h-10 touch-manipulation rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-[opacity]"
         >
           Today
         </button>
@@ -353,21 +386,26 @@ function Page({
   opacity,
   raised,
   torn,
+  className,
+  z,
 }: {
+  z?: MotionValue<number>;
   day: number;
   y?: MotionValue<number>;
   rotate?: MotionValue<number>;
   opacity?: MotionValue<number>;
   raised?: boolean;
   torn?: boolean;
+  className?: string;
 }) {
   const d = describeDay(day);
   return (
     <motion.div
       aria-hidden
-      style={{ y, rotate, opacity }}
+      style={{ y, rotate, opacity, zIndex: z }}
       className={cn(
         "pointer-events-none absolute inset-0 origin-top-left",
+        className,
         // Shadow as a filter outside the mask, so it follows the torn edge
         // instead of being masked away with it.
         torn &&
@@ -408,9 +446,11 @@ function Page({
 function FlyingPage({
   flight,
   onGone,
+  className,
 }: {
   flight: Flight;
   onGone: () => void;
+  className?: string;
 }) {
   const y = useMotionValue(flight.y);
   const rotate = useMotionValue(flight.rotate);
@@ -442,7 +482,14 @@ function FlyingPage({
   }, [flight, y, rotate, opacity]);
 
   return (
-    <Page day={flight.day} y={y} rotate={rotate} opacity={opacity} torn />
+    <Page
+      day={flight.day}
+      y={y}
+      rotate={rotate}
+      opacity={opacity}
+      torn
+      className={className}
+    />
   );
 }
 
@@ -460,7 +507,7 @@ function IconButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+      className="flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
     >
       <svg
         viewBox="0 0 16 16"

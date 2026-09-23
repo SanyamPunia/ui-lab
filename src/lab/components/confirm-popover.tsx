@@ -83,7 +83,7 @@ export function ConfirmPopover({
         aria-disabled={done}
         onClick={() => !done && setOpen((o) => !o)}
         className={cn(
-          "h-10 touch-manipulation rounded-full bg-background px-4 text-sm font-medium shadow-raised outline-hidden transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+          "h-10 touch-manipulation rounded-full bg-background px-4 text-sm font-medium shadow-raised outline-hidden transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
           done ? "text-foreground active:scale-100" : "text-danger",
         )}
       >
@@ -156,7 +156,7 @@ export function ConfirmPopover({
             ref={cancelRef}
             type="button"
             onClick={close}
-            className="h-9 flex-1 touch-manipulation rounded-[10px] bg-surface text-sm font-medium outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
+            className="h-9 flex-1 touch-manipulation rounded-[10px] bg-surface text-sm font-medium outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
           >
             Cancel
           </button>
@@ -164,7 +164,7 @@ export function ConfirmPopover({
             ref={confirmRef}
             type="button"
             onClick={confirm}
-            className="h-9 flex-1 touch-manipulation rounded-[10px] bg-danger text-sm font-medium text-white outline-hidden transition-[scale,opacity] duration-150 ease-out select-none hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]"
+            className="h-9 flex-1 touch-manipulation rounded-[10px] bg-danger text-sm font-medium text-white outline-hidden transition-[scale,opacity] duration-150 ease-out select-none hover:opacity-90 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]"
           >
             {confirmLabel}
           </button>

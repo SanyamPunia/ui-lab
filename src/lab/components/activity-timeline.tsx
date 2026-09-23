@@ -195,7 +195,7 @@ export default function ActivityTimelineDemo() {
         <button
           type="button"
           onClick={add}
-          className="h-9 touch-manipulation rounded-full bg-surface px-3.5 text-sm font-medium text-foreground outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
+          className="h-9 touch-manipulation rounded-full bg-surface px-3.5 text-sm font-medium text-foreground outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
         >
           Simulate event
         </button>
@@ -206,7 +206,7 @@ export default function ActivityTimelineDemo() {
         tabIndex={0}
         role="region"
         aria-label="Activity feed"
-        className="h-[400px] overflow-y-auto overscroll-contain px-5 pt-5 pb-6 outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground"
+        className="h-[400px] overflow-y-auto overscroll-contain px-5 pt-5 pb-6 outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-foreground"
         style={{
           maskImage: "linear-gradient(to bottom, black calc(100% - 32px), transparent)",
         }}

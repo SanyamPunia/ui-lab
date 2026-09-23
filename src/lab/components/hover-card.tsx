@@ -289,7 +289,7 @@ export function Mention({ profile }: { profile: Profile }) {
           if (isOpen && toggles) group.closeNow();
           else group.requestOpen(profile.id, measure, true);
         }}
-        className="rounded-[4px] font-medium whitespace-nowrap text-foreground underline decoration-foreground/25 decoration-1 underline-offset-4 outline-hidden transition-[text-decoration-color] duration-150 ease-out hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground aria-expanded:decoration-foreground"
+        className="rounded-[4px] font-medium whitespace-nowrap text-foreground underline decoration-foreground/25 decoration-1 underline-offset-4 outline-hidden transition-[text-decoration-color] duration-150 ease-out hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground aria-expanded:decoration-foreground"
       >
         {profile.handle}
       </button>
@@ -383,7 +383,7 @@ function FollowButton({
       aria-label={`Follow ${name}`}
       onClick={onToggle}
       className={cn(
-        "grid h-9 rounded-full px-4 text-[14px] font-medium outline-hidden transition-[scale,background-color,color,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color,color,box-shadow]",
+        "grid h-9 rounded-full px-4 text-[14px] font-medium outline-hidden transition-[scale,background-color,color,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color,color,box-shadow]",
         following
           ? "bg-background text-foreground shadow-raised"
           : "bg-foreground text-background",

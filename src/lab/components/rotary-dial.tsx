@@ -77,6 +77,14 @@ const DISC_PATH = [
   }),
 ].join("");
 
+// The dial is a physical object, so it keeps its materials in both themes:
+// black bakelite over an ivory number plate. The plate dims a little in
+// dark mode so it doesn't glare.
+const BAKELITE = "oklch(0.19 0.004 60)";
+const BAKELITE_LIT = "oklch(0.3 0.004 60)";
+const PLATE = "light-dark(oklch(0.965 0.01 85), oklch(0.86 0.012 85))";
+const PLATE_INK = "oklch(0.24 0.01 60)";
+
 const HOOK_FROM = polar(HOLE_RING + 8, HOOK);
 const HOOK_TO = polar(C - 3, HOOK);
 
@@ -109,6 +117,8 @@ export function RotaryDial({
   className?: string;
 }) {
   const id = useId();
+  // SVG ids can't hold the colons useId may produce.
+  const gid = `rd${id.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const reduceMotion = useReducedMotion();
   const rotation = useMotionValue(0);
   const dialRef = useRef<HTMLDivElement>(null);
@@ -356,7 +366,7 @@ export function RotaryDial({
             aria-label="Delete last digit"
             disabled={!value}
             onClick={erase}
-            className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted outline-hidden transition-[scale,color,opacity] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] disabled:pointer-events-none disabled:opacity-40"
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted outline-hidden transition-[scale,color,opacity] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] disabled:pointer-events-none disabled:opacity-40"
           >
             <svg
               viewBox="0 0 24 24"
@@ -382,7 +392,7 @@ export function RotaryDial({
         aria-label={`${label} dial`}
         aria-describedby={`${id}-hint`}
         aria-keyshortcuts="0 1 2 3 4 5 6 7 8 9 Backspace"
-        className="relative aspect-square w-[280px] max-w-full cursor-grab touch-none rounded-full outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground active:cursor-grabbing"
+        className="relative aspect-square w-[280px] max-w-full cursor-grab touch-none rounded-full shadow-[0_12px_28px_-10px_oklch(0_0_0/0.35),0_2px_4px_oklch(0_0_0/0.12)] outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground active:cursor-grabbing"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={(e) => release(e, false)}
@@ -401,9 +411,24 @@ export function RotaryDial({
         <span id={`${id}-hint`} className="sr-only">
           Type digits to dial them. Backspace deletes.
         </span>
-        {/* The number plate stays put; its digits show through the holes. */}
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full" aria-hidden>
-          <circle cx={C} cy={C} r={C - 1} strokeWidth={1} className="fill-surface stroke-border" />
+          <defs>
+            {/* Concentric light, so it stays put while the disc turns: the
+                bakelite is darkest near the hub and catches a band of light
+                toward its rolled rim. */}
+            <radialGradient id={`${gid}-disc`} cx="50%" cy="50%" r="50%">
+              <stop offset="0.42" stopColor={BAKELITE} />
+              <stop offset="0.86" stopColor={BAKELITE_LIT} />
+              <stop offset="0.93" stopColor={BAKELITE} />
+            </radialGradient>
+            <linearGradient id={`${gid}-chrome`} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="oklch(0.94 0 0)" />
+              <stop offset="0.5" stopColor="oklch(0.62 0 0)" />
+              <stop offset="1" stopColor="oklch(0.8 0 0)" />
+            </linearGradient>
+          </defs>
+          {/* The number plate stays put; its digits show through the holes. */}
+          <circle cx={C} cy={C} r={C - 1} style={{ fill: PLATE }} stroke="oklch(0 0 0 / 0.12)" />
           {DIGITS.map((d) => {
             const [x, y] = polar(HOLE_RING, rest(d));
             return (
@@ -411,9 +436,10 @@ export function RotaryDial({
                 key={d}
                 x={x}
                 y={y}
-                dy="0.35em"
+                dy="0.36em"
                 textAnchor="middle"
-                className="fill-foreground text-lg font-medium tabular-nums"
+                fill={PLATE_INK}
+                className="text-lg font-semibold tabular-nums"
               >
                 {d}
               </text>
@@ -423,13 +449,20 @@ export function RotaryDial({
 
         <motion.div className="absolute inset-0" style={{ rotate: rotation }}>
           <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-full" aria-hidden>
-            <path d={DISC_PATH} fillRule="evenodd" className="fill-foreground" />
-            {/* A faint lip on every edge reads as moulded bakelite. */}
-            <circle cx={C} cy={C} r={DISC_R - 1} fill="none" className="stroke-background/15" />
+            {/* A soft shadow the disc casts on the plate. */}
+            <path
+              d={DISC_PATH}
+              fillRule="evenodd"
+              fill="oklch(0 0 0 / 0.18)"
+              transform="translate(0 1.5)"
+            />
+            <path d={DISC_PATH} fillRule="evenodd" fill={`url(#${gid}-disc)`} />
+            {/* Moulded lips on the rim and every hole catch the light. */}
+            <circle cx={C} cy={C} r={DISC_R - 0.75} fill="none" stroke="oklch(1 0 0 / 0.16)" strokeWidth={1.5} />
             {DIGITS.map((d) => {
               const [x, y] = polar(HOLE_RING, rest(d));
               return (
-                <circle key={d} cx={x} cy={y} r={HOLE_R} fill="none" className="stroke-background/20" />
+                <circle key={d} cx={x} cy={y} r={HOLE_R + 0.75} fill="none" stroke="oklch(1 0 0 / 0.2)" strokeWidth={1.5} />
               );
             })}
           </svg>
@@ -437,25 +470,27 @@ export function RotaryDial({
 
         <div ref={stopRef} className="pointer-events-none absolute inset-0">
           <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-full" aria-hidden>
-            {/* A collar in the plate colour separates the hook from the disc. */}
+            {/* A plated steel finger stop, screwed to the plate at its outer
+                end, with a collar of plate colour between it and the disc. */}
             <line
               x1={HOOK_FROM[0]}
               y1={HOOK_FROM[1]}
               x2={HOOK_TO[0]}
               y2={HOOK_TO[1]}
-              strokeWidth={11}
+              strokeWidth={12}
               strokeLinecap="round"
-              className="stroke-surface"
+              style={{ stroke: PLATE }}
             />
             <line
               x1={HOOK_FROM[0]}
               y1={HOOK_FROM[1]}
               x2={HOOK_TO[0]}
               y2={HOOK_TO[1]}
-              strokeWidth={6}
+              strokeWidth={7}
               strokeLinecap="round"
-              className="stroke-muted"
+              stroke={`url(#${gid}-chrome)`}
             />
+            <circle cx={HOOK_TO[0]} cy={HOOK_TO[1]} r={2} fill="oklch(0.45 0 0)" />
           </svg>
         </div>
 
@@ -464,11 +499,14 @@ export function RotaryDial({
           className="pointer-events-none absolute inset-0 size-full"
           aria-hidden
         >
-          <circle cx={C} cy={C} r={CARD_R} strokeWidth={1} className="fill-background stroke-border" />
-          <text x={C} y={C - 3} textAnchor="middle" className="fill-muted text-xs">
+          {/* The centre card, printed on the same stock as the plate, under
+              a clear bezel. */}
+          <circle cx={C} cy={C} r={CARD_R} style={{ fill: PLATE }} stroke="oklch(0 0 0 / 0.25)" strokeWidth={1.5} />
+          <circle cx={C} cy={C} r={CARD_R - 5} fill="none" stroke={PLATE_INK} strokeOpacity={0.25} />
+          <text x={C} y={C - 4} textAnchor="middle" fill={PLATE_INK} fillOpacity={0.7} className="text-xs">
             Pull a hole
           </text>
-          <text x={C} y={C + 13} textAnchor="middle" className="fill-muted text-xs">
+          <text x={C} y={C + 12} textAnchor="middle" fill={PLATE_INK} fillOpacity={0.7} className="text-xs">
             to the stop
           </text>
         </svg>

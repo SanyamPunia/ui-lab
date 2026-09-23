@@ -100,7 +100,7 @@ export function ScrollReveal({
     // fades only the text, not the box or its outline.
     <div
       className={cn(
-        "relative h-[360px] w-[480px] max-w-full rounded-3xl bg-surface shadow-raised has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
+        "relative h-[360px] w-[480px] max-w-full rounded-3xl bg-surface shadow-raised has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground",
         className,
       )}
     >

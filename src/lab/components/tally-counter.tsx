@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 
 // Five groups of five per row, two rows: 50 marks fill the sheet exactly.
@@ -97,6 +97,14 @@ export function TallyCounter({
     [limit, seed],
   );
 
+  // Which way the last change went, so the number rolls the same way.
+  const [last, setLast] = useState(value);
+  const [direction, setDirection] = useState(1);
+  if (last !== value) {
+    setLast(value);
+    setDirection(value > last ? 1 : -1);
+  }
+
   const set = (next: number) => {
     const clamped = Math.min(Math.max(next, min), limit);
     if (clamped !== value) onChange(clamped);
@@ -109,9 +117,38 @@ export function TallyCounter({
           <p className="mb-1 text-sm font-medium text-muted">{label}</p>
           <p
             aria-hidden
-            className="text-5xl leading-none font-semibold tracking-tight text-foreground tabular-nums"
+            className="relative h-12 overflow-hidden text-5xl leading-none font-semibold tracking-tight text-foreground tabular-nums"
           >
-            {value}
+            {/* The number steps up or down with the pen: a short roll, so a
+                run of fast taps still reads as counting. */}
+            <AnimatePresence
+              initial={false}
+              mode="popLayout"
+              custom={direction}
+            >
+              <motion.span
+                key={value}
+                custom={direction}
+                className="block"
+                variants={{
+                  enter: (d: number) =>
+                    reduceMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, y: `${d * 45}%`, filter: "blur(4px)" },
+                  center: { opacity: 1, y: "0%", filter: "blur(0px)" },
+                  exit: (d: number) =>
+                    reduceMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, y: `${d * -45}%`, filter: "blur(4px)" },
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+              >
+                {value}
+              </motion.span>
+            </AnimatePresence>
           </p>
         </div>
         <div className="flex gap-2">
@@ -156,8 +193,14 @@ export function TallyCounter({
           e.preventDefault();
           set(next);
         }}
-        className="block cursor-pointer touch-manipulation rounded-2xl bg-surface p-2 shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+        className="relative block cursor-pointer touch-manipulation rounded-2xl bg-background px-2 pt-6 pb-2 shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
       >
+        {/* A pocket notebook's wire binding: a row of punched holes along
+            the top of the page, spaced to fit whole holes at any width. */}
+        <span
+          aria-hidden
+          className="absolute inset-x-5 top-2.5 h-2 bg-[radial-gradient(circle,var(--color-surface)_2.5px,color-mix(in_oklab,var(--color-foreground)_14%,transparent)_3px,transparent_3.5px)] bg-[length:16px_8px] [background-repeat:space_no-repeat]"
+        />
         <svg
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           className="block h-auto w-full text-foreground"
@@ -175,7 +218,7 @@ export function TallyCounter({
               x2={VIEW_W - 8}
               y1={PAD_Y + row * ROW_H + 52}
               y2={PAD_Y + row * ROW_H + 52}
-              className="stroke-border"
+              className="stroke-foreground/10"
               strokeWidth={1}
             />
           ))}
@@ -251,6 +294,7 @@ function StepButton({
 }
 
 export default function TallyCounterDemo() {
-  const [count, setCount] = useState(13);
+  // Opens a row and a bit in: the sheet looks used, with room to go.
+  const [count, setCount] = useState(28);
   return <TallyCounter label="Laps" value={count} onChange={setCount} />;
 }

@@ -157,7 +157,7 @@ export function TreeView({
             if (e.target === e.currentTarget) setFocused(id);
           }}
           // The item holds its children too, so the ring goes on the row alone.
-          className="outline-hidden [&:focus-visible>div]:outline-2 [&:focus-visible>div]:-outline-offset-2 [&:focus-visible>div]:outline-foreground"
+          className="outline-hidden [&:focus-visible>div]:outline-2 [&:focus-visible>div]:outline-solid [&:focus-visible>div]:-outline-offset-2 [&:focus-visible>div]:outline-foreground"
         >
           <div
             onClick={() => activate(item)}

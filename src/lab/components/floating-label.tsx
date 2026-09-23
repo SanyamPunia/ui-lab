@@ -101,7 +101,7 @@ export function FloatingLabel({
             // so typed text and label never share a pixel. A fixed 20px line
             // height keeps that math independent of the page's leading.
             "peer h-13 w-full rounded-xl border bg-background pt-[22px] pr-10 pb-2 pl-3.5 text-[15px]/5 text-foreground outline-hidden transition-[border-color] duration-150 ease-out",
-            "focus-visible:outline-2 focus-visible:-outline-offset-1",
+            "focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-1",
             invalid
               ? "border-danger focus-visible:outline-danger"
               : "border-border focus-visible:outline-foreground",

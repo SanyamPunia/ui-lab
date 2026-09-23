@@ -178,7 +178,7 @@ export function FileDropzone({
         }}
         className={cn(
           "dz-zone relative flex h-[300px] touch-manipulation flex-col items-center justify-center gap-4 rounded-[24px] px-6 text-center outline-hidden select-none",
-          "transition-[background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.99] motion-reduce:transition-[background-color]",
+          "transition-[background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.99] motion-reduce:transition-[background-color]",
           over ? "bg-foreground/5" : dragging ? "bg-foreground/[0.02]" : "",
         )}
       >
@@ -451,7 +451,7 @@ function FileRow({
         type="button"
         aria-label={`Remove ${entry.name}`}
         onClick={onRemove}
-        className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+        className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
       >
         <svg
           viewBox="0 0 16 16"

@@ -6,7 +6,9 @@ import { cn } from "@/lib/cn";
 
 const STRIP_H = 96;
 // The pen sits near the right edge so most of the strip is history.
-const PEN_INSET = 44;
+const PEN_INSET = 52;
+// The stylus arm's pivot, near the right edge.
+const PIVOT_INSET = 14;
 // Paper speed, px per second: a word's worth of keys spans a thumb's width.
 const PAPER_SPEED = 64;
 // Grid pitch on the paper, px.
@@ -22,13 +24,63 @@ const IDLE_MS = 1400;
 // WPM is keystrokes over the last few seconds, 5 characters per word.
 const WPM_WINDOW = 5000;
 
-type Colors = { ink: string; grid: string; axis: string; arm: string };
+type Colors = {
+  ink: string;
+  grid: string;
+  axis: string;
+  arm: string;
+  paper: string;
+};
 
 // Soft clip so a hard kick flattens against the edge instead of leaving the
 // paper. Applied only when drawing, so the physics stays linear.
 function clip(y: number) {
   const limit = STRIP_H / 2 - 6;
   return limit * Math.tanh(y / limit);
+}
+
+function tempoFor(gap: number) {
+  // Fast typing hits harder; a key after a long pause is a light tap.
+  return Math.min(1.6, Math.max(0.45, 180 / gap));
+}
+
+// A short message someone typed a few seconds ago, already on the paper when
+// the strip mounts, so the idea reads before the first key. Run through the
+// same needle physics as live typing; seconds between keys, and a negative
+// entry is a backspace.
+const EARLIER = [
+  0.12, 0.1, 0.14, 0.26, 0.11, 0.09, 0.13, 0.1, 0.12, 0.3, 0.1, 0.12, 0.28,
+  0.11, 0.1, 0.13, 0.09, 0.27, 0.12, 0.1, -0.34, -0.12, 0.3, 0.11,
+];
+// How long before the pen the recording ends, in seconds.
+const EARLIER_ENDS = 1.6;
+
+function earlierTrace(width: number) {
+  const trace = new Float32Array(width);
+  const dt = 1 / PAPER_SPEED;
+  const total = width * dt;
+  const length = EARLIER.reduce((t, g) => t + Math.abs(g), 0);
+  const kicks: { t: number; v: number }[] = [];
+  let t = total - EARLIER_ENDS - length;
+  for (const g of EARLIER) {
+    t += Math.abs(g);
+    // Fixed jitter so the trace is the same on every visit.
+    const jitter = 0.9 + 0.2 * Math.abs(Math.sin(t * 13.7));
+    kicks.push({ t, v: Math.sign(g) * KICK * tempoFor(Math.abs(g) * 1000) * jitter });
+  }
+  let y = 0;
+  let v = 0;
+  let k = 0;
+  for (let i = 0; i < width; i++) {
+    const now = i * dt;
+    while (k < kicks.length && kicks[k].t <= now) v += kicks[k++].v;
+    for (let j = 0; j < 8; j++) {
+      v += (-NEEDLE_K * y - NEEDLE_C * v) * (dt / 8);
+      y += v * (dt / 8);
+    }
+    trace[i] = clip(y);
+  }
+  return trace;
 }
 
 export function TypingSeismograph({
@@ -81,6 +133,7 @@ export function TypingSeismograph({
       grid: probe("grid"),
       axis: probe("axis"),
       arm: probe("arm"),
+      paper: probe("paper"),
     };
   };
 
@@ -136,16 +189,32 @@ export function TypingSeismograph({
     }
     ctx.stroke();
 
-    // Needle arm from the right edge to the pen tip.
-    ctx.strokeStyle = s.colors.arm;
-    ctx.lineWidth = 2;
+    // The stylus: an arm swinging on a pivot at the right edge, tapering
+    // to a pen that rests on the paper.
+    const px = w - PIVOT_INSET;
+    const tx = pen;
+    const ty = mid - tip;
+    const len = Math.hypot(tx - px, ty - mid) || 1;
+    const nx = -(ty - mid) / len;
+    const ny = (tx - px) / len;
+    ctx.fillStyle = s.colors.arm;
     ctx.beginPath();
-    ctx.moveTo(w + 2, mid - tip * 0.35);
-    ctx.lineTo(pen, mid - tip);
-    ctx.stroke();
+    ctx.moveTo(px + nx * 3.5, mid + ny * 3.5);
+    ctx.lineTo(tx + nx * 1.2, ty + ny * 1.2);
+    ctx.lineTo(tx - nx * 1.2, ty - ny * 1.2);
+    ctx.lineTo(px - nx * 3.5, mid - ny * 3.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(px, mid, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = s.colors.paper;
+    ctx.beginPath();
+    ctx.arc(px, mid, 2.5, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = s.colors.ink;
     ctx.beginPath();
-    ctx.arc(pen, mid - tip, 2.5, 0, Math.PI * 2);
+    ctx.arc(tx, ty, 3, 0, Math.PI * 2);
     ctx.fill();
   };
 
@@ -212,8 +281,7 @@ export function TypingSeismograph({
     if (gap > IDLE_MS) s.burstStart = now;
     s.lastKey = now;
     s.keys.push(now);
-    // Fast typing hits harder; a key after a long pause is a light tap.
-    const tempo = Math.min(1.6, Math.max(0.45, 180 / gap));
+    const tempo = tempoFor(gap);
     const jitter = 0.85 + Math.random() * 0.3;
     if (reduceMotion) {
       // No rolling paper: each key steps the paper and leaves one tick.
@@ -244,8 +312,9 @@ export function TypingSeismograph({
       const dpr = window.devicePixelRatio || 1;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(STRIP_H * dpr);
-      const next = new Float32Array(w);
       const old = s.samples;
+      // First size: start with the earlier message on the paper.
+      const next = old.length ? new Float32Array(w) : earlierTrace(w);
       for (let i = 0; i < Math.min(old.length, w); i++) {
         next[w - 1 - i] = old[(s.head - 1 - i + old.length * 2) % old.length];
       }
@@ -313,7 +382,12 @@ export function TypingSeismograph({
             ref={canvasRef}
             aria-hidden
             className="block w-full"
-            style={{ height: STRIP_H }}
+            // The oldest trace fades out at the left, like paper leaving
+            // the lit window of the drum.
+            style={{
+              height: STRIP_H,
+              maskImage: "linear-gradient(to right, transparent, black 56px)",
+            }}
           />
           {/* Hidden swatches: canvas can't use tokens, so it reads their
               resolved colors from these. */}
@@ -321,6 +395,7 @@ export function TypingSeismograph({
           <span data-probe="grid" className="hidden text-foreground/[0.06]" />
           <span data-probe="axis" className="hidden text-foreground/15" />
           <span data-probe="arm" className="hidden text-muted" />
+          <span data-probe="paper" className="hidden text-surface" />
         </div>
       </div>
       <div className="mt-2.5 flex items-center justify-between text-sm">

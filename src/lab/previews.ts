@@ -134,6 +134,26 @@ import CassetteScrubberDemo from "./components/cassette-scrubber";
 import BubbleWrapDemo from "./components/bubble-wrap";
 import SundialPickerDemo from "./components/sundial-picker";
 import FoldedMapDemo from "./components/folded-map";
+import ScrollSpineDemo from "./components/scroll-spine";
+import AvailabilityBadgeDemo from "./components/availability-badge";
+import SidenotesDemo from "./components/sidenotes";
+import FooterSignatureDemo from "./components/footer-signature";
+import ChangelogStackDemo from "./components/changelog-stack";
+import PricingCalculatorDemo from "./components/pricing-calculator";
+import FeatureSpotlightDemo from "./components/feature-spotlight";
+import TestimonialHighlightDemo from "./components/testimonial-highlight";
+import WaitlistJoinDemo from "./components/waitlist-join";
+import CookieConsentDemo from "./components/cookie-consent";
+import EmailTypoFixDemo from "./components/email-typo-fix";
+import CouponCodeDemo from "./components/coupon-code";
+import CodeMorphDemo from "./components/code-morph";
+import ImageHotspotsDemo from "./components/image-hotspots";
+import QuoteShareDemo from "./components/quote-share";
+import WaveformPlayerDemo from "./components/waveform-player";
+import SizePickerDemo from "./components/size-picker";
+import OrderTrackerDemo from "./components/order-tracker";
+import GiftWrapDemo from "./components/gift-wrap";
+import StoreHoursDemo from "./components/store-hours";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -274,5 +294,25 @@ export const previews: Record<string, ComponentType> = {
   "bubble-wrap": BubbleWrapDemo,
   "sundial-picker": SundialPickerDemo,
   "folded-map": FoldedMapDemo,
+  "scroll-spine": ScrollSpineDemo,
+  "availability-badge": AvailabilityBadgeDemo,
+  "sidenotes": SidenotesDemo,
+  "footer-signature": FooterSignatureDemo,
+  "changelog-stack": ChangelogStackDemo,
+  "pricing-calculator": PricingCalculatorDemo,
+  "feature-spotlight": FeatureSpotlightDemo,
+  "testimonial-highlight": TestimonialHighlightDemo,
+  "waitlist-join": WaitlistJoinDemo,
+  "cookie-consent": CookieConsentDemo,
+  "email-typo-fix": EmailTypoFixDemo,
+  "coupon-code": CouponCodeDemo,
+  "code-morph": CodeMorphDemo,
+  "image-hotspots": ImageHotspotsDemo,
+  "quote-share": QuoteShareDemo,
+  "waveform-player": WaveformPlayerDemo,
+  "size-picker": SizePickerDemo,
+  "order-tracker": OrderTrackerDemo,
+  "gift-wrap": GiftWrapDemo,
+  "store-hours": StoreHoursDemo,
   // new-component:entries
 };

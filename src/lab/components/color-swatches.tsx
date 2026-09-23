@@ -104,7 +104,7 @@ export function ColorSwatches({
                 // on a light background and a dark one on a dark background.
                 "shadow-[inset_0_0_0_1px_oklch(0_0_0/0.1)] dark:shadow-[inset_0_0_0_1px_oklch(1_0_0/0.1)]",
                 // Clears the 4px ring with a 2px gap.
-                "focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-foreground",
+                "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[6px] focus-visible:outline-foreground",
                 // Grows the hit area to 40px without growing the circle.
                 "after:absolute after:-inset-1 after:rounded-full",
               )}

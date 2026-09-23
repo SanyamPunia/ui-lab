@@ -207,7 +207,7 @@ export function DynamicIsland({
                   type="button"
                   aria-label={playing ? "Pause" : "Play"}
                   onClick={() => onPlayingChange?.(!playing)}
-                  className="-mr-1.5 grid size-11 shrink-0 touch-manipulation place-items-center rounded-full outline-hidden transition-[scale,background-color] duration-150 ease-out hover:bg-background/10 focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
+                  className="-mr-1.5 grid size-11 shrink-0 touch-manipulation place-items-center rounded-full outline-hidden transition-[scale,background-color] duration-150 ease-out hover:bg-background/10 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
                 >
                   <SwapIcon visible={!playing} reduceMotion={reduceMotion}>
                     {/* Starts right of center so the triangle's mass, not its
@@ -385,7 +385,7 @@ export default function DynamicIslandDemo() {
               tabIndex={checked ? 0 : -1}
               onClick={() => select(option.value)}
               className={cn(
-                "h-9 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                "h-9 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                 checked
                   ? "bg-background text-foreground shadow-raised"
                   : "text-muted hover:text-foreground",

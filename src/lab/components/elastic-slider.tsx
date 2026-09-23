@@ -106,7 +106,7 @@ export function ElasticSlider({
         aria-pressed={muted}
         onClick={() => onMutedChange(!muted)}
         style={{ x: lowIconX }}
-        className="relative flex size-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+        className="relative flex size-8 shrink-0 items-center justify-center rounded-full outline-hidden transition-[scale,color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]"
       >
         <SwapIcon visible={!silent}>
           <path d="M3 9.5v5h3.5L11 18V6L6.5 9.5Z" />
@@ -124,7 +124,7 @@ export function ElasticSlider({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(shown * 100)}
-        className="group flex h-8 flex-1 cursor-pointer touch-none items-center rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+        className="group flex h-8 flex-1 cursor-pointer touch-none items-center rounded-full outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground"
         onPointerDown={(e) => {
           if (e.button !== 0) return;
           dragging.current = true;

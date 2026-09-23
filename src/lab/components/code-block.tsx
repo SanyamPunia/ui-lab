@@ -115,7 +115,7 @@ export function CodeBlock({ files, className }: { files: CodeFile[]; className?:
                     tabs.current[target]?.focus();
                   }}
                   className={cn(
-                    "group relative touch-manipulation px-3 font-mono text-[13px] outline-hidden transition-[color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-foreground",
+                    "group relative touch-manipulation px-3 font-mono text-[13px] outline-hidden transition-[color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-4 focus-visible:outline-foreground",
                     selected ? "text-foreground" : "text-muted hover:text-foreground",
                   )}
                 >
@@ -159,7 +159,7 @@ export function CodeBlock({ files, className }: { files: CodeFile[]; className?:
               tabIndex={selected ? 0 : -1}
               inert={!selected}
               className={cn(
-                "absolute inset-0 overflow-auto overscroll-contain outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground",
+                "absolute inset-0 overflow-auto overscroll-contain outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-foreground",
                 "transition-[opacity,filter] ease-out motion-reduce:transition-[opacity]",
                 selected
                   ? "opacity-100 blur-[0px] duration-200"
@@ -238,7 +238,7 @@ function CopyCode({ value }: { value: string }) {
       onClick={copy}
       aria-label="Copy code"
       className={cn(
-        "relative flex h-8 touch-manipulation items-center gap-1.5 rounded-lg px-2.5 text-[13px] text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+        "relative flex h-8 touch-manipulation items-center gap-1.5 rounded-lg px-2.5 text-[13px] text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
         // Grows the hit area to 40px tall without growing the button.
         "after:absolute after:-inset-1",
         status !== "idle" && "text-foreground",

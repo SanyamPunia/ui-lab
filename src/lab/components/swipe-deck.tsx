@@ -120,7 +120,7 @@ export function SwipeDeck({ cards }: { cards: Card[] }) {
         aria-roledescription="card deck"
         aria-label="Animation principles"
         tabIndex={0}
-        className="relative h-80 w-64 rounded-[24px] outline-hidden focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-foreground"
+        className="relative h-80 w-64 rounded-[24px] outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-8 focus-visible:outline-foreground"
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft") throwCard(-1);
           if (e.key === "ArrowRight") throwCard(1);

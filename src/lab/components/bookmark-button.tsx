@@ -82,7 +82,7 @@ export function BookmarkButton({
         className={cn(
           "inline-flex h-10 touch-manipulation items-center gap-2 rounded-full bg-surface text-sm font-medium text-foreground shadow-raised outline-hidden select-none",
           "transition-[scale,background-color] duration-150 ease-out hover:bg-background active:scale-[0.96] motion-reduce:transition-[background-color]",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
           // 4px less on the icon side: the glyph's own bearings fill it.
           "pr-4 pl-3",
           className,

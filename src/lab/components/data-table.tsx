@@ -193,7 +193,7 @@ export function DataTable({
                       onClick={() => cycle(col.key)}
                       className={cn(
                         "inline-flex h-8 items-center gap-1 rounded-lg px-2 text-[13px] font-medium whitespace-nowrap outline-hidden select-none",
-                        "transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                        "transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                         dir ? "text-foreground" : "text-muted",
                         // Keeps the arrow on the outside edge, so numeric
                         // labels stay aligned with their right-aligned values.
@@ -383,7 +383,7 @@ function Checkbox({
           "peer col-start-1 row-start-1 size-4 cursor-pointer appearance-none rounded-[5px] bg-background shadow-[inset_0_0_0_1.5px_var(--border)] outline-hidden disabled:cursor-default disabled:opacity-50",
           "transition-[background-color,box-shadow,scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-[background-color,box-shadow]",
           "hover:shadow-[inset_0_0_0_1.5px_var(--muted)] checked:bg-foreground checked:shadow-none indeterminate:bg-foreground indeterminate:shadow-none",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground",
         )}
       />
       <svg
@@ -462,7 +462,7 @@ function BarButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-9 items-center gap-1.5 rounded-full px-3 font-medium outline-hidden select-none transition-[scale,background-color] duration-150 ease-out hover:bg-background/15 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
+      className="flex h-9 items-center gap-1.5 rounded-full px-3 font-medium outline-hidden select-none transition-[scale,background-color] duration-150 ease-out hover:bg-background/15 focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[background-color]"
     >
       {children}
     </button>
@@ -531,7 +531,7 @@ export default function DataTableDemo() {
         onClick={() => setRows(SAMPLE)}
         inert={full}
         className={cn(
-          "h-9 rounded-full px-3 text-sm text-muted outline-hidden select-none transition-[opacity,scale,color,filter] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity,color]",
+          "h-9 rounded-full px-3 text-sm text-muted outline-hidden select-none transition-[opacity,scale,color,filter] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity,color]",
           full && "opacity-0 blur-[4px] motion-reduce:blur-[0px]",
         )}
       >

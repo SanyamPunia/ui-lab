@@ -206,7 +206,7 @@ export function SlideToConfirm({
         style={{ x }}
         className={cn(
           "absolute top-1 left-1 flex size-14 touch-none items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden",
-          "transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none",
+          "transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none",
           done ? "cursor-default" : "cursor-grab active:scale-[0.96] active:cursor-grabbing",
         )}
         onPointerDown={(e) => {

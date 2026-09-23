@@ -233,7 +233,7 @@ export default function GaugeDemo() {
             aria-pressed={i === active}
             onClick={() => setActive(i)}
             className={cn(
-              "h-10 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,color,background-color,box-shadow] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
+              "h-10 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,color,background-color,box-shadow] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
               i === active
                 ? "bg-background text-foreground shadow-raised"
                 : "text-muted hover:text-foreground",

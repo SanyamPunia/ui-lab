@@ -101,7 +101,7 @@ function ScrambleItem({ index, label }: { index: number; label: string }) {
         type="button"
         onPointerEnter={scramble}
         onFocus={scramble}
-        className="group flex items-baseline gap-4 font-mono text-3xl tracking-tight text-muted uppercase transition-[color] duration-150 ease-out outline-hidden hover:text-foreground focus-visible:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+        className="group flex items-baseline gap-4 font-mono text-3xl tracking-tight text-muted uppercase transition-[color] duration-150 ease-out outline-hidden hover:text-foreground focus-visible:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-foreground"
       >
         <span className="text-xs tabular-nums">
           {String(index + 1).padStart(2, "0")}

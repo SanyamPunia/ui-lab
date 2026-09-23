@@ -99,7 +99,7 @@ export function PromiseToast({
         aria-disabled={loading}
         onClick={() => !loading && run()}
         className={cn(
-          "h-10 touch-manipulation rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]",
+          "h-10 touch-manipulation rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]",
           loading && "cursor-progress opacity-60 active:scale-100",
         )}
       >
@@ -223,7 +223,7 @@ function Toast({
               <button
                 type="button"
                 onClick={onRetry}
-                className="ml-2 h-8 touch-manipulation rounded-full bg-surface px-3 text-sm font-medium text-foreground outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
+                className="ml-2 h-8 touch-manipulation rounded-full bg-surface px-3 text-sm font-medium text-foreground outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-border focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]"
               >
                 Retry
               </button>

@@ -212,7 +212,7 @@ function Bar({
       tabIndex={tabIndex}
       aria-label={`${datum.label}, ${datum.value} ${unit}`}
       // The whole column is the hit target, not just the 40px bar.
-      className="relative flex-1 rounded-sm outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="relative flex-1 rounded-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground"
       onPointerEnter={(e) => {
         if (e.pointerType !== "touch") onActivate();
       }}
@@ -330,7 +330,7 @@ export default function BarChartDemo() {
               aria-pressed={week === w}
               onClick={() => setWeek(w)}
               className={cn(
-                "relative h-9 w-[96px] touch-manipulation rounded-full text-sm font-medium outline-hidden transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+                "relative h-9 w-[96px] touch-manipulation rounded-full text-sm font-medium outline-hidden transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
                 week === w ? "text-foreground" : "text-muted hover:text-foreground",
               )}
             >

@@ -102,7 +102,7 @@ export function TagInput({
       {/* Clicking the field's empty space types into it, like a real input.
           The field grows downward as chips wrap. */}
       <div
-        className="rounded-[14px] bg-surface p-1.5 shadow-raised outline-offset-2 outline-foreground has-[input:focus-visible]:outline-2"
+        className="rounded-[14px] bg-surface p-1.5 shadow-raised outline-offset-2 outline-foreground has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-solid"
         onPointerDown={(e) => {
           const target = e.target as HTMLElement;
           if (target !== e.currentTarget && !target.dataset.fill) return;
@@ -200,7 +200,7 @@ export function TagInput({
                         inputRef.current?.focus();
                       }}
                       className={cn(
-                        "relative flex size-6 shrink-0 items-center justify-center rounded-md outline-hidden transition-[scale,color,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+                        "relative flex size-6 shrink-0 items-center justify-center rounded-md outline-hidden transition-[scale,color,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96]",
                         // Grows the hit area to 32px without growing the icon.
                         "after:absolute after:-inset-1",
                         armed === i
