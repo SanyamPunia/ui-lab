@@ -114,6 +114,26 @@ import ContributionHeatmapDemo from "./components/contribution-heatmap";
 import DonutChartDemo from "./components/donut-chart";
 import StatCounterDemo from "./components/stat-counter";
 import LeaderboardDemo from "./components/leaderboard";
+import RotaryDialDemo from "./components/rotary-dial";
+import TapeMeasureDemo from "./components/tape-measure";
+import PullCordSwitchDemo from "./components/pull-cord-switch";
+import CombinationLockDemo from "./components/combination-lock";
+import RubberStampDemo from "./components/rubber-stamp";
+import StickyNotePeelDemo from "./components/sticky-note-peel";
+import ReceiptPrinterDemo from "./components/receipt-printer";
+import TearOffCalendarDemo from "./components/tear-off-calendar";
+import BalanceScaleDemo from "./components/balance-scale";
+import TallyCounterDemo from "./components/tally-counter";
+import InkWellDemo from "./components/ink-well";
+import TypingSeismographDemo from "./components/typing-seismograph";
+import EnvelopeSendDemo from "./components/envelope-send";
+import PaperShredderDemo from "./components/paper-shredder";
+import TipJarDemo from "./components/tip-jar";
+import ZipperRevealDemo from "./components/zipper-reveal";
+import CassetteScrubberDemo from "./components/cassette-scrubber";
+import BubbleWrapDemo from "./components/bubble-wrap";
+import SundialPickerDemo from "./components/sundial-picker";
+import FoldedMapDemo from "./components/folded-map";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -234,5 +254,25 @@ export const previews: Record<string, ComponentType> = {
   "donut-chart": DonutChartDemo,
   "stat-counter": StatCounterDemo,
   "leaderboard": LeaderboardDemo,
+  "rotary-dial": RotaryDialDemo,
+  "tape-measure": TapeMeasureDemo,
+  "pull-cord-switch": PullCordSwitchDemo,
+  "combination-lock": CombinationLockDemo,
+  "rubber-stamp": RubberStampDemo,
+  "sticky-note-peel": StickyNotePeelDemo,
+  "receipt-printer": ReceiptPrinterDemo,
+  "tear-off-calendar": TearOffCalendarDemo,
+  "balance-scale": BalanceScaleDemo,
+  "tally-counter": TallyCounterDemo,
+  "ink-well": InkWellDemo,
+  "typing-seismograph": TypingSeismographDemo,
+  "envelope-send": EnvelopeSendDemo,
+  "paper-shredder": PaperShredderDemo,
+  "tip-jar": TipJarDemo,
+  "zipper-reveal": ZipperRevealDemo,
+  "cassette-scrubber": CassetteScrubberDemo,
+  "bubble-wrap": BubbleWrapDemo,
+  "sundial-picker": SundialPickerDemo,
+  "folded-map": FoldedMapDemo,
   // new-component:entries
 };

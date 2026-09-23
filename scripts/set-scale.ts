@@ -12,7 +12,7 @@ for (const [slug, [w, h]] of Object.entries(sizes)) {
   // Rounded down to 0.05 so the preview always has a little margin.
   const scale = fit >= 1 ? null : Math.floor(fit * 20) / 20;
   const entry = new RegExp(
-    `(    slug: "${slug}",\\n    name: "[^"]*",\\n    description:\\s*"[^"]*",\\n(?:    keywords:\\s*"[^"]*",\\n)?)(    previewScale: [\\d.]+,\\n)?`,
+    `(    slug: "${slug}",\\n(?:    isNew: true,\\n)?    name: "[^"]*",\\n    description:\\s*"[^"]*",\\n(?:    keywords:\\s*"[^"]*",\\n)?)(    previewScale: [\\d.]+,\\n)?`,
   );
   if (!entry.test(source)) throw new Error(`entry not found: ${slug}`);
   source = source.replace(

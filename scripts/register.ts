@@ -11,7 +11,7 @@ const entries: {
 let source = await Bun.file(file).text();
 for (const e of entries) {
   const pattern = new RegExp(
-    `(    slug: "${e.slug}",\\n    name: "[^"]*",\\n)    description: "",\\n`,
+    `(    slug: "${e.slug}",\\n(?:    isNew: true,\\n)?    name: "[^"]*",\\n)    description: "",\\n`,
   );
   if (!pattern.test(source)) throw new Error(`no empty entry for ${e.slug}`);
   const extra =
