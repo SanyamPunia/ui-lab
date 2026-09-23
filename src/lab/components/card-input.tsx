@@ -39,11 +39,13 @@ const BRANDS: Record<Brand, BrandSpec> = {
     gaps: [4, 8, 12, 16],
     cvc: 3,
   },
-  // Until the prefix is known, accept anything a real network might issue.
+  // An unrecognised prefix stops at 16, the length nearly every card has.
+  // Only a network known to issue longer numbers, like Visa or Discover,
+  // lets the field run on to 19, so a typo never spills past the card.
   unknown: {
     name: "Card",
     test: /^/,
-    lengths: [16, 12, 13, 14, 15, 17, 18, 19],
+    lengths: [16, 12, 13, 14, 15],
     gaps: [4, 8, 12, 16],
     cvc: 3,
   },
