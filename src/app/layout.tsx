@@ -82,10 +82,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="flex min-h-full flex-col">
-        {children}
-        <LabSidebar />
-        <SiteFooter />
+      <body className="min-h-full">
+        {/* Sidebar and page side by side on wide screens; the page column
+            carries its own header, content and footer. */}
+        <div className="flex min-h-dvh">
+          <LabSidebar />
+          <div className="flex min-w-0 flex-1 flex-col">
+            {children}
+            <SiteFooter />
+          </div>
+        </div>
         <Analytics />
       </body>
     </html>

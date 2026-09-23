@@ -68,14 +68,17 @@ export default function Home() {
       <JsonLd data={jsonLd} />
       <SiteHeader />
       <ScrollMemory />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-10 pb-16 sm:px-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-12 pb-16 sm:px-6 sm:pt-16">
         {/* Says plainly what the page is, for people and for the search and
             answer engines that quote it. */}
-        <div className="mb-10">
-          <h1 className="text-xl font-medium tracking-tight text-balance">
+        <div className="mb-12">
+          <p className="text-sm font-medium text-muted">
+            ui lab <span className="text-border">/</span> by xevrion
+          </p>
+          <h1 className="mt-3 max-w-2xl text-3xl leading-[1.15] font-semibold tracking-tight text-balance sm:text-[40px]">
             Things I made because I liked how they felt
           </h1>
-          <p className="mt-2 max-w-xl text-sm text-pretty text-muted">
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-pretty text-muted">
             Not a library, just a lab. Small interaction
             experiments I built in React while learning motion and detail.
             Each one has a live demo and its source, if you want to see how

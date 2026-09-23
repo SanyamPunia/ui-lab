@@ -1,30 +1,20 @@
-import { categories, lab } from "@/lab/registry";
+import Link from "next/link";
+import { groups } from "@/lab/order";
 import { SidebarLink } from "./sidebar-link";
 
-// Every piece in the lab, grouped the same way as the index filters and
-// alphabetical within each group, so it works as a table of contents. Only
-// on screens wide enough to hold it beside the centred content.
-export function LabSidebar() {
-  const groups = categories.map((c) => ({
-    ...c,
-    items: lab
-      .filter((e) => e.category === c.id)
-      .sort((a, b) => a.name.localeCompare(b.name)),
-  }));
-
+// The list itself, shared by the desktop column and the phone menu.
+export function SidebarNav() {
   return (
-    <nav
-      aria-label="All components"
-      // Fades at both ends, so the list reads as scrolling on under the
-      // header rather than being cut by it.
-      className="fixed top-14 bottom-0 left-0 hidden w-60 overflow-y-auto overscroll-contain px-4 pt-6 pb-16 [mask-image:linear-gradient(to_bottom,transparent,black_24px,black_calc(100%-48px),transparent)] [scrollbar-width:none] xl:block [&::-webkit-scrollbar]:hidden"
-    >
+    <div className="flex flex-col gap-7">
       {groups.map((g) => (
-        <div key={g.id} className="mb-6">
-          <p className="mb-1.5 px-2 text-xs font-medium text-muted">
+        <div key={g.id}>
+          <p className="mb-1.5 flex items-baseline justify-between px-3 text-xs font-medium text-muted">
             {g.label}
+            <span className="font-normal tabular-nums opacity-70">
+              {g.items.length}
+            </span>
           </p>
-          <ul>
+          <ul className="flex flex-col">
             {g.items.map((e) => (
               <li key={e.slug}>
                 <SidebarLink slug={e.slug} name={e.name} isNew={e.isNew} />
@@ -33,6 +23,33 @@ export function LabSidebar() {
           </ul>
         </div>
       ))}
-    </nav>
+    </div>
+  );
+}
+
+// A real column on wide screens: full height, its own scroll, one hairline
+// between it and the work.
+export function LabSidebar() {
+  return (
+    <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border lg:flex">
+      <Link
+        href="/"
+        scroll={false}
+        className="flex h-14 shrink-0 items-baseline gap-2 border-b border-border px-6 pt-[19px] outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-foreground"
+      >
+        <span className="text-[15px] font-semibold tracking-tight text-foreground">
+          ui lab
+        </span>
+        <span className="text-[13px] text-muted">by xevrion</span>
+      </Link>
+      <nav
+        aria-label="All components"
+        // Fades at both ends, so the list reads as continuing out of view
+        // rather than being cut.
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pt-6 pb-12 [mask-image:linear-gradient(to_bottom,transparent,black_20px,black_calc(100%-40px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <SidebarNav />
+      </nav>
+    </aside>
   );
 }

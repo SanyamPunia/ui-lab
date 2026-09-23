@@ -1,17 +1,17 @@
 import Link from "next/link";
-import { NewMark } from "./new-mark";
+import { SidebarNav } from "./lab-sidebar";
+import { MobileNav } from "./mobile-nav";
 import { ThemeToggle } from "./theme-toggle";
 
-export function SiteHeader({
-  title,
-  isNew,
-}: {
-  title?: string;
-  isNew?: boolean;
-}) {
+// Sticks to the top of the page column, with a hairline under it matching
+// the sidebar's brand row, so the two read as one frame.
+export function SiteHeader({ title }: { title?: string }) {
   return (
-    <header className="flex h-14 items-center justify-between px-4 sm:px-6">
-      <nav className="flex items-center gap-2 text-sm">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
+      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm">
+        <MobileNav>
+          <SidebarNav />
+        </MobileNav>
         <Link
           href="/"
           // The index restores its own scroll position, so Next shouldn't
@@ -19,20 +19,20 @@ export function SiteHeader({
           scroll={false}
           className={
             title
-              ? "text-muted transition-[color] duration-150 ease-out hover:text-foreground"
+              ? "shrink-0 text-muted transition-[color] duration-150 ease-out hover:text-foreground"
               : "font-medium"
           }
         >
-          Lab
+          {/* On wide screens the sidebar already carries the name. */}
+          <span className="lg:hidden">ui lab</span>
+          <span className="hidden lg:inline">Lab</span>
         </Link>
         {title && (
           <>
             <span aria-hidden className="text-border">
               /
             </span>
-            {/* The page's heading, sized to sit in the breadcrumb. */}
-            <h1 className="font-medium">{title}</h1>
-            {isNew && <NewMark className="ml-1" />}
+            <span className="truncate font-medium">{title}</span>
           </>
         )}
       </nav>
