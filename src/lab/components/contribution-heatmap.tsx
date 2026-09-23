@@ -146,7 +146,9 @@ export function ContributionHeatmap({
   return (
     <div
       ref={wrapRef}
-      className={cn("relative flex w-[720px] max-w-full text-xs text-muted", className)}
+      // Sized to its content rather than a fixed width, so it only scrolls
+      // when the screen is genuinely too narrow for the year.
+      className={cn("relative flex w-fit max-w-full text-xs text-muted", className)}
     >
       {/* Stays put while the weeks scroll, so rows keep their names. */}
       <div aria-hidden className="mt-[23px] mr-[5px] flex shrink-0 flex-col">
@@ -357,7 +359,7 @@ const TOTAL = YEAR.reduce((sum, d) => sum + d.count, 0);
 
 export default function ContributionHeatmapDemo() {
   return (
-    <div className="flex w-[720px] max-w-full flex-col gap-4">
+    <div className="flex w-fit max-w-full flex-col gap-4">
       <p className="text-[15px] text-muted">
         <span className="font-semibold text-foreground tabular-nums">{number.format(TOTAL)}</span>{" "}
         contributions in the last year
