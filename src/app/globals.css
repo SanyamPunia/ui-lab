@@ -21,6 +21,9 @@
   --muted: light-dark(#737373, #8f8f8f);
   /* Deeper in light mode so white text on it clears 4.5:1 (5.2 vs 3.9). */
   --danger: light-dark(#ce2c31, #e5484d);
+  /* Red pen ink for hand-drawn annotations, like the "new" mark. Kept apart
+     from danger so neither changes the other's meaning. */
+  --marker: light-dark(#d93d31, #ff6b5f);
   --shadow-raised:
     0 0 0 1px light-dark(oklch(0 0 0 / 0.06), oklch(1 0 0 / 0.08)),
     0 1px 2px light-dark(oklch(0 0 0 / 0.06), oklch(0 0 0 / 0.4)),
@@ -45,6 +48,7 @@
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-danger: var(--danger);
+  --color-marker: var(--marker);
   --shadow-raised: var(--shadow-raised);
   --shadow-wheel: var(--shadow-wheel);
   --font-sans: var(--font-geist-sans);

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { LabSearch } from "@/components/lab-search";
+import { NewMark } from "@/components/new-mark";
 import { ScrollMemory } from "@/components/scroll-memory";
 import { SiteHeader } from "@/components/site-header";
 import { SourceLink } from "@/components/source-link";
@@ -8,6 +9,11 @@ import { previews } from "@/lab/previews";
 import { lab } from "@/lab/registry";
 import { cn } from "@/lib/cn";
 import { absoluteUrl, labPath, site } from "@/lib/site";
+
+// The newest batch leads, so returning visitors see it without scrolling
+// past everything they've seen before. Search matches cards by position, so
+// its entries come from this same list.
+const shown = [...lab.filter((e) => e.isNew), ...lab.filter((e) => !e.isNew)];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -73,13 +79,13 @@ export default function Home() {
           </p>
         </div>
         <LabSearch
-          entries={lab.map(({ name, description, keywords }) => ({
+          entries={shown.map(({ name, description, keywords }) => ({
             name,
             description,
             keywords,
           }))}
         >
-          {lab.map(({ slug, name, description, previewScale, previewCrop }) => {
+          {shown.map(({ slug, name, description, previewScale, previewCrop, isNew }) => {
             const Preview = previews[slug];
             return (
               <li key={slug} className="group/card relative">
@@ -122,7 +128,11 @@ export default function Home() {
                   </div>
                   <div className="px-2 pt-3 pb-1">
                     {/* Right padding leaves room for the source link. */}
-                    <p className="pr-20 text-sm font-medium">{name}</p>
+                    <p className="pr-20 text-sm font-medium">
+                      {/* The space keeps "new" a separate word for screen
+                          readers and search snippets. */}
+                      {name} {isNew && <NewMark className="ml-1" />}
+                    </p>
                     <p className="mt-0.5 text-sm text-pretty text-muted">
                       {description}
                     </p>

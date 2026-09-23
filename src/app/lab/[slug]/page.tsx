@@ -104,7 +104,7 @@ export default async function LabPage({ params }: PageProps<"/lab/[slug]">) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <SiteHeader title={entry.name} />
+      <SiteHeader title={entry.name} isNew={entry.isNew} />
       <main className="flex flex-1 flex-col">
         {/* Clipped sideways so thrown or dragged demos can't widen the page.
             `clip` rather than `hidden`, which would make this a scroll box. */}

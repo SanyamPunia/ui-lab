@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { NewMark } from "./new-mark";
 import { ThemeToggle } from "./theme-toggle";
 
-export function SiteHeader({ title }: { title?: string }) {
+export function SiteHeader({
+  title,
+  isNew,
+}: {
+  title?: string;
+  isNew?: boolean;
+}) {
   return (
     <header className="flex h-14 items-center justify-between px-4 sm:px-6">
       <nav className="flex items-center gap-2 text-sm">
@@ -25,6 +32,7 @@ export function SiteHeader({ title }: { title?: string }) {
             </span>
             {/* The page's heading, sized to sit in the breadcrumb. */}
             <h1 className="font-medium">{title}</h1>
+            {isNew && <NewMark className="ml-1" />}
           </>
         )}
       </nav>
