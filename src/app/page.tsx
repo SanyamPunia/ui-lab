@@ -88,14 +88,13 @@ export default function Home() {
           {shown.map(({ slug, name, description, previewScale, previewCrop, isNew }) => {
             const Preview = previews[slug];
             return (
-              <li key={slug} className="group/card relative">
-                <Link
-                  href={`/lab/${slug}`}
-                  // Named, because demos use plain group-hover for their own
-                  // hover states; an unnamed group here would trigger all of
-                  // them whenever the card is hovered.
-                  className="group/preview block h-full rounded-[20px] bg-background p-2 shadow-raised transition-[background-color] duration-150 ease-out hover:bg-surface"
-                >
+              <li
+                key={slug}
+                // Named groups, because demos use plain group-hover for their
+                // own hover states; an unnamed group here would trigger all of
+                // them whenever the card is hovered.
+                className="group/card group/preview relative rounded-[20px] bg-background p-2 shadow-raised transition-[background-color] duration-150 ease-out hover:bg-surface"
+              >
                   {/* Offscreen previews skip rendering until scrolled near, so
                       the index doesn't paint every live demo at once. It sits
                       here rather than on the card because it clips like
@@ -129,24 +128,34 @@ export default function Home() {
                   <div className="px-2 pt-3 pb-1">
                     {/* Right padding leaves room for the source link. */}
                     <p className="pr-20 text-sm font-medium">
+                      {/* The title is the card's link, stretched over the
+                          whole card by its ::after. Wrapping the card in the
+                          link instead would nest any link inside a demo in
+                          another link, which is invalid HTML and breaks
+                          hydration. */}
+                      <Link
+                        href={`/lab/${slug}`}
+                        className="outline-hidden after:absolute after:inset-0 after:rounded-[20px] focus-visible:after:outline-2 focus-visible:after:outline-solid focus-visible:after:outline-offset-2 focus-visible:after:outline-foreground"
+                      >
+                        {name}
+                      </Link>
                       {/* The space keeps "new" a separate word for screen
-                          readers and search snippets. */}
-                      {name} {isNew && <NewMark className="ml-1" />}
+                          readers and search snippets. */}{" "}
+                      {isNew && <NewMark className="ml-1" />}
                     </p>
                     <p className="mt-0.5 text-sm text-pretty text-muted">
                       {description}
                     </p>
                   </div>
-                </Link>
-                {/* Beside the card link rather than inside it, since links can't
-                    nest. It sits on the title line, below the preview, so no
-                    demo can ever run into it: 8px padding + 224px preview +
-                    12px gap puts the title 244px down, and 242 centers the
-                    24px link on its 20px line. */}
+                {/* Above the stretched card link, so it stays its own target.
+                    It sits on the title line, below the preview, so no demo
+                    can ever run into it: 8px padding + 224px preview + 12px
+                    gap puts the title 244px down, and 242 centers the 24px
+                    link on its 20px line. */}
                 <SourceLink
                   slug={slug}
                   name={name}
-                  className="absolute top-[242px] right-3 px-1.5 py-1 text-xs group-hover/card:text-foreground"
+                  className="absolute top-[242px] right-3 z-10 px-1.5 py-1 text-xs group-hover/card:text-foreground"
                 />
               </li>
             );
