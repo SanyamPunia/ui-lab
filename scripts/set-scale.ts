@@ -15,7 +15,7 @@ for (const [slug, [w, h, max = 1]] of Object.entries(sizes)) {
   const scale = rounded === 1 ? null : rounded;
   const entry = new RegExp(
     // Strings may hold escaped quotes, like a description that quotes UI text.
-    `(    slug: "${slug}",\\n(?:    isNew: true,\\n)?    name: "[^"]*",\\n    description:\\s*"(?:[^"\\\\]|\\\\.)*",\\n(?:    keywords:\\s*"[^"]*",\\n)?)(    previewScale: [\\d.]+,\\n)?`,
+    `(    slug: "${slug}",\\n(?:    isNew: true,\\n)?    name: "[^"]*",\\n(?:    category: "[^"]*",\\n)?    description:\\s*"(?:[^"\\\\]|\\\\.)*",\\n(?:    keywords:\\s*"[^"]*",\\n)?)(    previewScale: [\\d.]+,\\n)?`,
   );
   if (!entry.test(source)) throw new Error(`entry not found: ${slug}`);
   source = source.replace(

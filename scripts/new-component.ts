@@ -1,10 +1,20 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
+import { categories } from "../src/lab/registry";
+
 const slug = process.argv[2];
+// Which index filter it belongs to; see `categories` in the registry.
+const category = process.argv[3] ?? "cards";
 
 if (!slug || !/^[a-z][a-z0-9-]*$/.test(slug)) {
-  console.error("usage: bun run new <kebab-case-name>");
+  console.error("usage: bun run new <kebab-case-name> [category]");
+  process.exit(1);
+}
+if (!categories.some((c) => c.id === category)) {
+  console.error(
+    `unknown category "${category}"; use one of: ${categories.map((c) => c.id).join(", ")}`,
+  );
   process.exit(1);
 }
 
@@ -51,6 +61,7 @@ await insert(registry, [
     `  {
     slug: "${slug}",
     name: "${name}",
+    category: "${category}",
     description: "",
   },`,
   ],

@@ -1,12 +1,12 @@
-import { lab, type LabEntry } from "@/lab/registry";
+import type { LabEntry } from "@/lab/registry";
 
 // One place for the facts every metadata file, OG image and JSON-LD block
 // repeats, so the title in a share card never drifts from the page title.
 export const site = {
   url: "https://lab.xevrion.dev",
   name: "ui lab",
-  tagline: "Interaction design components built to feel right",
-  description: `${lab.length} React interaction components built with Tailwind CSS and Motion: smooth animation, keyboard support, light and dark themes, and source for each.`,
+  tagline: "Small interaction experiments, made because they felt right",
+  description: `A personal lab by Yash Bavadiya: small interaction experiments in React, Tailwind CSS and Motion, each with a live demo and its source. Not a library, just things I liked making.`,
   repo: "https://github.com/xevrion/ui-lab",
   locale: "en_US",
   author: {
@@ -35,7 +35,7 @@ export function labPath(slug: string) {
 // plain, accurate suffix while long ones are left alone.
 export function entryDescription({ description }: LabEntry) {
   const suffix =
-    " A React interaction component built with Tailwind CSS and Motion, with its source on GitHub.";
+    " An interaction experiment from Yash Bavadiya's ui lab, with its source on GitHub.";
   return description.length + suffix.length <= 170
     ? description + suffix
     : description;

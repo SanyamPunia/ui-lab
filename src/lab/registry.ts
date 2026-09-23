@@ -1,8 +1,26 @@
 // Metadata only. Component code lives in demos.ts, so pages that need just
 // a name or description never pull in every demo.
+
+// The index's filters, in the order they're offered. Text comes last on
+// purpose: those previews are words on a card, so the livelier ones lead.
+export const categories = [
+  { id: "buttons", label: "Buttons" },
+  { id: "inputs", label: "Inputs" },
+  { id: "navigation", label: "Navigation" },
+  { id: "feedback", label: "Feedback" },
+  { id: "data", label: "Data" },
+  { id: "cards", label: "Cards & media" },
+  { id: "objects", label: "Objects" },
+  { id: "playground", label: "Playground" },
+  { id: "text", label: "Text" },
+] as const;
+
+export type Category = (typeof categories)[number]["id"];
+
 export type LabEntry = {
   slug: string;
   name: string;
+  category: Category;
   description: string;
   // Searched but never shown: the gestures and synonyms people type, like
   // "drag" or "wizard", that a description doesn't always mention.
@@ -27,6 +45,7 @@ export const lab: LabEntry[] = [
   {
     slug: "odometer",
     name: "Odometer",
+    category: "data",
     description:
       "Rolls forward like a mechanical counter and wraps from 999 back to 000.",
     keywords: "counter number digits rolling increment",
@@ -34,6 +53,7 @@ export const lab: LabEntry[] = [
   {
     slug: "hold-to-delete",
     name: "Hold to delete",
+    category: "buttons",
     description:
       "Fills slowly while you commit to it, snaps back the moment you let go.",
     keywords: "button long press confirm destructive clip-path",
@@ -42,6 +62,7 @@ export const lab: LabEntry[] = [
   {
     slug: "segmented-control",
     name: "Segmented control",
+    category: "navigation",
     description:
       "The pill stretches toward your pick like an inchworm, recoloring each label as its edge crosses.",
     keywords: "tabs toggle switcher radio",
@@ -49,6 +70,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tilt-card",
     name: "Tilt card",
+    category: "cards",
     description:
       "Leans toward your cursor with a glare that follows the light.",
     keywords: "3d hover parallax glare reflection",
@@ -57,6 +79,7 @@ export const lab: LabEntry[] = [
   {
     slug: "dock",
     name: "Dock",
+    category: "navigation",
     description:
       "Icons swell as your cursor nears them, and launch with a macOS-style bounce.",
     keywords: "macos magnify icons hover spring toolbar",
@@ -64,6 +87,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sheet",
     name: "Sheet",
+    category: "feedback",
     description:
       "Drag it down or flick it away; pull it up and it pushes back.",
     keywords: "drawer bottom sheet modal drag swipe dismiss gesture",
@@ -72,6 +96,7 @@ export const lab: LabEntry[] = [
   {
     slug: "toast-stack",
     name: "Toast stack",
+    category: "feedback",
     description:
       "Stacks with depth, fans out on hover, and each toast's edge drains as its timer.",
     keywords: "notification toast sonner swipe drag stack",
@@ -80,6 +105,7 @@ export const lab: LabEntry[] = [
   {
     slug: "elastic-slider",
     name: "Elastic slider",
+    category: "inputs",
     description:
       "Stretches like rubber when you drag past the end, then springs back.",
     keywords: "volume slider rubber band drag mute range",
@@ -88,6 +114,7 @@ export const lab: LabEntry[] = [
   {
     slug: "magnetic-button",
     name: "Magnetic button",
+    category: "buttons",
     description:
       "Stretches toward your cursor like soft rubber on a magnet, then wobbles home.",
     keywords: "button hover cursor pull spring",
@@ -96,6 +123,7 @@ export const lab: LabEntry[] = [
   {
     slug: "text-scramble",
     name: "Text scramble",
+    category: "text",
     description:
       "Hover a word and a block cursor reads it in, one letter at a time.",
     keywords: "text hover decode glitch letters",
@@ -103,6 +131,7 @@ export const lab: LabEntry[] = [
   {
     slug: "swipe-deck",
     name: "Swipe deck",
+    category: "cards",
     description: "Fling a card away and the rest of the deck steps forward.",
     keywords: "cards drag swipe fling tinder gesture stack",
     previewScale: 0.5,
@@ -110,6 +139,7 @@ export const lab: LabEntry[] = [
   {
     slug: "scroll-reveal",
     name: "Scroll reveal",
+    category: "text",
     description: "Words light up one by one as you scroll through them.",
     keywords: "scroll text words reveal scroll-driven",
     previewScale: 0.55,
@@ -117,6 +147,7 @@ export const lab: LabEntry[] = [
   {
     slug: "copy-button",
     name: "Copy button",
+    category: "buttons",
     description: "The two pages merge into one before a check draws itself in.",
     keywords: "clipboard copy button icon feedback",
     previewScale: 1.4,
@@ -124,6 +155,7 @@ export const lab: LabEntry[] = [
   {
     slug: "expanding-search",
     name: "Expanding search",
+    category: "inputs",
     description:
       "Opens from a circle into a search field, and closes faster than it opens.",
     keywords: "search input morph expand shortcut",
@@ -131,6 +163,7 @@ export const lab: LabEntry[] = [
   {
     slug: "accordion",
     name: "Accordion",
+    category: "navigation",
     description:
       "Answers unfold from under their question like a folded flap, and the row you clicked never moves.",
     keywords: "disclosure faq collapse expand",
@@ -140,6 +173,7 @@ export const lab: LabEntry[] = [
   {
     slug: "expanding-card",
     name: "Expanding card",
+    category: "cards",
     description:
       "Grows from its slot into a detail view and folds back when you are done.",
     keywords: "shared layout morph modal dialog layoutid",
@@ -148,6 +182,7 @@ export const lab: LabEntry[] = [
   {
     slug: "otp-input",
     name: "OTP input",
+    category: "inputs",
     description:
       "Six slots mirror one real input, so paste and SMS autofill just work.",
     keywords: "code one-time password input verification pin",
@@ -155,6 +190,7 @@ export const lab: LabEntry[] = [
   {
     slug: "toggle-switch",
     name: "Toggle switch",
+    category: "buttons",
     description:
       "Leans into the move when pressed, then springs across and squashes on landing.",
     keywords: "switch toggle checkbox squash stretch drag",
@@ -163,12 +199,14 @@ export const lab: LabEntry[] = [
   {
     slug: "command-palette",
     name: "Command palette",
+    category: "navigation",
     description: "Opens on ⌘K and filters commands as you type.",
     keywords: "cmdk command menu search keyboard shortcut",
   },
   {
     slug: "marquee",
     name: "Marquee",
+    category: "text",
     description:
       "Drifts endlessly past a reading lens, and brakes gently when you hover.",
     keywords: "ticker scroll loop infinite",
@@ -177,6 +215,7 @@ export const lab: LabEntry[] = [
   {
     slug: "reorder-list",
     name: "Reorder list",
+    category: "cards",
     description:
       "Picks rows up by the handle and slides the rest out of the way.",
     keywords: "drag reorder sortable list",
@@ -185,6 +224,7 @@ export const lab: LabEntry[] = [
   {
     slug: "compare-slider",
     name: "Compare slider",
+    category: "cards",
     description: "Drag the line to see what polish actually changes.",
     keywords: "before after compare drag clip-path",
     previewScale: 0.6,
@@ -192,6 +232,7 @@ export const lab: LabEntry[] = [
   {
     slug: "multi-step-form",
     name: "Multi-step form",
+    category: "inputs",
     description: "Slides between steps while the card grows around each one.",
     keywords: "wizard steps form onboarding",
     previewScale: 0.4,
@@ -199,6 +240,7 @@ export const lab: LabEntry[] = [
   {
     slug: "upload-button",
     name: "Upload button",
+    category: "buttons",
     description: "Shrinks into a progress ring, fills, then checks off.",
     keywords: "upload progress ring button loading",
     previewScale: 1.4,
@@ -206,6 +248,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tooltip-group",
     name: "Tooltip group",
+    category: "feedback",
     description:
       "One tooltip slides from button to button and reshapes around each label.",
     keywords: "tooltip toolbar delay hover",
@@ -213,6 +256,7 @@ export const lab: LabEntry[] = [
   {
     slug: "dropdown-menu",
     name: "Dropdown menu",
+    category: "navigation",
     description:
       "Grows out of its trigger, and press, drag, release picks an item like a native menu.",
     keywords: "menu popover dropdown options",
@@ -221,6 +265,7 @@ export const lab: LabEntry[] = [
   {
     slug: "dynamic-island",
     name: "Dynamic island",
+    category: "feedback",
     description:
       "Morphs between live states with a springy, Apple-style bounce.",
     keywords: "iphone island morph pill notification music",
@@ -229,6 +274,7 @@ export const lab: LabEntry[] = [
   {
     slug: "scrub-input",
     name: "Scrub input",
+    category: "inputs",
     description:
       "Drag the label and a tape measure runs under the needle, or just type.",
     keywords: "number input drag scrub figma",
@@ -237,12 +283,14 @@ export const lab: LabEntry[] = [
   {
     slug: "star-rating",
     name: "Star rating",
+    category: "inputs",
     description: "Hover to preview, click to commit with a little pop.",
     keywords: "rating stars review",
   },
   {
     slug: "like-button",
     name: "Like button",
+    category: "buttons",
     description: "Pops, bursts and rolls the count when you like.",
     keywords: "heart like particles burst",
     previewScale: 1.4,
@@ -250,6 +298,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sliding-tabs",
     name: "Sliding tabs",
+    category: "navigation",
     description:
       "An underline stretches toward the tab you pick while a soft pill follows your pointer.",
     keywords: "tabs underline navigation layoutid",
@@ -258,6 +307,7 @@ export const lab: LabEntry[] = [
   {
     slug: "page-dots",
     name: "Page dots",
+    category: "navigation",
     description:
       "A pill that inches between pages like a worm and counts down to the next.",
     keywords: "pagination carousel dots autoplay indicator",
@@ -266,6 +316,7 @@ export const lab: LabEntry[] = [
   {
     slug: "collapsible-sidebar",
     name: "Collapsible sidebar",
+    category: "navigation",
     description:
       "Folds down to an icon rail, with labels that step aside before it closes.",
     keywords: "sidebar navigation collapse nav rail",
@@ -274,6 +325,7 @@ export const lab: LabEntry[] = [
   {
     slug: "snap-carousel",
     name: "Snap carousel",
+    category: "cards",
     description:
       "Snaps cards to center, drags with the mouse, and each card acts out its motion principle.",
     keywords: "carousel slider scroll snap drag gallery",
@@ -282,6 +334,7 @@ export const lab: LabEntry[] = [
   {
     slug: "skeleton-loader",
     name: "Skeleton loader",
+    category: "feedback",
     description: "Holds the exact shape of what is coming, so nothing jumps.",
     keywords: "loading placeholder shimmer skeleton",
     previewScale: 0.65,
@@ -289,6 +342,7 @@ export const lab: LabEntry[] = [
   {
     slug: "context-menu",
     name: "Context menu",
+    category: "navigation",
     description: "Opens at your cursor and grows from it.",
     keywords: "right click menu contextmenu long press",
     previewScale: 0.6,
@@ -296,6 +350,7 @@ export const lab: LabEntry[] = [
   {
     slug: "notification-bell",
     name: "Notification bell",
+    category: "feedback",
     description:
       "Rings when something new arrives, and the badge rolls up with each one.",
     keywords: "notifications badge bell alert inbox",
@@ -304,6 +359,7 @@ export const lab: LabEntry[] = [
   {
     slug: "avatar-stack",
     name: "Avatar stack",
+    category: "cards",
     description:
       "Fans open when you reach for it, with a name above each face.",
     keywords: "avatars people users team faces",
@@ -311,6 +367,7 @@ export const lab: LabEntry[] = [
   {
     slug: "morphing-button",
     name: "Morphing button",
+    category: "buttons",
     description:
       "Shrinks into a spinner while it saves, then answers with a check or a shake.",
     keywords: "button loading success error submit save",
@@ -319,6 +376,7 @@ export const lab: LabEntry[] = [
   {
     slug: "kanban-board",
     name: "Kanban board",
+    category: "data",
     description: "Lift a card and the others slide aside to make room for it.",
     keywords: "kanban drag board columns tasks trello",
     previewScale: 0.5,
@@ -326,6 +384,7 @@ export const lab: LabEntry[] = [
   {
     slug: "color-swatches",
     name: "Color swatches",
+    category: "inputs",
     description:
       "The ring glides to the color you pick and the color floods the preview from that side.",
     keywords: "color picker palette swatch theme",
@@ -334,6 +393,7 @@ export const lab: LabEntry[] = [
   {
     slug: "mini-calendar",
     name: "Mini calendar",
+    category: "inputs",
     description: "Months slide past in the direction you travel.",
     keywords: "calendar date picker month",
     previewScale: 0.5,
@@ -341,6 +401,7 @@ export const lab: LabEntry[] = [
   {
     slug: "floating-label",
     name: "Floating label",
+    category: "inputs",
     description:
       "The label peels up letter by letter, and never covers what you wrote.",
     keywords: "input label form field validation",
@@ -350,6 +411,7 @@ export const lab: LabEntry[] = [
   {
     slug: "password-field",
     name: "Password field",
+    category: "inputs",
     description:
       "Reveals the password with a wave of dots turning into letters; the meter fills as it gets stronger.",
     keywords: "password strength meter input form",
@@ -358,6 +420,7 @@ export const lab: LabEntry[] = [
   {
     slug: "filter-list",
     name: "Filter list",
+    category: "data",
     description:
       "Rows fade out of the way while the rest slide up to close the gap.",
     keywords: "search filter list chips",
@@ -366,6 +429,7 @@ export const lab: LabEntry[] = [
   {
     slug: "gauge",
     name: "Gauge",
+    category: "data",
     description:
       "Ticks light up as the value sweeps in, and a peak marker holds where it was before falling.",
     keywords: "meter dial chart progress",
@@ -374,6 +438,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sparkline",
     name: "Sparkline",
+    category: "data",
     description:
       "Draws itself in, then scrubs to the nearest point under your cursor.",
     keywords: "line chart graph data",
@@ -382,6 +447,7 @@ export const lab: LabEntry[] = [
   {
     slug: "bar-chart",
     name: "Bar chart",
+    category: "data",
     description:
       "Grows its bars from the baseline and springs them between two weeks.",
     keywords: "bar chart graph data",
@@ -390,6 +456,7 @@ export const lab: LabEntry[] = [
   {
     slug: "stacked-drawer",
     name: "Stacked drawer",
+    category: "feedback",
     description:
       "Stacks iOS sheets that push the page back and drag down to dismiss.",
     keywords: "ios sheet modal stack drawer drag",
@@ -398,6 +465,7 @@ export const lab: LabEntry[] = [
   {
     slug: "confetti-button",
     name: "Confetti button",
+    category: "buttons",
     description:
       "A click pops confetti; hold it and the fuse burns until the whole thing blows.",
     keywords: "celebrate confetti particles canvas",
@@ -406,6 +474,7 @@ export const lab: LabEntry[] = [
   {
     slug: "typewriter",
     name: "Typewriter",
+    category: "text",
     description:
       "Types, pauses and rewrites the last word with a human rhythm.",
     keywords: "typing text animation cursor",
@@ -413,6 +482,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tag-input",
     name: "Tag input",
+    category: "inputs",
     description: "Your typed words stay put while a chip forms around them.",
     keywords: "tags chips input multi",
     previewScale: 0.7,
@@ -421,6 +491,7 @@ export const lab: LabEntry[] = [
   {
     slug: "range-slider",
     name: "Range slider",
+    category: "inputs",
     description:
       "Two thumbs that glide, stop at each other, and show their value as you drag.",
     keywords: "range slider dual price filter drag",
@@ -429,6 +500,7 @@ export const lab: LabEntry[] = [
   {
     slug: "number-stepper",
     name: "Number stepper",
+    category: "inputs",
     description:
       "Rolls each digit the way the count moves, and speeds up the longer you hold.",
     keywords: "quantity stepper counter cart increment",
@@ -437,6 +509,7 @@ export const lab: LabEntry[] = [
   {
     slug: "select-menu",
     name: "Select menu",
+    category: "inputs",
     description:
       "Opens with your current choice sitting exactly on the button, macOS style.",
     keywords: "select dropdown listbox picker",
@@ -445,6 +518,7 @@ export const lab: LabEntry[] = [
   {
     slug: "undo-toast",
     name: "Undo toast",
+    category: "feedback",
     description:
       "Deletes instantly and gives you five seconds to change your mind.",
     keywords: "undo snackbar delete countdown",
@@ -453,6 +527,7 @@ export const lab: LabEntry[] = [
   {
     slug: "file-dropzone",
     name: "File dropzone",
+    category: "inputs",
     description:
       "Its dashed edge marches when a file enters the window and seals solid when it is overhead.",
     keywords: "upload drag drop files",
@@ -462,6 +537,7 @@ export const lab: LabEntry[] = [
   {
     slug: "chat-thread",
     name: "Chat thread",
+    category: "cards",
     description:
       "Replies arrive after a beat of typing, and the thread follows only if you are.",
     keywords: "chat messages bubbles typing",
@@ -470,6 +546,7 @@ export const lab: LabEntry[] = [
   {
     slug: "loader-set",
     name: "Loader set",
+    category: "feedback",
     description:
       "Four loaders that each know how to finish: leapfrog dots, an inchworm bar, a ring that closes into a check.",
     keywords: "loading spinner progress indicator",
@@ -478,6 +555,7 @@ export const lab: LabEntry[] = [
   {
     slug: "wheel-picker",
     name: "Wheel picker",
+    category: "inputs",
     description: "Spins through the hours on a curved drum, just like iOS.",
     keywords: "time picker ios wheel drum scroll",
     previewScale: 0.6,
@@ -485,6 +563,7 @@ export const lab: LabEntry[] = [
   {
     slug: "slide-to-confirm",
     name: "Slide to confirm",
+    category: "buttons",
     description: "Drag the knob all the way across to confirm.",
     keywords: "slide unlock drag confirm",
     previewScale: 0.85,
@@ -492,6 +571,7 @@ export const lab: LabEntry[] = [
   {
     slug: "pull-to-refresh",
     name: "Pull to refresh",
+    category: "feedback",
     description: "Pull the feed down and new posts slide in at the top.",
     keywords: "refresh feed drag mobile",
     previewScale: 0.4,
@@ -499,6 +579,7 @@ export const lab: LabEntry[] = [
   {
     slug: "hover-card",
     name: "Hover card",
+    category: "feedback",
     description: "One card travels between names as you hover them.",
     keywords: "profile preview popover hover",
     previewScale: 0.7,
@@ -506,6 +587,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tree-view",
     name: "Tree view",
+    category: "navigation",
     description:
       "Folders unfold in place while the selection glides to the file you pick.",
     keywords: "file tree folders explorer",
@@ -515,6 +597,7 @@ export const lab: LabEntry[] = [
   {
     slug: "pricing-toggle",
     name: "Pricing toggle",
+    category: "inputs",
     description:
       "Each digit rolls to its new price on its own, and new digits grow in.",
     keywords: "pricing plans billing numbers",
@@ -523,6 +606,7 @@ export const lab: LabEntry[] = [
   {
     slug: "reading-progress",
     name: "Reading progress",
+    category: "feedback",
     description:
       "A progress bar fills as you read while the time left counts down.",
     keywords: "scroll progress article reading",
@@ -531,6 +615,7 @@ export const lab: LabEntry[] = [
   {
     slug: "code-block",
     name: "Code block",
+    category: "cards",
     description:
       "Switch files with a sliding underline and copy with one click.",
     keywords: "code syntax copy tabs",
@@ -539,12 +624,14 @@ export const lab: LabEntry[] = [
   {
     slug: "wave-text",
     name: "Wave text",
+    category: "text",
     description: "Letters rise in a wave that follows your cursor.",
     keywords: "text hover wave letters",
   },
   {
     slug: "dot-grid",
     name: "Dot grid",
+    category: "playground",
     description:
       "Dots swell and part around your cursor, and a click sends a shockwave.",
     keywords: "canvas dots grid cursor interactive",
@@ -553,6 +640,7 @@ export const lab: LabEntry[] = [
   {
     slug: "spotlight-card",
     name: "Spotlight card",
+    category: "cards",
     description:
       "The cursor is a lamp: cards catch its glow and their icons cast shadows away from it.",
     keywords: "spotlight glow hover cards",
@@ -561,6 +649,7 @@ export const lab: LabEntry[] = [
   {
     slug: "story-progress",
     name: "Story progress",
+    category: "feedback",
     description: "Tap through stories, hold to pause.",
     keywords: "stories instagram progress autoplay",
     previewScale: 0.4,
@@ -568,6 +657,7 @@ export const lab: LabEntry[] = [
   {
     slug: "data-table",
     name: "Data table",
+    category: "data",
     description: "Sorts, selects and bulk-acts on rows without losing its place.",
     keywords: "grid sort checkbox bulk rows spreadsheet list select",
     previewScale: 0.5,
@@ -575,6 +665,7 @@ export const lab: LabEntry[] = [
   {
     slug: "combobox",
     name: "Combobox",
+    category: "inputs",
     description:
       "The person you pick flies out of the list and into the field.",
     keywords: "autocomplete typeahead search assign people dropdown select mention",
@@ -583,6 +674,7 @@ export const lab: LabEntry[] = [
   {
     slug: "date-range-picker",
     name: "Date range picker",
+    category: "inputs",
     description: "Paints the range as you hover, then commits it on the second click.",
     keywords: "calendar dates range booking hover filter period schedule",
     previewScale: 0.4,
@@ -590,6 +682,7 @@ export const lab: LabEntry[] = [
   {
     slug: "inline-edit",
     name: "Inline edit",
+    category: "inputs",
     description: "Edits your name and bio in place without moving a pixel.",
     keywords: "editable text profile rename click form field input",
     previewScale: 0.75,
@@ -598,6 +691,7 @@ export const lab: LabEntry[] = [
   {
     slug: "dialog",
     name: "Dialog",
+    category: "feedback",
     description: "Opens a modal over the page, with a confirmation that stacks on top of it.",
     keywords: "modal popup overlay confirm nested alertdialog focus trap",
     previewScale: 0.75,
@@ -605,6 +699,7 @@ export const lab: LabEntry[] = [
   {
     slug: "pagination",
     name: "Pagination",
+    category: "navigation",
     description:
       "Numbers roll in place like an odometer; the one you click never moves.",
     keywords: "pager pages next previous ellipsis table navigation",
@@ -613,6 +708,7 @@ export const lab: LabEntry[] = [
   {
     slug: "announcement-banner",
     name: "Announcement banner",
+    category: "feedback",
     description: "Dismissing folds the bar away and the page slides up to fill the gap.",
     keywords: "alert bar notice top bar dismiss close collapse notification",
     previewScale: 0.6,
@@ -620,6 +716,7 @@ export const lab: LabEntry[] = [
   {
     slug: "shortcut-sheet",
     name: "Shortcut sheet",
+    category: "navigation",
     description: "Press ? anywhere to see every shortcut, then press one to watch it light up.",
     keywords: "hotkeys keybindings cheatsheet help kbd keyboard search",
     previewScale: 1.4,
@@ -627,6 +724,7 @@ export const lab: LabEntry[] = [
   {
     slug: "spring-playground",
     name: "Spring playground",
+    category: "playground",
     description: "Tune a spring and watch its overshoot and settle, plotted live.",
     keywords: "physics stiffness damping bounce drag throw chart",
     previewScale: 0.5,
@@ -636,6 +734,7 @@ export const lab: LabEntry[] = [
   {
     slug: "easing-editor",
     name: "Easing editor",
+    category: "playground",
     description: "Drag a cubic-bezier into shape and see it move.",
     keywords: "curve bezier timing function drag handles preview css",
     previewScale: 0.55,
@@ -644,6 +743,7 @@ export const lab: LabEntry[] = [
   {
     slug: "stagger-visualizer",
     name: "Stagger visualizer",
+    category: "playground",
     description: "Shows what per-item delay actually does to a list entrance.",
     keywords: "cascade sequence ripple entrance grid timeline delay",
     previewScale: 0.6,
@@ -653,6 +753,7 @@ export const lab: LabEntry[] = [
   {
     slug: "onboarding-checklist",
     name: "Onboarding checklist",
+    category: "feedback",
     description: "A setup checklist that counts up as you go and celebrates the finish.",
     keywords: "todo tasks progress ring checkbox getting started",
     previewScale: 0.45,
@@ -661,6 +762,7 @@ export const lab: LabEntry[] = [
   {
     slug: "flip-card",
     name: "Flip card",
+    category: "cards",
     description: "Turns over in 3D to show what is on the back.",
     keywords: "rotate 3d membership reveal tilt hover card flip",
     previewScale: 0.45,
@@ -668,6 +770,7 @@ export const lab: LabEntry[] = [
   {
     slug: "icon-morph",
     name: "Icon morph",
+    category: "buttons",
     description: "Icons reshape themselves between states instead of swapping.",
     keywords: "toggle svg path hamburger play pause animated icon",
     previewScale: 0.85,
@@ -675,6 +778,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sticky-stack",
     name: "Sticky stack",
+    category: "cards",
     description: "Cards pile up and sink back as you scroll.",
     keywords: "scroll sticky stacking cards parallax progress",
     previewScale: 0.4,
@@ -682,6 +786,7 @@ export const lab: LabEntry[] = [
   {
     slug: "infinite-canvas",
     name: "Infinite canvas",
+    category: "playground",
     description: "Pan, pinch and zoom around a board of notes.",
     keywords: "pan zoom pinch drag whiteboard figma momentum",
     previewScale: 0.5,
@@ -689,6 +794,7 @@ export const lab: LabEntry[] = [
   {
     slug: "drag-select",
     name: "Drag select",
+    category: "cards",
     description: "Draw a box across files to select them, like the desktop.",
     keywords: "marquee lasso multi-select rubber band finder files grid drag",
     previewScale: 0.55,
@@ -696,6 +802,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sortable-grid",
     name: "Sortable grid",
+    category: "cards",
     description: "Drag an app tile and the others slide out of its way.",
     keywords: "reorder drag and drop sortable rearrange home screen icons long-press",
     previewScale: 0.45,
@@ -703,6 +810,7 @@ export const lab: LabEntry[] = [
   {
     slug: "magnet-lines",
     name: "Magnet lines",
+    category: "playground",
     description: "Lines turn toward your cursor like iron filings near a magnet.",
     keywords: "canvas field compass hover follow pointer background interactive",
     previewScale: 0.55,
@@ -710,6 +818,7 @@ export const lab: LabEntry[] = [
   {
     slug: "morphing-nav",
     name: "Morphing nav",
+    category: "navigation",
     description: "One dropdown panel reshapes and slides as you move between menu items.",
     keywords: "mega menu dropdown navigation navbar hover header stripe",
     previewScale: 0.5,
@@ -717,6 +826,7 @@ export const lab: LabEntry[] = [
   {
     slug: "color-picker",
     name: "Color picker",
+    category: "inputs",
     description: "Drag a color out of the square, then fine-tune hue and opacity.",
     keywords: "swatch eyedropper hex hsv palette alpha drag",
     previewScale: 0.5,
@@ -724,6 +834,7 @@ export const lab: LabEntry[] = [
   {
     slug: "card-input",
     name: "Card input",
+    category: "inputs",
     description: "Formats as you type, spots the card brand, and flips to show the CVC.",
     keywords: "credit payment checkout luhn 3d flip form validation",
     previewScale: 0.75,
@@ -732,6 +843,7 @@ export const lab: LabEntry[] = [
   {
     slug: "radio-cards",
     name: "Radio cards",
+    category: "inputs",
     description: "The selection ring glides to the plan you pick.",
     keywords: "plan pricing tier radio select option subscription",
     previewScale: 0.65,
@@ -739,6 +851,7 @@ export const lab: LabEntry[] = [
   {
     slug: "checkbox-group",
     name: "Checkbox group",
+    category: "inputs",
     description: "Check marks draw themselves in, and Shift-click fills a range.",
     keywords: "checkbox select all indeterminate bulk settings notifications toggle",
     previewScale: 0.45,
@@ -746,6 +859,7 @@ export const lab: LabEntry[] = [
   {
     slug: "progress-stepper",
     name: "Progress stepper",
+    category: "feedback",
     description: "Fills the line toward the next step and unfills it in reverse.",
     keywords: "steps wizard checkout progress breadcrumb onboarding",
     previewScale: 0.6,
@@ -753,6 +867,7 @@ export const lab: LabEntry[] = [
   {
     slug: "promise-toast",
     name: "Promise toast",
+    category: "feedback",
     description: "One toast that morphs from saving to saved, or to an error with retry.",
     keywords: "toast notification loading spinner async snackbar sonner",
     previewScale: 1.4,
@@ -760,6 +875,7 @@ export const lab: LabEntry[] = [
   {
     slug: "confirm-popover",
     name: "Confirm popover",
+    category: "feedback",
     description: "Asks before deleting, from a popover that grows out of the button.",
     keywords: "confirm delete destructive dialog popconfirm danger alert",
     previewScale: 0.7,
@@ -767,6 +883,7 @@ export const lab: LabEntry[] = [
   {
     slug: "activity-timeline",
     name: "Activity timeline",
+    category: "data",
     description: "New events slide in at the top as the line grows to meet them.",
     keywords: "feed log history events notifications changelog list",
     previewScale: 0.4,
@@ -774,6 +891,7 @@ export const lab: LabEntry[] = [
   {
     slug: "breadcrumbs",
     name: "Breadcrumbs",
+    category: "navigation",
     description: "Folds the middle of a deep path into a menu when space runs out.",
     keywords: "path overflow collapse ellipsis resize navigation trail",
     previewScale: 0.6,
@@ -781,6 +899,7 @@ export const lab: LabEntry[] = [
   {
     slug: "overflow-tabs",
     name: "Overflow tabs",
+    category: "navigation",
     description: "Scrolls a long row of tabs, fading whichever edge still hides more.",
     keywords: "scroll horizontal arrows fade tablist navigation overflow",
     previewScale: 0.65,
@@ -788,6 +907,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tab-bar",
     name: "Tab bar",
+    category: "navigation",
     description: "A phone tab bar whose pill slides over and fills in the icon it lands on.",
     keywords: "mobile bottom navigation ios pill icons tap",
     previewScale: 0.35,
@@ -795,6 +915,7 @@ export const lab: LabEntry[] = [
   {
     slug: "selection-toolbar",
     name: "Selection toolbar",
+    category: "feedback",
     description: "A formatting toolbar that grows out of whatever text you select.",
     keywords: "highlight bold editor popover floating format text select",
     previewScale: 0.65,
@@ -802,6 +923,7 @@ export const lab: LabEntry[] = [
   {
     slug: "carousel-3d",
     name: "Carousel 3d",
+    category: "cards",
     description: "Spin a ring of cards and flick it to land on the one you were aiming for.",
     keywords: "3d rotate drag flick coverflow gallery slider momentum",
     previewScale: 0.6,
@@ -809,6 +931,7 @@ export const lab: LabEntry[] = [
   {
     slug: "lens-reveal",
     name: "Lens reveal",
+    category: "cards",
     description: "A lens follows your cursor and shows the specs hidden under a card.",
     keywords: "magnifier spotlight x-ray hover inspect reveal mask blueprint",
     previewScale: 0.65,
@@ -816,6 +939,7 @@ export const lab: LabEntry[] = [
   {
     slug: "elastic-string",
     name: "Elastic string",
+    category: "playground",
     description: "Pull a string and let go to watch it ring back to rest.",
     keywords: "guitar pluck spring drag pull rubber band svg physics",
     previewScale: 0.65,
@@ -823,6 +947,7 @@ export const lab: LabEntry[] = [
   {
     slug: "particle-text",
     name: "Particle text",
+    category: "text",
     description: "A word made of dots that part around your cursor and burst when clicked.",
     keywords: "canvas particles scatter explode hover typography interactive physics",
     previewScale: 0.6,
@@ -830,6 +955,7 @@ export const lab: LabEntry[] = [
   {
     slug: "theme-toggle",
     name: "Theme toggle",
+    category: "buttons",
     description: "A sun that folds its rays away and turns into a crescent moon.",
     keywords: "dark mode light mode night switch icon morph sun moon",
     previewScale: 0.85,
@@ -837,6 +963,7 @@ export const lab: LabEntry[] = [
   {
     slug: "bookmark-button",
     name: "Bookmark button",
+    category: "buttons",
     description: "Fills from the bottom up and lands with a small squash.",
     keywords: "save favorite bookmark toggle counter read later",
     previewScale: 0.7,
@@ -844,6 +971,7 @@ export const lab: LabEntry[] = [
   {
     slug: "send-button",
     name: "Send button",
+    category: "buttons",
     description: "The plane takes off along a curve, and a check lands in its place.",
     keywords: "submit message paper plane chat success confirm",
     previewScale: 0.75,
@@ -851,6 +979,7 @@ export const lab: LabEntry[] = [
   {
     slug: "download-button",
     name: "Download button",
+    category: "buttons",
     description: "The arrow drops into the tray while the button fills with progress.",
     keywords: "progress file save loading export cancel",
     previewScale: 0.65,
@@ -858,6 +987,7 @@ export const lab: LabEntry[] = [
   {
     slug: "contribution-heatmap",
     name: "Contribution heatmap",
+    category: "data",
     description: "A year of activity at a glance, sweeping in week by week.",
     keywords: "github graph calendar activity grid hover streak",
     previewScale: 0.4,
@@ -865,6 +995,7 @@ export const lab: LabEntry[] = [
   {
     slug: "donut-chart",
     name: "Donut chart",
+    category: "data",
     description: "Draws itself in, then lifts whichever slice you point at.",
     keywords: "pie chart ring hover legend breakdown percent",
     previewScale: 0.65,
@@ -872,6 +1003,7 @@ export const lab: LabEntry[] = [
   {
     slug: "stat-counter",
     name: "Stat counter",
+    category: "data",
     description:
       "Numbers count up to their value; scrub a sparkline and the figure rolls back through its history.",
     keywords: "kpi metrics dashboard cards sparkline trend refresh",
@@ -880,6 +1012,7 @@ export const lab: LabEntry[] = [
   {
     slug: "leaderboard",
     name: "Leaderboard",
+    category: "data",
     description: "Players glide past each other to their new ranks.",
     keywords: "ranking scores list reorder sort game standings",
     previewScale: 0.4,
@@ -887,6 +1020,7 @@ export const lab: LabEntry[] = [
   {
     slug: "rotary-dial",
     name: "Rotary dial",
+    category: "objects",
     description: "Drag a hole to the finger stop and each digit lands as the disc unwinds.",
     keywords: "rotary phone pin drag rotate keypad retro telephone",
     previewScale: 0.5,
@@ -894,6 +1028,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tape-measure",
     name: "Tape measure",
+    category: "objects",
     description: "Pull the blade out to measure; release the lock and it reels itself back in.",
     keywords: "ruler slider length drag centimeters measure range",
     previewScale: 0.65,
@@ -901,6 +1036,7 @@ export const lab: LabEntry[] = [
   {
     slug: "pull-cord-switch",
     name: "Pull cord switch",
+    category: "objects",
     description:
       "Pull the ball chain to switch the site's lights; light pours from the bulb as a cone.",
     keywords: "theme toggle dark mode light lamp pull chain physics view transition",
@@ -909,6 +1045,7 @@ export const lab: LabEntry[] = [
   {
     slug: "combination-lock",
     name: "Combination lock",
+    category: "objects",
     description: "Spin right, left, right to fill each number, then turn the handle to open.",
     keywords: "safe dial code knob rotate password vault",
     previewScale: 0.4,
@@ -916,6 +1053,7 @@ export const lab: LabEntry[] = [
   {
     slug: "rubber-stamp",
     name: "Rubber stamp",
+    category: "objects",
     description: "Stamps a document approved or rejected, with ink that looks pressed in.",
     keywords: "approve reject review verdict badge keyboard shortcut",
     previewScale: 0.5,
@@ -923,6 +1061,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sticky-note-peel",
     name: "Sticky note peel",
+    category: "objects",
     description: "Peel the top reminder off by its corner to mark it done.",
     keywords: "drag dismiss todo reminders stack swipe checklist",
     previewScale: 0.55,
@@ -930,6 +1069,7 @@ export const lab: LabEntry[] = [
   {
     slug: "receipt-printer",
     name: "Receipt printer",
+    category: "objects",
     description:
       "Feeds a receipt out of the slot line by line; twist it against the cutter to tear it off.",
     keywords: "receipt checkout order invoice print tear drag thermal pos",
@@ -939,6 +1079,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tear-off-calendar",
     name: "Tear off calendar",
+    category: "objects",
     description: "Tear a day off to move forward, pull one back to go back.",
     keywords: "date picker calendar day drag flick spinbutton",
     previewScale: 0.4,
@@ -946,6 +1087,7 @@ export const lab: LabEntry[] = [
   {
     slug: "balance-scale",
     name: "Balance scale",
+    category: "objects",
     description: "Weighs your pros against your cons on a balance that tips and slowly settles.",
     keywords: "decision pros cons list weight tilt verdict compare physics",
     previewScale: 0.35,
@@ -953,6 +1095,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tally-counter",
     name: "Tally counter",
+    category: "objects",
     description: "Counts in hand-drawn tally marks, one pen stroke at a time.",
     keywords: "counter stepper spinbutton increment score handwriting marks",
     previewScale: 0.65,
@@ -960,6 +1103,7 @@ export const lab: LabEntry[] = [
   {
     slug: "ink-well",
     name: "Ink well",
+    category: "objects",
     description: "Drains a glass inkwell as you spend your character limit.",
     keywords: "textarea character count limit remaining liquid meter form",
     previewScale: 0.6,
@@ -967,6 +1111,7 @@ export const lab: LabEntry[] = [
   {
     slug: "typing-seismograph",
     name: "Typing seismograph",
+    category: "objects",
     description: "Records the rhythm of your typing on a scrolling seismograph.",
     keywords: "textarea wpm typing speed canvas waveform rhythm trace",
     previewScale: 0.65,
@@ -974,6 +1119,7 @@ export const lab: LabEntry[] = [
   {
     slug: "envelope-send",
     name: "Envelope send",
+    category: "objects",
     description: "Folds your note into an envelope, seals it and sends it off.",
     keywords: "feedback form textarea submit mail letter message",
     previewScale: 0.5,
@@ -981,6 +1127,7 @@ export const lab: LabEntry[] = [
   {
     slug: "paper-shredder",
     name: "Paper shredder",
+    category: "objects",
     description: "Drag a file into the shredder and it comes out in strips.",
     keywords: "delete trash remove drag drop undo file list",
     previewScale: 0.4,
@@ -988,6 +1135,7 @@ export const lab: LabEntry[] = [
   {
     slug: "tip-jar",
     name: "Tip jar",
+    category: "objects",
     description: "Coins drop into a glass jar and pile up as the total counts.",
     keywords: "tip donate payment amount coins physics drag",
     previewScale: 0.45,
@@ -995,6 +1143,7 @@ export const lab: LabEntry[] = [
   {
     slug: "zipper-reveal",
     name: "Zipper reveal",
+    category: "objects",
     description: "Unzip the pouch to reveal the code inside.",
     keywords: "reveal secret promo coupon spoiler slider drag hidden",
     previewScale: 0.5,
@@ -1002,6 +1151,7 @@ export const lab: LabEntry[] = [
   {
     slug: "cassette-scrubber",
     name: "Cassette scrubber",
+    category: "objects",
     description: "Scrub audio by dragging the tape, with reels that spin like the real thing.",
     keywords: "audio player seek timeline drag momentum tape slider",
     previewScale: 0.55,
@@ -1009,6 +1159,7 @@ export const lab: LabEntry[] = [
   {
     slug: "bubble-wrap",
     name: "Bubble wrap",
+    category: "objects",
     description: "Pop every bubble to clear the list, one click or one long swipe.",
     keywords: "pop clear progress drag fidget checklist notifications",
     previewScale: 0.6,
@@ -1016,6 +1167,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sundial-picker",
     name: "Sundial picker",
+    category: "objects",
     description: "Pick a time by dragging the sun across the sky.",
     keywords: "time clock picker drag day schedule slider",
     previewScale: 0.5,
@@ -1023,6 +1175,7 @@ export const lab: LabEntry[] = [
   {
     slug: "folded-map",
     name: "Folded map",
+    category: "objects",
     description:
       "An itinerary that unfolds panel by panel like a paper road map, recentring as it opens.",
     keywords: "accordion 3d fold reveal trip itinerary disclosure",
@@ -1032,6 +1185,7 @@ export const lab: LabEntry[] = [
   {
     slug: "scroll-spine",
     name: "Scroll spine",
+    category: "navigation",
     description:
       "Maps the article as a spine of bands, each as long as its section, filling in as you read.",
     keywords: "table of contents toc scrollspy article nav reading position headings minimap",
@@ -1040,6 +1194,7 @@ export const lab: LabEntry[] = [
   {
     slug: "availability-badge",
     name: "Availability badge",
+    category: "feedback",
     description: "Shows when the owner is working, and when that overlaps with your day.",
     keywords: "availability status timezone working hours portfolio hire me local time",
     previewScale: 0.4,
@@ -1047,6 +1202,7 @@ export const lab: LabEntry[] = [
   {
     slug: "sidenotes",
     name: "Sidenotes",
+    category: "text",
     description: "Slides footnotes into the margin beside their sentence, and folds them inline on narrow screens.",
     keywords: "footnotes sidenotes margin notes tufte blog annotations references",
     previewScale: 0.4,
@@ -1054,6 +1210,7 @@ export const lab: LabEntry[] = [
   {
     slug: "footer-signature",
     name: "Footer signature",
+    category: "cards",
     description: "Signs the footer by hand when it scrolls into view, slowing through every loop.",
     keywords: "signature footer handwriting svg path stroke animation draw on scroll portfolio",
     previewScale: 0.4,
@@ -1061,6 +1218,7 @@ export const lab: LabEntry[] = [
   {
     slug: "changelog-stack",
     name: "Changelog stack",
+    category: "data",
     description: "Files each release card behind the stack like a hand riffling index cards.",
     keywords: "changelog release notes whats new version card stack swipe timeline",
     previewScale: 0.45,
@@ -1068,6 +1226,7 @@ export const lab: LabEntry[] = [
   {
     slug: "pricing-calculator",
     name: "Pricing calculator",
+    category: "data",
     description: "Itemizes your bill like an invoice and upgrades the plan the moment your team crosses a seat threshold.",
     keywords: "pricing calculator saas seats slider billing invoice plans",
     previewScale: 0.4,
@@ -1075,6 +1234,7 @@ export const lab: LabEntry[] = [
   {
     slug: "feature-spotlight",
     name: "Feature spotlight",
+    category: "cards",
     description: "A camera zooms into the part of the product screenshot each feature describes as you scroll past it.",
     keywords: "landing page features scroll spotlight product tour zoom sticky screenshot",
     previewScale: 0.35,
@@ -1082,6 +1242,7 @@ export const lab: LabEntry[] = [
   {
     slug: "testimonial-highlight",
     name: "Testimonial highlight",
+    category: "cards",
     description: "Swipes a highlighter across the line that sold the customer, one line at a time.",
     keywords: "testimonials quotes reviews highlighter marker carousel social proof",
     previewScale: 0.55,
@@ -1089,6 +1250,7 @@ export const lab: LabEntry[] = [
   {
     slug: "waitlist-join",
     name: "Waitlist join",
+    category: "inputs",
     description: "Drops your face into a real queue and rolls out your place in line.",
     keywords: "waitlist signup queue referral early access launch position email",
     previewScale: 0.5,
@@ -1096,6 +1258,7 @@ export const lab: LabEntry[] = [
   {
     slug: "cookie-consent",
     name: "Cookie consent",
+    category: "feedback",
     description:
       "Bakes a bite back into the cookie for every category you allow.",
     keywords: "cookie consent gdpr privacy banner switch toggle preferences",
@@ -1104,6 +1267,7 @@ export const lab: LabEntry[] = [
   {
     slug: "email-typo-fix",
     name: "Email typo fix",
+    category: "inputs",
     description: "Catches gmial.com and fixes it by moving only the letters that were wrong.",
     keywords: "email typo suggestion signup validation autocorrect domain input",
     previewScale: 0.5,
@@ -1111,6 +1275,7 @@ export const lab: LabEntry[] = [
   {
     slug: "coupon-code",
     name: "Coupon code",
+    category: "inputs",
     description: "Stamps your promo code onto the order and strikes out the price it beat.",
     keywords: "coupon promo code discount checkout order summary cart",
     previewScale: 0.4,
@@ -1119,6 +1284,7 @@ export const lab: LabEntry[] = [
   {
     slug: "code-morph",
     name: "Code morph",
+    category: "cards",
     description: "Glides every surviving token to its new spot as a tutorial moves to the next step.",
     keywords: "code diff tutorial magic move syntax steps blog",
     previewScale: 0.5,
@@ -1127,6 +1293,7 @@ export const lab: LabEntry[] = [
   {
     slug: "image-hotspots",
     name: "Image hotspots",
+    category: "cards",
     description:
       "Draws a leader line to one label card that travels between a watch's features, never covering the product.",
     keywords: "hotspots product callout annotation leader line tour ecommerce",
@@ -1135,6 +1302,7 @@ export const lab: LabEntry[] = [
   {
     slug: "quote-share",
     name: "Quote share",
+    category: "text",
     description: "Lifts the words you select out of the paragraph and into a shareable quote card.",
     keywords: "quote share selection highlight text fragment blog article",
     previewScale: 0.35,
@@ -1142,6 +1310,7 @@ export const lab: LabEntry[] = [
   {
     slug: "waveform-player",
     name: "Waveform player",
+    category: "cards",
     description: "Inks in a podcast's waveform, with chapter markers and a ghost playhead.",
     keywords: "audio podcast waveform player scrubber chapters media",
     previewScale: 0.55,
@@ -1149,6 +1318,7 @@ export const lab: LabEntry[] = [
   {
     slug: "size-picker",
     name: "Size picker",
+    category: "inputs",
     description: "Pulls a tee over a body outline so you see the fit before you pick the size.",
     keywords: "size picker clothing fit apparel ecommerce sizing product page",
     previewScale: 0.4,
@@ -1156,6 +1326,7 @@ export const lab: LabEntry[] = [
   {
     slug: "order-tracker",
     name: "Order tracker",
+    category: "data",
     description:
       "Drives a parcel across a street map to your door and stamps each stop as it arrives.",
     keywords: "order tracking delivery shipping parcel status timeline ecommerce",
@@ -1164,6 +1335,7 @@ export const lab: LabEntry[] = [
   {
     slug: "gift-wrap",
     name: "Gift wrap",
+    category: "cards",
     description: "Folds kraft paper over the cart item, ties a ribbon and bow, and asks who it's for.",
     keywords: "gift wrap cart checkout gift message ecommerce toggle bag",
     previewScale: 0.55,
@@ -1172,6 +1344,7 @@ export const lab: LabEntry[] = [
   {
     slug: "store-hours",
     name: "Store hours",
+    category: "data",
     description: "Draws the week's hours on a 24-hour scale and can redraw them in your own time zone.",
     keywords: "store hours opening hours open now business hours timezone local business schedule",
     previewScale: 0.35,
@@ -1180,6 +1353,7 @@ export const lab: LabEntry[] = [
     slug: "word-rotator",
     isNew: true,
     name: "Word rotator",
+    category: "text",
     description: "Keeps the letters two words share and glides them into place as the rest trade out.",
     keywords: "text headline rotate morph flip letters hero",
     previewScale: 0.85,
@@ -1188,6 +1362,7 @@ export const lab: LabEntry[] = [
     slug: "keycap-hint",
     isNew: true,
     name: "Keycap hint",
+    category: "navigation",
     description: "Keycaps that sink when you press the real keys.",
     keywords: "keyboard shortcut kbd keycap hint command",
     previewScale: 1.6,
@@ -1196,6 +1371,7 @@ export const lab: LabEntry[] = [
     slug: "caps-lock-warning",
     isNew: true,
     name: "Caps lock warning",
+    category: "inputs",
     description: "A small caps lock key with its light on slides into the field when caps is on.",
     keywords: "password input caps lock warning form keycap",
     previewScale: 0.95,
@@ -1204,6 +1380,7 @@ export const lab: LabEntry[] = [
     slug: "eye-toggle",
     isNew: true,
     name: "Eye toggle",
+    category: "inputs",
     description: "The eye shuts when your password is hidden and watches while you type.",
     keywords: "password eye toggle reveal show hide input",
     previewScale: 0.95,
@@ -1212,6 +1389,7 @@ export const lab: LabEntry[] = [
     slug: "relative-time",
     isNew: true,
     name: "Relative time",
+    category: "text",
     description: "Says \"4 min ago\" and changes only at the moment the words would change.",
     keywords: "time relative timestamp tooltip digits roll ticker",
     previewScale: 0.7,
@@ -1220,6 +1398,7 @@ export const lab: LabEntry[] = [
     slug: "copy-email",
     isNew: true,
     name: "Copy email",
+    category: "text",
     description: "Click the address and its letters flip, one by one, into \"Copied to clipboard\".",
     keywords: "email copy clipboard flip cascade portfolio mailto",
     previewScale: 0.9,
@@ -1228,6 +1407,7 @@ export const lab: LabEntry[] = [
     slug: "directional-underline",
     isNew: true,
     name: "Directional underline",
+    category: "text",
     description: "The underline comes in from the side your cursor entered and leaves toward the side it left.",
     keywords: "link underline hover direction nav clip-path",
     previewScale: 0.75,
@@ -1236,6 +1416,7 @@ export const lab: LabEntry[] = [
     slug: "hover-preview-link",
     isNew: true,
     name: "Hover preview link",
+    category: "text",
     description: "Hover a link to get a preview card that trails your cursor and leans as it moves.",
     keywords: "link preview hover card spring tilt velocity",
     previewScale: 0.75,
@@ -1244,6 +1425,7 @@ export const lab: LabEntry[] = [
     slug: "scribble-checkbox",
     isNew: true,
     name: "Scribble checkbox",
+    category: "inputs",
     description: "Checks itself off with a quick pen stroke and strikes the words through.",
     keywords: "checkbox todo hand-drawn strikethrough svg pen checklist",
     previewScale: 0.95,
@@ -1252,6 +1434,7 @@ export const lab: LabEntry[] = [
     slug: "focus-paragraph",
     isNew: true,
     name: "Focus paragraph",
+    category: "text",
     description: "Brings the sentence you're reading forward and lets the rest step back.",
     keywords: "reading paragraph focus hover blur dim text",
     previewScale: 0.7,
@@ -1260,6 +1443,7 @@ export const lab: LabEntry[] = [
     slug: "text-progress",
     isNew: true,
     name: "Text progress",
+    category: "text",
     description: "Fills the label itself with ink as the upload runs.",
     keywords: "progress upload clip-path text loader percent rolling",
     previewScale: 1.6,
@@ -1268,6 +1452,7 @@ export const lab: LabEntry[] = [
     slug: "spoiler-text",
     isNew: true,
     name: "Spoiler text",
+    category: "text",
     description: "Hides a spoiler under shimmering grain that blows away from your click.",
     keywords: "spoiler reveal canvas particles noise inline text",
     previewScale: 0.75,
@@ -1276,6 +1461,7 @@ export const lab: LabEntry[] = [
     slug: "badge-counter",
     isNew: true,
     name: "Badge counter",
+    category: "feedback",
     description: "Rolls its digits the way the count moved and bumps each time it changes.",
     keywords: "badge notification counter inbox unread rolling digits",
     previewScale: 1.6,
@@ -1284,6 +1470,7 @@ export const lab: LabEntry[] = [
     slug: "star-button",
     isNew: true,
     name: "Star button",
+    category: "buttons",
     description: "Spins once and throws off tiny sparks when starred, then rolls the count.",
     keywords: "star github split button count sparks",
     previewScale: 1.6,
@@ -1292,6 +1479,7 @@ export const lab: LabEntry[] = [
     slug: "follow-button",
     isNew: true,
     name: "Follow button",
+    category: "buttons",
     description: "Turns its plus into a check as you follow, and warns before you unfollow.",
     keywords: "follow button morph unfollow avatar stack social",
     previewScale: 1.2,
@@ -1300,6 +1488,7 @@ export const lab: LabEntry[] = [
     slug: "live-indicator",
     isNew: true,
     name: "Live indicator",
+    category: "feedback",
     description: "Breathes while live, lets the viewer count drift, and blinks hollow while reconnecting.",
     keywords: "live status pill viewers realtime presence",
     previewScale: 1.6,
@@ -1308,6 +1497,7 @@ export const lab: LabEntry[] = [
     slug: "mini-clock",
     isNew: true,
     name: "Mini clock",
+    category: "data",
     description: "A tiny analog clock that sweeps in its city's time and turns dark after sundown.",
     keywords: "clock time timezone analog footer night hover",
     previewScale: 1.6,
@@ -1316,6 +1506,7 @@ export const lab: LabEntry[] = [
     slug: "pixel-loader",
     isNew: true,
     name: "Pixel loader",
+    category: "feedback",
     description: "A tiny pixel grid that cycles spiral, snake, pulse and checker, then draws a check when done.",
     keywords: "loader spinner pixel grid progress status check",
     previewScale: 1.6,
@@ -1324,6 +1515,7 @@ export const lab: LabEntry[] = [
     slug: "greeting",
     isNew: true,
     name: "Greeting",
+    category: "text",
     description: "Greets by time of day, with a sun or moon that rises into place along an arc.",
     keywords: "greeting time sun moon phase welcome crossfade",
     previewScale: 1.6,
@@ -1332,6 +1524,7 @@ export const lab: LabEntry[] = [
     slug: "arrow-callout",
     isNew: true,
     name: "Arrow callout",
+    category: "cards",
     description: "A handwritten note whose arrow draws itself to whatever it points at.",
     keywords: "annotation arrow callout handwritten onboarding hint marker",
     previewScale: 0.85,
@@ -1340,7 +1533,9 @@ export const lab: LabEntry[] = [
     slug: "voice-orb",
     isNew: true,
     name: "Voice orb",
-    description: "A glassy orb of drifting mist that listens to your real mic, thinks in a slow swirl and breathes as it speaks.",
+    category: "cards",
+    description:
+      "A glassy orb of drifting mist that listens to your real mic, thinks in a slow swirl and breathes as it speaks.",
     keywords: "ai agent voice assistant orb audio mic speaking listening",
     previewScale: 0.5,
   },
@@ -1348,6 +1543,7 @@ export const lab: LabEntry[] = [
     slug: "call-widget",
     isNew: true,
     name: "Call widget",
+    category: "feedback",
     description: "Accept turns into hang-up as the call controls unfold out of it, one by one.",
     keywords: "call video zoom phone accept decline mute camera widget",
     previewScale: 0.75,

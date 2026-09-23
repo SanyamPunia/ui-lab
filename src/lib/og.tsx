@@ -78,13 +78,7 @@ function Footer({ left, right }: { left: string; right: string }) {
   );
 }
 
-export function siteImage({
-  description,
-  count,
-}: {
-  description: string;
-  count: number;
-}) {
+export function siteImage({ description }: { description: string }) {
   return render(
     <div style={stack}>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -111,7 +105,7 @@ export function siteImage({
         </div>
       </div>
       <Footer
-        left={`${count} interaction components with source`}
+        left="Interaction experiments, made by hand"
         right="lab.xevrion.dev"
       />
     </div>,

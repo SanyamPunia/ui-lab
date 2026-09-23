@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { LabSidebar } from "@/components/lab-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { themeScript } from "@/components/theme-toggle";
 import { site } from "@/lib/site";
@@ -19,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name}: interaction design components with source`,
+    default: `${site.name}: small interaction experiments by ${site.author.handle}`,
     template: `%s · ${site.name}`,
   },
   description: site.description,
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     "framer motion",
     "next.js",
     "design engineering",
-    "component library",
+    "interaction experiments",
   ],
   authors: [{ name: site.author.name, url: site.author.url }],
   creator: site.author.name,
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="flex min-h-full flex-col">
         {children}
+        <LabSidebar />
         <SiteFooter />
         <Analytics />
       </body>

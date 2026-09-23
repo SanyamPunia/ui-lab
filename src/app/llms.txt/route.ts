@@ -11,7 +11,7 @@ export function GET() {
     "",
     `> ${site.description}`,
     "",
-    `${site.name} is a collection of small React components by ${site.author.name} (${site.author.handle}), each focused on one interaction and built to feel right. Every component has its own page with a live demo and a link to its TypeScript source on GitHub (${site.repo}).`,
+    `${site.name} is ${site.author.name}'s (${site.author.handle}) personal lab of small React interaction experiments. It is not a component library or a package: each piece is something he built because he liked how it felt, with its own page, a live demo and a link to its TypeScript source on GitHub (${site.repo}).`,
     "",
     "## Components",
     "",

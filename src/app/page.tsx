@@ -7,14 +7,17 @@ import { ScrollMemory } from "@/components/scroll-memory";
 import { SiteHeader } from "@/components/site-header";
 import { SourceLink } from "@/components/source-link";
 import { previews } from "@/lab/previews";
-import { lab } from "@/lab/registry";
+import { categories, lab } from "@/lab/registry";
 import { cn } from "@/lib/cn";
 import { absoluteUrl, labPath, site } from "@/lib/site";
 
 // The newest batch leads, so returning visitors see it without scrolling
-// past everything they've seen before. Search matches cards by position, so
-// its entries come from this same list.
-const shown = [...lab.filter((e) => e.isNew), ...lab.filter((e) => !e.isNew)];
+// past everything they've seen before, and the text effects trail at the
+// end: their previews are words on a card, so the livelier ones go first.
+// Search matches cards by position, so its entries come from this same list.
+const rank = (e: (typeof lab)[number]) =>
+  (e.category === "text" ? 2 : 0) + (e.isNew ? 0 : 1);
+const shown = [...lab].sort((a, b) => rank(a) - rank(b));
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -40,14 +43,13 @@ const jsonLd = {
     {
       "@type": "CollectionPage",
       "@id": `${site.url}/#collection`,
-      name: `${site.name}: interaction design components with source`,
+      name: `${site.name}: small interaction experiments by ${site.author.handle}`,
       url: absoluteUrl("/"),
       description: site.description,
       isPartOf: { "@id": `${site.url}/#website` },
       author: { "@id": `${site.url}/#person` },
       mainEntity: {
         "@type": "ItemList",
-        numberOfItems: lab.length,
         itemListElement: lab.map(({ slug, name, description }, i) => ({
           "@type": "ListItem",
           position: i + 1,
@@ -71,19 +73,22 @@ export default function Home() {
             answer engines that quote it. */}
         <div className="mb-10">
           <h1 className="text-xl font-medium tracking-tight text-balance">
-            Interaction components, built to feel right
+            Things I made because I liked how they felt
           </h1>
           <p className="mt-2 max-w-xl text-sm text-pretty text-muted">
-            A collection of {lab.length} React interaction components built
-            with Tailwind CSS and Motion. Each one has smooth animation,
-            keyboard support, light and dark themes, and source you can read.
+            Not a library, just a lab. Small interaction
+            experiments I built in React while learning motion and detail.
+            Each one has a live demo and its source, if you want to see how
+            it works.
           </p>
         </div>
         <LabSearch
-          entries={shown.map(({ name, description, keywords }) => ({
+          categories={categories}
+          entries={shown.map(({ name, description, keywords, category }) => ({
             name,
             description,
             keywords,
+            category,
           }))}
         >
           {shown.map(({ slug, name, description, previewScale, previewCrop, isNew }) => {
