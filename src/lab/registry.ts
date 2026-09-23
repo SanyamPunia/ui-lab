@@ -1548,6 +1548,15 @@ export const lab: LabEntry[] = [
     keywords: "call video zoom phone accept decline mute camera widget",
     previewScale: 0.75,
   },
+  {
+    slug: "logo-orbit",
+    isNew: true,
+    name: "Logo orbit",
+    category: "cards",
+    description: "Logos orbit a heading on tilted rings, passing behind it, and brake to a stop when you point.",
+    keywords: "logos brands orbit landing trusted by stack integrations 3d",
+    previewScale: 0.5,
+  },
   // new-component:entries
 ];
 
