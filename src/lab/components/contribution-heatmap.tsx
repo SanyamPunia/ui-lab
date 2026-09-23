@@ -3,8 +3,11 @@
 import { memo, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useInView } from "motion/react";
 import { cn } from "@/lib/cn";
+import contributions from "@/lab/data/contributions.json";
 
-export type ContributionDay = { date: string; count: number };
+// `level` (0 to 4) overrides the thresholds, for data that arrives already
+// bucketed, like GitHub's own graph.
+export type ContributionDay = { date: string; count: number; level?: number };
 
 // GitHub's own proportions: 10px squares on a 13px pitch.
 const CELL = 10;
@@ -79,7 +82,7 @@ export function ContributionHeatmap({
       data.map((d) => {
         const date = new Date(`${d.date}T00:00:00Z`);
         return {
-          level: levelOf(d.count, thresholds),
+          level: d.level ?? levelOf(d.count, thresholds),
           tip: `${phrase(d.count)} on ${shortDate.format(date)}`,
           label: `${phrase(d.count)} on ${longDate.format(date)}`,
           date,
@@ -323,38 +326,9 @@ export function HeatmapLegend({ className }: { className?: string }) {
   );
 }
 
-// Seeded so the server and the browser draw the same year.
-function mulberry32(seed: number) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function sampleYear(): ContributionDay[] {
-  const random = mulberry32(20260919);
-  // Ends on a fixed Saturday, so the year never shifts between renders.
-  const end = Date.UTC(2026, 8, 19);
-  const days = 53 * 7;
-  const out: ContributionDay[] = [];
-  let streak = 0;
-  for (let i = 0; i < days; i++) {
-    const time = end - (days - 1 - i) * 86_400_000;
-    const weekday = new Date(time).getUTCDay();
-    // Weekends are quieter, and busy days tend to come in runs.
-    const weekend = weekday === 0 || weekday === 6;
-    streak = random() < 0.3 ? 0 : streak + 1;
-    const active = random() < (weekend ? 0.3 : 0.72);
-    const burst = Math.min(streak / 6, 1);
-    const count = active ? Math.round(random() ** 1.6 * (9 + burst * 9)) + 1 : 0;
-    out.push({ date: new Date(time).toISOString().slice(0, 10), count });
-  }
-  return out;
-}
-
-const YEAR = sampleYear();
+// Yash's real year, refreshed from his public GitHub graph on every build
+// by scripts/fetch-contributions.ts.
+const YEAR: ContributionDay[] = contributions.days;
 const TOTAL = YEAR.reduce((sum, d) => sum + d.count, 0);
 
 export default function ContributionHeatmapDemo() {
@@ -362,7 +336,15 @@ export default function ContributionHeatmapDemo() {
     <div className="flex w-fit max-w-full flex-col gap-4">
       <p className="text-[15px] text-muted">
         <span className="font-semibold text-foreground tabular-nums">{number.format(TOTAL)}</span>{" "}
-        contributions in the last year
+        contributions in the last year by{" "}
+        <a
+          href={`https://github.com/${contributions.user}`}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-sm font-medium text-foreground underline decoration-foreground/25 underline-offset-2 outline-hidden transition-[text-decoration-color] duration-150 ease-out hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+        >
+          @{contributions.user}
+        </a>
       </p>
       <ContributionHeatmap data={YEAR} />
       <HeatmapLegend className="self-end" />

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "bun scripts/fetch-contributions.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "new": "bun scripts/new-component.ts"
