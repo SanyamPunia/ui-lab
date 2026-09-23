@@ -1336,6 +1336,22 @@ export const lab: LabEntry[] = [
     keywords: "annotation arrow callout handwritten onboarding hint marker",
     previewScale: 0.85,
   },
+  {
+    slug: "voice-orb",
+    isNew: true,
+    name: "Voice orb",
+    description: "A glassy orb of drifting mist that listens to your real mic, thinks in a slow swirl and breathes as it speaks.",
+    keywords: "ai agent voice assistant orb audio mic speaking listening",
+    previewScale: 0.5,
+  },
+  {
+    slug: "call-widget",
+    isNew: true,
+    name: "Call widget",
+    description: "Accept turns into hang-up as the call controls unfold out of it, one by one.",
+    keywords: "call video zoom phone accept decline mute camera widget",
+    previewScale: 0.75,
+  },
   // new-component:entries
 ];
 

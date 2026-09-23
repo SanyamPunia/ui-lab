@@ -182,6 +182,8 @@ const demos: Record<string, ComponentType> = {
   "pixel-loader": dynamic(() => import("./components/pixel-loader")),
   "greeting": dynamic(() => import("./components/greeting")),
   "arrow-callout": dynamic(() => import("./components/arrow-callout")),
+  "voice-orb": dynamic(() => import("./components/voice-orb")),
+  "call-widget": dynamic(() => import("./components/call-widget")),
   // new-component:entries
 };
 

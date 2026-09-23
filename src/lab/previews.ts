@@ -174,6 +174,8 @@ import MiniClockDemo from "./components/mini-clock";
 import PixelLoaderDemo from "./components/pixel-loader";
 import GreetingDemo from "./components/greeting";
 import ArrowCalloutDemo from "./components/arrow-callout";
+import VoiceOrbDemo from "./components/voice-orb";
+import CallWidgetDemo from "./components/call-widget";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -354,5 +356,7 @@ export const previews: Record<string, ComponentType> = {
   "pixel-loader": PixelLoaderDemo,
   "greeting": GreetingDemo,
   "arrow-callout": ArrowCalloutDemo,
+  "voice-orb": VoiceOrbDemo,
+  "call-widget": CallWidgetDemo,
   // new-component:entries
 };
