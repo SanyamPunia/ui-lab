@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
 import { themeScript } from "@/components/theme-toggle";
+import { site } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,9 +16,58 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lab.xevrion.dev"),
-  title: { default: "Lab", template: "%s · Lab" },
-  description: "Small UI components by xevrion, built to feel right.",
+  metadataBase: new URL(site.url),
+  title: {
+    default: `${site.name}: interaction design components with source`,
+    template: `%s · ${site.name}`,
+  },
+  description: site.description,
+  applicationName: site.name,
+  keywords: [
+    "react components",
+    "interaction design",
+    "ui components",
+    "micro-interactions",
+    "animation",
+    "tailwind css",
+    "motion",
+    "framer motion",
+    "next.js",
+    "design engineering",
+    "component library",
+  ],
+  authors: [{ name: site.author.name, url: site.author.url }],
+  creator: site.author.name,
+  publisher: site.author.name,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    locale: site.locale,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: site.author.twitter,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

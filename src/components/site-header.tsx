@@ -23,7 +23,8 @@ export function SiteHeader({ title }: { title?: string }) {
             <span aria-hidden className="text-border">
               /
             </span>
-            <span className="font-medium">{title}</span>
+            {/* The page's heading, sized to sit in the breadcrumb. */}
+            <h1 className="font-medium">{title}</h1>
           </>
         )}
       </nav>

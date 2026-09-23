@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JsonLd } from "@/components/json-ld";
 import { LabSearch } from "@/components/lab-search";
 import { ScrollMemory } from "@/components/scroll-memory";
 import { SiteHeader } from "@/components/site-header";
@@ -6,13 +7,71 @@ import { SourceLink } from "@/components/source-link";
 import { previews } from "@/lab/previews";
 import { lab } from "@/lab/registry";
 import { cn } from "@/lib/cn";
+import { absoluteUrl, labPath, site } from "@/lib/site";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${site.url}/#website`,
+      name: site.name,
+      url: absoluteUrl("/"),
+      description: site.description,
+      inLanguage: "en",
+      author: { "@id": `${site.url}/#person` },
+      publisher: { "@id": `${site.url}/#person` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${site.url}/#person`,
+      name: site.author.name,
+      alternateName: site.author.handle,
+      url: site.author.url,
+      sameAs: site.author.sameAs,
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": `${site.url}/#collection`,
+      name: `${site.name}: interaction design components with source`,
+      url: absoluteUrl("/"),
+      description: site.description,
+      isPartOf: { "@id": `${site.url}/#website` },
+      author: { "@id": `${site.url}/#person` },
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: lab.length,
+        itemListElement: lab.map(({ slug, name, description }, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name,
+          url: absoluteUrl(labPath(slug)),
+          description,
+        })),
+      },
+    },
+  ],
+};
 
 export default function Home() {
   return (
     <>
+      <JsonLd data={jsonLd} />
       <SiteHeader />
       <ScrollMemory />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-10 pb-16 sm:px-6">
+        {/* Says plainly what the page is, for people and for the search and
+            answer engines that quote it. */}
+        <div className="mb-10">
+          <h1 className="text-xl font-medium tracking-tight text-balance">
+            Interaction components, built to feel right
+          </h1>
+          <p className="mt-2 max-w-xl text-sm text-pretty text-muted">
+            A collection of {lab.length} React interaction components built
+            with Tailwind CSS and Motion. Each one has smooth animation,
+            keyboard support, light and dark themes, and source you can read.
+          </p>
+        </div>
         <LabSearch
           entries={lab.map(({ name, description, keywords }) => ({
             name,
