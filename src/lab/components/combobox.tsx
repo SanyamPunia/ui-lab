@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 
@@ -12,6 +12,8 @@ export type Person = {
 };
 
 const ICON_SWAP = { type: "spring", duration: 0.3, bounce: 0 } as const;
+// Every option row is h-12.
+const ROW = 48;
 
 const initials = (name: string) =>
   name
@@ -58,13 +60,70 @@ export function Combobox({
     : people;
   const highlighted = open ? results[active] : undefined;
 
+  // One highlight for the whole list, gliding from row to row, so arrowing
+  // down reads as a single thing moving rather than rows blinking on and off.
+  const pillRef = useRef<HTMLLIElement>(null);
+  // Set whenever the list is rebuilt (opened or filtered): the highlight
+  // lands in place instead of sliding in from wherever it last was.
+  const pillJump = useRef(true);
+  // Scroll smoothly only for moves within a list that is already showing.
+  const scrollJump = useRef(true);
+  const slotRef = useRef<HTMLSpanElement>(null);
+  // Where the chosen person's avatar was in the list, for the flight into
+  // the field.
+  const flight = useRef<DOMRect | null>(null);
+  const [flying, setFlying] = useState(false);
+
   useEffect(() => {
     if (!scrollToActive.current || !highlighted) return;
+    const jump = scrollJump.current;
+    scrollJump.current = false;
     scrollToActive.current = false;
     document
       .getElementById(`${id}-${highlighted.id}`)
-      ?.scrollIntoView({ block: "nearest" });
-  }, [highlighted, id]);
+      ?.scrollIntoView({
+        block: "nearest",
+        behavior: jump || reduceMotion ? "instant" : "smooth",
+      });
+  }, [highlighted, id, reduceMotion]);
+
+  useLayoutEffect(() => {
+    const pill = pillRef.current;
+    if (!pill) return;
+    const jump = pillJump.current || !!reduceMotion;
+    pillJump.current = false;
+    pill.style.transition = jump ? "none" : "";
+    // Rows are a fixed 48px, so the index is the offset.
+    pill.style.transform = `translateY(${active * ROW}px)`;
+    if (jump) {
+      // Commits the jump before the transition comes back.
+      void pill.offsetHeight;
+      pill.style.transition = "";
+    }
+  }, [active, open, query, reduceMotion]);
+
+  // The avatar leaves its row and lands in the field's leading slot, scaling
+  // from 32px down to 24px on the way: the pick is carried, not swapped.
+  useLayoutEffect(() => {
+    const from = flight.current;
+    const el = slotRef.current;
+    flight.current = null;
+    if (!from || !el || !value) return;
+    const to = el.getBoundingClientRect();
+    const animation = el.animate(
+      [
+        {
+          transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width})`,
+        },
+        { transform: "none" },
+      ],
+      // 280ms on the iOS drawer curve: long enough to follow a 100px trip,
+      // settled before the next keystroke is likely.
+      { duration: 280, easing: "cubic-bezier(0.32, 0.72, 0, 1)" },
+    );
+    animation.onfinish = animation.oncancel = () => setFlying(false);
+    return () => animation.cancel();
+  }, [value]);
 
   const openList = (text = query) => {
     engaged.current = text.length > 0;
@@ -72,10 +131,22 @@ export function Combobox({
     const start = text || !value ? 0 : Math.max(people.indexOf(value), 0);
     setActive(start);
     scrollToActive.current = true;
+    scrollJump.current = true;
+    pillJump.current = true;
     setOpen(true);
   };
 
   const choose = (person: Person) => {
+    if (!reduceMotion && person.id !== value?.id) {
+      const from = document
+        .getElementById(`${id}-${person.id}`)
+        ?.querySelector("[data-avatar]")
+        ?.getBoundingClientRect();
+      if (from) {
+        flight.current = from;
+        setFlying(true);
+      }
+    }
     onChange(person);
     setQuery("");
     setOpen(false);
@@ -152,8 +223,16 @@ export function Combobox({
                 <path d="m10.5 10.5 3 3" />
               </svg>
             </SwapSlot>
-            <SwapSlot visible={!!value} reduceMotion={reduceMotion}>
-              {value && <Avatar person={value} size="sm" />}
+            {/* A flying avatar is already visible, so it skips the pop in.
+                z-30 carries it over the closing list (z-20) on the way up. */}
+            <SwapSlot
+              visible={!!value}
+              reduceMotion={reduceMotion}
+              instant={flying}
+            >
+              <span ref={slotRef} className="relative z-30 block origin-top-left">
+                {value && <Avatar person={value} size="sm" />}
+              </span>
             </SwapSlot>
           </span>
           <input
@@ -220,8 +299,20 @@ export function Combobox({
             role="listbox"
             aria-label={label}
             // Just under five 48px rows, so the clipped fifth shows it scrolls.
-            className="max-h-[232px] overflow-y-auto overscroll-contain"
+            className="relative max-h-[232px] overflow-y-auto overscroll-contain"
           >
+            {/* Inside the scroller so it scrolls with the rows. 180ms
+                ease-out: quick enough to keep up with held arrow keys. */}
+            <li
+              ref={pillRef}
+              role="presentation"
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute inset-x-0 top-0 h-12 rounded-lg bg-foreground/[0.06]",
+                "transition-[transform,opacity] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                highlighted ? "opacity-100" : "opacity-0",
+              )}
+            />
             {results.map((person, i) => {
               const isActive = i === active;
               const isChosen = value?.id === person.id;
@@ -242,10 +333,7 @@ export function Combobox({
                     engaged.current = true;
                     setActive(i);
                   }}
-                  className={cn(
-                    "flex h-12 cursor-default items-center gap-3 rounded-lg px-2.5 select-none",
-                    isActive && "bg-foreground/[0.06]",
-                  )}
+                  className="relative flex h-12 cursor-default items-center gap-3 rounded-lg px-2.5 select-none"
                 >
                   <Avatar person={person} />
                   <span className="min-w-0 flex-1">
@@ -309,6 +397,7 @@ function Avatar({ person, size = "md" }: { person: Person; size?: "sm" | "md" })
   return person.avatar ? (
     // eslint-disable-next-line @next/next/no-img-element -- tiny local SVGs gain nothing from next/image.
     <img
+      data-avatar
       src={person.avatar}
       alt=""
       className={cn(
@@ -319,6 +408,7 @@ function Avatar({ person, size = "md" }: { person: Person; size?: "sm" | "md" })
     />
   ) : (
     <span
+      data-avatar
       aria-hidden
       className={cn(
         box,
@@ -334,10 +424,12 @@ function Avatar({ person, size = "md" }: { person: Person; size?: "sm" | "md" })
 function SwapSlot({
   visible,
   reduceMotion,
+  instant = false,
   children,
 }: {
   visible: boolean;
   reduceMotion: boolean | null;
+  instant?: boolean;
   children: React.ReactNode;
 }) {
   const hidden = reduceMotion
@@ -348,7 +440,7 @@ function SwapSlot({
       className="col-start-1 row-start-1 grid place-items-center"
       initial={false}
       animate={visible ? { scale: 1, opacity: 1, filter: "blur(0px)" } : hidden}
-      transition={ICON_SWAP}
+      transition={instant ? { duration: 0 } : ICON_SWAP}
     >
       {children}
     </motion.span>

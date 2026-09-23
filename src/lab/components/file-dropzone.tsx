@@ -18,6 +18,29 @@ const INSTANT = { duration: 0 };
 // bar moves in the uneven surges of a real upload instead of a smooth ramp.
 const TICK = 280;
 
+// The edge's length in pathLength units: 120 dash-and-gap pairs of one unit
+// each, about 12px apiece on the 440 x 300 zone. A whole number, so the
+// pattern always meets itself cleanly where the path starts and ends.
+const EDGE_LENGTH = 120;
+// Marching loops, so keyframes; each loop moves the dashes exactly one
+// period, so it repeats without a hitch. Closing the gaps is a transition,
+// so a file that leaves mid-seal reverses from wherever it got to.
+const CSS = `
+@keyframes dz-march { to { stroke-dashoffset: -1; } }
+.dz-edge {
+  stroke-dasharray: 0.5 0.5;
+  transition: stroke-dasharray 240ms cubic-bezier(0.23, 1, 0.32, 1), color 150ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .dz-zone:hover .dz-edge[data-state="idle"] { animation: dz-march 1.6s linear infinite; }
+}
+.dz-edge[data-state="dragging"] { animation: dz-march 0.6s linear infinite; }
+.dz-edge[data-state="over"] { stroke-dasharray: 1 0; }
+@media (prefers-reduced-motion: reduce) {
+  .dz-edge { animation: none !important; }
+}
+`;
+
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   const units = ["KB", "MB", "GB"];
@@ -105,10 +128,16 @@ export function FileDropzone({
     if (files.length === 0) return;
     setEntries((prev) => [
       ...prev,
-      ...files.map((f) => ({ id: nextId.current++, name: f.name, size: f.size })),
+      ...files.map((f) => ({
+        id: nextId.current++,
+        name: f.name,
+        size: f.size,
+      })),
     ]);
     setAnnouncement(
-      files.length === 1 ? `Added ${files[0].name}` : `Added ${files.length} files`,
+      files.length === 1
+        ? `Added ${files[0].name}`
+        : `Added ${files.length} files`,
     );
     onFiles?.(files);
   };
@@ -148,15 +177,43 @@ export function FileDropzone({
           add(e.dataTransfer.files);
         }}
         className={cn(
-          "flex h-[300px] touch-manipulation flex-col items-center justify-center gap-4 rounded-[24px] border-2 border-dashed px-6 text-center outline-hidden select-none",
-          "transition-[border-color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.99] motion-reduce:transition-[border-color,background-color]",
-          over
-            ? "border-solid border-foreground bg-foreground/5"
-            : dragging
-              ? "border-foreground/40 bg-foreground/[0.02]"
-              : "border-foreground/15 hover:border-foreground/30",
+          "dz-zone relative flex h-[300px] touch-manipulation flex-col items-center justify-center gap-4 rounded-[24px] px-6 text-center outline-hidden select-none",
+          "transition-[background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.99] motion-reduce:transition-[background-color]",
+          over ? "bg-foreground/5" : dragging ? "bg-foreground/[0.02]" : "",
         )}
       >
+        <style href="file-dropzone" precedence="default">
+          {CSS}
+        </style>
+        {/* The dashed edge is drawn, not a CSS border, so its dashes can
+            move. At rest they sit still; a pointer over the zone sets them
+            slowly marching, a file anywhere on the page makes them hurry,
+            and a file right over the zone closes every gap into one solid
+            line: the zone sealing around what you are about to drop. */}
+        <svg
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 size-full overflow-visible",
+            over
+              ? "text-foreground"
+              : dragging
+                ? "text-foreground/45"
+                : "text-foreground/20 [.dz-zone:hover_&]:text-foreground/35",
+          )}
+        >
+          <rect
+            x="1"
+            y="1"
+            rx="23"
+            style={{ width: "calc(100% - 2px)", height: "calc(100% - 2px)" }}
+            pathLength={EDGE_LENGTH}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            data-state={over ? "over" : dragging ? "dragging" : "idle"}
+            className="dz-edge"
+          />
+        </svg>
         {/* Lifts toward the cursor when a file is right over it, as if
             reaching up to take it. */}
         <svg
@@ -296,7 +353,9 @@ function FileRow({
       // One tick in six stalls, the way real uploads hang on a slow packet,
       // and chunks shrink toward the end as the server finishes up.
       const stall = Math.random() < 1 / 6;
-      const chunk = stall ? 0 : ((0.6 + Math.random() * 0.8) / ticks) * (1.2 - p * 0.5);
+      const chunk = stall
+        ? 0
+        : ((0.6 + Math.random() * 0.8) / ticks) * (1.2 - p * 0.5);
       p = Math.min(1, p + chunk);
       setProgress(p);
       if (p < 1) {
@@ -324,7 +383,9 @@ function FileRow({
           {entry.name}
         </span>
         <div className="flex h-5 items-center gap-3 text-[13px] text-muted">
-          <span className="shrink-0 tabular-nums">{formatSize(entry.size)}</span>
+          <span className="shrink-0 tabular-nums">
+            {formatSize(entry.size)}
+          </span>
           {/* The bar and "Uploaded" share one cell and crossfade. */}
           <span className="grid flex-1 items-center">
             <span
@@ -376,7 +437,9 @@ function FileRow({
           strokeLinejoin="round"
           aria-hidden
           initial={false}
-          animate={done ? { scale: 1, opacity: 1, filter: "blur(0px)" } : hidden}
+          animate={
+            done ? { scale: 1, opacity: 1, filter: "blur(0px)" } : hidden
+          }
           transition={ICON_SWAP}
         >
           <path d="m3.5 8.5 3 3 6-7" />

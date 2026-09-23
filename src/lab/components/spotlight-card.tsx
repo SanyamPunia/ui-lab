@@ -15,6 +15,21 @@ const GLOW =
 const EDGE =
   "radial-gradient(180px circle at var(--x) var(--y), light-dark(oklch(0 0 0 / 0.28), oklch(1 0 0 / 0.4)), transparent 70%)";
 
+// Card-space point the shadows are cast from: the middle of the icon
+// (20px padding + half of the 20px icon).
+const SHADOW_ORIGIN = 30;
+// Longest shadow in px, when the light sits right beside the icon, and the
+// distance at which it has shrunk to nothing.
+const SHADOW_MAX = 6;
+const SHADOW_FALLOFF = 420;
+// Soft and low contrast, like a desk lamp on paper, in both themes.
+const SHADOW_COLOR = "light-dark(oklch(0 0 0 / 0.22), oklch(0 0 0 / 0.9))";
+// While lit the shadows track the cursor with no lag (they are the light);
+// when it leaves they ease back under their objects. Reduced motion keeps
+// the glow but drops the moving shadows.
+const CAST =
+  "transition-[filter] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-data-[lit]/grid:transition-none motion-reduce:[filter:none]";
+
 export type Feature = {
   title: string;
   text: string;
@@ -40,8 +55,19 @@ export function SpotlightGrid({
     for (const card of cards.current) {
       if (!card) continue;
       const box = card.getBoundingClientRect();
-      card.style.setProperty("--x", `${e.clientX - box.left}px`);
-      card.style.setProperty("--y", `${e.clientY - box.top}px`);
+      const x = e.clientX - box.left;
+      const y = e.clientY - box.top;
+      card.style.setProperty("--x", `${x}px`);
+      card.style.setProperty("--y", `${y}px`);
+      // The cursor is the light: each icon casts a shadow pointing away
+      // from it, shortening as the light moves off, so every card in the
+      // grid agrees on where the lamp is.
+      const dx = SHADOW_ORIGIN - x;
+      const dy = SHADOW_ORIGIN - y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const reach = Math.max(0, 1 - dist / SHADOW_FALLOFF);
+      card.style.setProperty("--sx", `${((dx / dist) * SHADOW_MAX * reach).toFixed(2)}px`);
+      card.style.setProperty("--sy", `${((dy / dist) * SHADOW_MAX * reach).toFixed(2)}px`);
     }
   };
 
@@ -53,7 +79,13 @@ export function SpotlightGrid({
         className,
       )}
       onPointerMove={track}
-      onPointerLeave={() => gridRef.current?.removeAttribute("data-lit")}
+      onPointerLeave={() => {
+        gridRef.current?.removeAttribute("data-lit");
+        for (const card of cards.current) {
+          card?.style.setProperty("--sx", "0px");
+          card?.style.setProperty("--sy", "0px");
+        }
+      }}
     >
       {features.map((feature, i) => (
         <article
@@ -74,8 +106,21 @@ export function SpotlightGrid({
             className="pointer-events-none absolute inset-0 rounded-[inherit] p-px opacity-0 transition-[opacity] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-data-[lit]/grid:opacity-100"
             style={{ background: EDGE, mask: RING_MASK }}
           />
-          <div className="relative">
-            <span className="block text-muted">{feature.icon}</span>
+          {/* Shadows follow the cursor with no transition while lit (they
+              are the light), and ease back under the object when it leaves. */}
+          <div
+            className="relative"
+            style={{ "--shadow": SHADOW_COLOR } as React.CSSProperties}
+          >
+            <span
+              className={cn(
+                CAST,
+                "block w-fit text-muted [filter:drop-shadow(var(--sx,0px)_var(--sy,0px)_2px_var(--shadow))]",
+              )}
+            >
+              {feature.icon}
+            </span>
+            {/* Text stays flat and crisp: a shadow on it reads as ghosting. */}
             <h3 className="mt-6 text-[15px] font-medium text-foreground">
               {feature.title}
             </h3>

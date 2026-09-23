@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -58,10 +59,26 @@ const CARD = {
     transition: { duration: instant ? 0 : 0.1, ease: EASE_OUT },
   }),
 };
-type OpenState = { id: string; place: Place; instant: boolean } | null;
+// `from` is where the previous card sat on screen when this one replaced it:
+// the new card starts there and travels to its own name.
+type OpenState = {
+  id: string;
+  place: Place;
+  instant: boolean;
+  from?: DOMRect;
+} | null;
+
+// The trip between two names. 260ms on the iOS drawer curve: long enough to
+// follow a card crossing a paragraph, and it decelerates onto the new name
+// so the eye lands with it.
+const TRAVEL = { duration: 260, easing: "cubic-bezier(0.32, 0.72, 0, 1)" };
+// The contents re-develop on arrival instead of swapping in place.
+const DEVELOP = { duration: 220, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
 
 type Group = {
   open: OpenState;
+  // Registers the card on screen, so the next one knows where to start.
+  setCard: (el: HTMLElement) => void;
   requestOpen: (id: string, measure: () => Place, immediate?: boolean) => void;
   requestClose: (id: string) => void;
   closeNow: () => void;
@@ -96,6 +113,9 @@ export function HoverCardGroup({ children }: { children: React.ReactNode }) {
   const openTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closedAt = useRef(-Infinity);
+  const card = useRef<HTMLElement | null>(null);
+  // Where the last card was when it closed, for a quick return trip.
+  const lastRect = useRef<DOMRect | null>(null);
 
   useEffect(
     () => () => {
@@ -105,23 +125,38 @@ export function HoverCardGroup({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const cardRect = () =>
+    card.current?.isConnected
+      ? card.current.getBoundingClientRect()
+      : undefined;
+
   const commit = (next: OpenState) => {
-    if (openRef.current && !next) closedAt.current = performance.now();
+    if (openRef.current && !next) {
+      closedAt.current = performance.now();
+      lastRect.current = cardRect() ?? null;
+    }
     openRef.current = next;
     setOpen(next);
   };
 
   const group: Group = {
     open,
+    setCard: (el) => {
+      card.current = el;
+    },
     requestOpen: (id, measure, immediate) => {
       clearTimeout(closeTimer.current);
       const current = openRef.current;
       if (current?.id === id) return;
       clearTimeout(openTimer.current);
+      const recent = performance.now() - closedAt.current < SKIP_DELAY_FOR;
       if (current) {
-        // Already showing someone: switch with no delay and no animation.
-        commit({ id, place: measure(), instant: true });
-      } else if (immediate || performance.now() - closedAt.current < SKIP_DELAY_FOR) {
+        // Already showing someone: no delay, and the card itself moves over.
+        commit({ id, place: measure(), instant: true, from: cardRect() });
+      } else if (recent && lastRect.current) {
+        // Closed a moment ago on the way here: fly back out from there.
+        commit({ id, place: measure(), instant: true, from: lastRect.current });
+      } else if (immediate || recent) {
         commit({ id, place: measure(), instant: false });
       } else {
         openTimer.current = setTimeout(
@@ -164,6 +199,34 @@ export function Mention({ profile }: { profile: Profile }) {
   const place = state?.place ?? lastPlace;
 
   const measure = () => measurePlace(buttonRef.current!);
+  const cardRef = useRef<HTMLSpanElement>(null);
+  const contentRef = useRef<HTMLSpanElement>(null);
+  const from = state?.from;
+
+  // Plays the trip from the previous card's spot. Uses the independent
+  // translate property, so it never fights Motion's scale on transform.
+  useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!from || !el) return;
+    const to = el.getBoundingClientRect();
+    const dx = from.left - to.left;
+    const dy = from.top - to.top;
+    const animations: Animation[] = [];
+    if (!reduceMotion && (dx || dy)) {
+      animations.push(
+        el.animate({ translate: [`${dx}px ${dy}px`, "0 0"] }, TRAVEL),
+      );
+    }
+    animations.push(
+      contentRef.current!.animate(
+        reduceMotion
+          ? { opacity: [0, 1] }
+          : { opacity: [0, 1], filter: ["blur(4px)", "blur(0px)"] },
+        DEVELOP,
+      ),
+    );
+    return () => animations.forEach((a) => a.cancel());
+  }, [from, reduceMotion]);
 
   // Taps have no hover, so a tap opens the card and a tap anywhere else
   // closes it.
@@ -195,7 +258,10 @@ export function Mention({ profile }: { profile: Profile }) {
       // Keyboard focus only. A tap also focuses the button, and opening
       // here would let the click that follows close it again.
       onFocus={(e) => {
-        if (e.target === buttonRef.current && e.target.matches(":focus-visible"))
+        if (
+          e.target === buttonRef.current &&
+          e.target.matches(":focus-visible")
+        )
           group.requestOpen(profile.id, measure, true);
       }}
       onBlur={(e) => {
@@ -232,6 +298,10 @@ export function Mention({ profile }: { profile: Profile }) {
         {isOpen && place && (
           <motion.span
             key="card"
+            ref={(el: HTMLSpanElement | null) => {
+              cardRef.current = el;
+              if (el) group.setCard(el);
+            }}
             id={cardId}
             role="group"
             aria-label={`${profile.name}, ${profile.handle}`}
@@ -254,34 +324,40 @@ export function Mention({ profile }: { profile: Profile }) {
                 : "bottom-full mb-2 before:-bottom-3",
             )}
           >
-            <span className="flex items-start justify-between gap-3">
-              <span className="size-12 shrink-0 overflow-hidden rounded-full bg-[oklch(0.97_0_0)] outline-1 -outline-offset-1 outline-[oklch(0_0_0/0.1)] dark:outline-[oklch(1_0_0/0.1)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={profile.avatar} alt="" className="size-full" />
+            <span ref={contentRef} className="block">
+              <span className="flex items-start justify-between gap-3">
+                <span className="size-12 shrink-0 overflow-hidden rounded-full bg-[oklch(0.97_0_0)] outline-1 -outline-offset-1 outline-[oklch(0_0_0/0.1)] dark:outline-[oklch(1_0_0/0.1)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={profile.avatar} alt="" className="size-full" />
+                </span>
+                <FollowButton
+                  following={following}
+                  onToggle={() => setFollowing((f) => !f)}
+                  name={profile.name}
+                />
               </span>
-              <FollowButton
-                following={following}
-                onToggle={() => setFollowing((f) => !f)}
-                name={profile.name}
-              />
-            </span>
-            <span className="mt-3 block text-[15px] font-semibold tracking-[-0.01em]">
-              {profile.name}
-            </span>
-            <span className="block text-[13px] text-muted">{profile.handle}</span>
-            <span className="mt-2 block text-pretty">{profile.bio}</span>
-            <span className="mt-3 flex gap-4 text-[13px] text-muted">
-              <span>
-                <span className="font-semibold text-foreground tabular-nums">
-                  {(profile.followers + (following ? 1 : 0)).toLocaleString("en-US")}
-                </span>{" "}
-                followers
+              <span className="mt-3 block text-[15px] font-semibold tracking-[-0.01em]">
+                {profile.name}
               </span>
-              <span>
-                <span className="font-semibold text-foreground tabular-nums">
-                  {profile.following.toLocaleString("en-US")}
-                </span>{" "}
-                following
+              <span className="block text-[13px] text-muted">
+                {profile.handle}
+              </span>
+              <span className="mt-2 block text-pretty">{profile.bio}</span>
+              <span className="mt-3 flex gap-4 text-[13px] text-muted">
+                <span>
+                  <span className="font-semibold text-foreground tabular-nums">
+                    {(profile.followers + (following ? 1 : 0)).toLocaleString(
+                      "en-US",
+                    )}
+                  </span>{" "}
+                  followers
+                </span>
+                <span>
+                  <span className="font-semibold text-foreground tabular-nums">
+                    {profile.following.toLocaleString("en-US")}
+                  </span>{" "}
+                  following
+                </span>
               </span>
             </span>
           </motion.span>
@@ -371,8 +447,8 @@ export default function HoverCardDemo() {
       <p className="w-[440px] max-w-full text-[15px] leading-7 text-pretty text-foreground">
         Last week <Mention profile={PEOPLE.ava} /> shipped the new motion
         guidelines, <Mention profile={PEOPLE.ben} /> rebuilt the gesture system
-        on top of them, and <Mention profile={PEOPLE.cara} /> is already
-        writing the docs. <span className="text-muted">Hover a name to meet them.</span>
+        on top of them, and <Mention profile={PEOPLE.cara} /> is already writing
+        the docs. <span className="text-muted">Hover a name to meet them.</span>
       </p>
     </HoverCardGroup>
   );

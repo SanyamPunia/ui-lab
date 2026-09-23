@@ -7,6 +7,13 @@ import { cn } from "@/lib/cn";
 type Status = "idle" | "error" | "valid";
 
 const ICON_SWAP = { type: "spring", duration: 0.3, bounce: 0 } as const;
+// Per letter: 14ms reads as a ripple without the end of a long label
+// lagging. Past the cap every letter moves together, so no label takes
+// longer than 200ms + 8 * 14ms to land.
+const RISE_STAGGER = 14;
+// Settling back is quicker: the field is being left, not entered.
+const SETTLE_STAGGER = 8;
+const STAGGER_CAP = 8;
 
 export function FloatingLabel({
   label,
@@ -47,6 +54,12 @@ export function FloatingLabel({
   };
 
   const invalid = status === "error";
+  // Only flips when focus moves or the field crosses empty, never per
+  // keystroke; setState with an unchanged value skips the render.
+  const [focused, setFocused] = useState(false);
+  const [filled, setFilled] = useState(() => !!defaultValue);
+  const floated = focused || filled;
+  const letters = Array.from(label);
 
   return (
     <div className={cn("flex flex-col", className)}>
@@ -63,8 +76,10 @@ export function FloatingLabel({
           spellCheck={false}
           aria-invalid={invalid || undefined}
           aria-describedby={invalid ? errorId : undefined}
+          onFocus={() => setFocused(true)}
           onChange={(e) => {
             const value = e.target.value;
+            setFilled(value !== "");
             onValueChange?.(value);
             if (!validate) return;
             if (live) check(value);
@@ -73,6 +88,7 @@ export function FloatingLabel({
             else if (status === "valid" && validate(value)) setStatus("idle");
           }}
           onBlur={(e) => {
+            setFocused(false);
             if (!validate) return;
             const value = e.target.value;
             // Tabbing past an untouched field is not a mistake.
@@ -91,21 +107,46 @@ export function FloatingLabel({
               : "border-border focus-visible:outline-foreground",
           )}
         />
-        {/* Moves with translate and scale from its top left corner, so the text
-            never reflows. Rising takes 200ms, settling back 150ms. */}
+        {/* The label peels off the line one letter at a time, first letter
+            first, and settles back last letter first, like a sticker lifted
+            from its corner. The whole word scales from its top left corner
+            while each letter rises on its own delay, so nothing reflows. */}
         <label
           htmlFor={id}
+          data-floated={floated || undefined}
           className={cn(
-            "pointer-events-none absolute top-4 left-3.5 origin-top-left text-[15px]/5 whitespace-nowrap select-none",
-            "transition-[translate,scale,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[color]",
-            // Centered at 16px from the top, it rises 9px to sit 7px from the
-            // top, at 80% (12px) of the text size.
-            "peer-focus:-translate-y-[9px] peer-focus:scale-[0.8] peer-focus:duration-200",
-            "peer-[:not(:placeholder-shown)]:-translate-y-[9px] peer-[:not(:placeholder-shown)]:scale-[0.8] peer-[:not(:placeholder-shown)]:duration-200",
+            "group/label pointer-events-none absolute top-4 left-3.5 origin-top-left text-[15px]/5 whitespace-nowrap select-none",
+            "transition-[scale,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[color]",
+            // Centered at 16px from the top, it shrinks to 80% (12px) while
+            // its letters rise 9px, to sit 7px from the top.
+            "data-floated:scale-[0.8] data-floated:duration-200",
             invalid ? "text-danger" : "text-muted peer-focus:text-foreground",
           )}
         >
-          {label}
+          <span className="sr-only">{label}</span>
+          <span aria-hidden>
+            {letters.map((letter, i) => (
+              <span
+                key={i}
+                style={{
+                  transitionDelay: `${
+                    floated
+                      ? Math.min(i, STAGGER_CAP) * RISE_STAGGER
+                      : Math.min(letters.length - 1 - i, STAGGER_CAP) *
+                        SETTLE_STAGGER
+                  }ms`,
+                }}
+                className={cn(
+                  "inline-block whitespace-pre",
+                  "transition-[translate] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+                  // 9px on screen is 11.25px before the 0.8 scale.
+                  "group-data-floated/label:-translate-y-[11.25px] group-data-floated/label:duration-200",
+                )}
+              >
+                {letter}
+              </span>
+            ))}
+          </span>
         </label>
         <motion.svg
           aria-hidden
@@ -179,9 +220,9 @@ export default function FloatingLabelDemo() {
       noValidate
       onSubmit={(e) => e.preventDefault()}
     >
-      <FloatingLabel label="Name" name="name" autoComplete="name" />
+      <FloatingLabel label="Full name" name="name" autoComplete="name" />
       <FloatingLabel
-        label="Email"
+        label="Email address"
         type="email"
         name="email"
         autoComplete="email"

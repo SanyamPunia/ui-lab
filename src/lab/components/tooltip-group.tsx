@@ -6,25 +6,78 @@ import {
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   useSyncExternalStore,
 } from "react";
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  type Variants,
+} from "motion/react";
 import { cn } from "@/lib/cn";
 
-/* The teachable part: one shared clock for every tooltip in a group. */
+/* The teachable part: one shared clock, and one shared bubble, for every
+   tooltip in a group. Scanning a toolbar doesn't swap tooltips; the same
+   bubble slides to the next button and reshapes around its label. */
 
 type Open = { id: string; instant: boolean } | null;
+type Shown = { id: string; content: React.ReactNode; dir: number };
+type Anchor = { el: HTMLElement | null; content: React.ReactNode };
 
 type Group = {
   open: Open;
+  anchors: React.RefObject<Map<string, Anchor>>;
   request: (id: string, immediate: boolean) => void;
   release: (id: string) => void;
   dismiss: (id: string) => void;
 };
 
 const GroupContext = createContext<Group | null>(null);
+
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+// A touch of give on the slide, so the bubble reads as one object being
+// carried over rather than a highlight jumping. Short enough that a fast
+// sweep never leaves it trailing more than a button behind.
+const GLIDE = { type: "spring", visualDuration: 0.22, bounce: 0.12 } as const;
+// The outline itself never overshoots: a pill that briefly outgrows its
+// label looks like a measuring bug.
+const RESHAPE = { type: "spring", visualDuration: 0.22, bounce: 0 } as const;
+// Space between the trigger's top edge and the arrow tip.
+const OFFSET = 10;
+// Horizontal padding inside the pill, added to the measured label.
+const PAD_X = 24;
+// A reopen within this window finds the old bubble still fading out, so it
+// slides from there instead of popping in somewhere new.
+const STILL_VISIBLE = 110;
+
+// The incoming label drifts in from the side the bubble is travelling from,
+// the outgoing one leaves the other way, so the text rides with the motion.
+const LABEL: Variants = {
+  enter: ({ dir, reduce }: { dir: number; reduce: boolean }) => ({
+    opacity: 0,
+    x: reduce ? 0 : dir * 10,
+    filter: reduce ? "blur(0px)" : "blur(4px)",
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.2, ease: EASE_OUT },
+  },
+  // Softer and quicker than the entrance: gone before the new one settles.
+  exit: ({ dir, reduce }: { dir: number; reduce: boolean }) => ({
+    opacity: 0,
+    x: reduce ? 0 : dir * -6,
+    filter: reduce ? "blur(0px)" : "blur(2px)",
+    transition: { duration: 0.12, ease: EASE_OUT },
+  }),
+};
 
 export function TooltipGroup({
   // Long enough that sweeping the cursor across the page never flashes a
@@ -33,25 +86,96 @@ export function TooltipGroup({
   // How long the group stays warm after the last tooltip closes. Covers the
   // gap between two buttons with plenty of room to spare.
   skipDelay = 300,
+  className,
   children,
 }: {
   delay?: number;
   skipDelay?: number;
+  className?: string;
   children: React.ReactNode;
 }) {
+  const reduceMotion = useReducedMotion() ?? false;
   const [open, setOpenState] = useState<Open>(null);
+  const [shown, setShown] = useState<Shown | null>(null);
   // Pointer events can outrun re-renders, so handlers read these refs.
   const openRef = useRef<Open>(null);
+  const shownId = useRef<string | null>(null);
+  const closedAt = useRef(-Infinity);
   const warm = useRef(false);
   const pending = useRef<string | null>(null);
   const suppressed = useRef<string | null>(null);
   const delayTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const graceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const anchors = useRef(new Map<string, Anchor>());
+
+  const root = useRef<HTMLDivElement>(null);
+  const measure = useRef<HTMLSpanElement>(null);
+  // Position of the arrow tip and width of the pill, relative to the group.
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const width = useMotionValue(0);
+  const lastOpen = useRef<Open>(null);
+
+  const center = (id: string | null) => {
+    const box = id ? anchors.current.get(id)?.el?.getBoundingClientRect() : null;
+    return box ? box.left + box.width / 2 : null;
+  };
 
   const setOpen = useCallback((next: Open) => {
+    const previous = openRef.current;
     openRef.current = next;
     setOpenState(next);
+    if (!next) {
+      if (previous) closedAt.current = performance.now();
+      return;
+    }
+    const from = center(shownId.current);
+    const to = center(next.id);
+    shownId.current = next.id;
+    setShown({
+      id: next.id,
+      content: anchors.current.get(next.id)?.content,
+      dir: from === null || to === null ? 0 : Math.sign(to - from),
+    });
   }, []);
+
+  // Measures the new label and moves the bubble before paint, so the first
+  // frame is already heading to the right place.
+  useLayoutEffect(() => {
+    const wasOpen = lastOpen.current !== null;
+    lastOpen.current = open;
+    const el = open ? anchors.current.get(open.id)?.el : null;
+    const box = root.current?.getBoundingClientRect();
+    if (!open || !el || !box || !measure.current) return;
+    const target = el.getBoundingClientRect();
+    const tx = target.left + target.width / 2 - box.left;
+    const ty = target.top - box.top - OFFSET;
+    const tw = measure.current.offsetWidth + PAD_X;
+    const onScreen =
+      wasOpen ||
+      performance.now() - closedAt.current < STILL_VISIBLE;
+    if (!onScreen || reduceMotion) {
+      x.jump(tx);
+      y.jump(ty);
+      width.jump(tw);
+      return;
+    }
+    // Not stopped on cleanup: the next animate() on the same value takes
+    // over mid-flight and keeps its velocity, so a fast sweep bends the
+    // path instead of restarting it.
+    animate(x, tx, GLIDE);
+    animate(y, ty, GLIDE);
+    animate(width, tw, RESHAPE);
+  }, [open, shown, reduceMotion, x, y, width]);
+
+  useEffect(
+    () => () => {
+      x.stop();
+      y.stop();
+      width.stop();
+    },
+    [x, y, width],
+  );
 
   useEffect(
     () => () => {
@@ -69,8 +193,8 @@ export function TooltipGroup({
       clearTimeout(graceTimer.current);
       pending.current = null;
       if (warm.current || openRef.current) {
-        // Scanning the toolbar: no delay and no entrance, as if the tooltips
-        // were already there.
+        // Scanning the toolbar: no delay and no entrance. The bubble that is
+        // already up slides over instead.
         setOpen({ id, instant: true });
         return;
       }
@@ -131,26 +255,89 @@ export function TooltipGroup({
   }, [open, dismiss]);
 
   const value = useMemo(
-    () => ({ open, request, release, dismiss }),
+    () => ({ open, anchors, request, release, dismiss }),
     [open, request, release, dismiss],
   );
+  const custom = { dir: shown?.dir ?? 0, reduce: reduceMotion };
+
   return (
-    <GroupContext.Provider value={value}>{children}</GroupContext.Provider>
+    <GroupContext.Provider value={value}>
+      <div ref={root} className={cn("relative w-fit max-w-full", className)}>
+        {children}
+        {/* Every trigger describes itself with its own hidden text, so this
+            visual copy stays out of the accessibility tree. */}
+        <motion.div
+          aria-hidden
+          style={{ x, y, width }}
+          className={cn(
+            // Anchored by its arrow tip: the CSS translate pulls it up and
+            // left of the point Motion moves, and it grows out of that point.
+            "pointer-events-none absolute top-0 left-0 z-10 h-7 origin-bottom -translate-x-1/2 -translate-y-full",
+            "transition-[opacity,scale] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100",
+            // Enters in 150ms and leaves in 100ms: the exit never holds the eye.
+            open ? "scale-100 opacity-100 duration-150" : "scale-[0.97] opacity-0 duration-100",
+            open?.instant && "duration-0",
+          )}
+        >
+          <div className="relative size-full overflow-hidden rounded-full bg-foreground text-[13px] font-medium text-background">
+            <AnimatePresence initial={false} custom={custom}>
+              {shown && (
+                <motion.span
+                  key={shown.id}
+                  custom={custom}
+                  variants={LABEL}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="absolute inset-0 flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  {shown.content}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+          {/* Part of the same object, so it slides with the pill instead of
+              being redrawn under each trigger. */}
+          <span className="absolute top-full left-1/2 -ml-[5px] block border-x-[5px] border-t-[5px] border-x-transparent border-t-foreground" />
+        </motion.div>
+        {/* Sizes the pill: the same label, laid out but never painted. */}
+        <span
+          ref={measure}
+          aria-hidden
+          className="invisible absolute top-0 left-0 flex gap-2 text-[13px] font-medium whitespace-nowrap"
+        >
+          {shown?.content}
+        </span>
+      </div>
+    </GroupContext.Provider>
   );
 }
 
-export function useTooltip() {
+export function useTooltip(content?: React.ReactNode) {
   const group = useContext(GroupContext);
   if (!group) throw new Error("useTooltip needs a <TooltipGroup> above it");
-  const { open, request, release, dismiss } = group;
+  const { open, anchors, request, release, dismiss } = group;
   const id = useId();
   const isOpen = open?.id === id;
+  const el = useRef<HTMLElement | null>(null);
+
+  // Kept current every render, read only when this tooltip opens.
+  useLayoutEffect(() => {
+    anchors.current.set(id, { el: el.current, content });
+  });
+  useEffect(() => {
+    const map = anchors.current;
+    return () => {
+      map.delete(id);
+    };
+  }, [anchors, id]);
 
   return {
     isOpen,
-    // Snap in when the group is warm, and snap out when a neighbor takes
-    // over, so a sweep never shows two tooltips crossing.
-    instant: isOpen ? open.instant : open !== null,
+    // The bubble points at this element.
+    anchorRef: (node: HTMLElement | null) => {
+      el.current = node;
+    },
     triggerProps: {
       "aria-describedby": id,
       onPointerEnter: (e: React.PointerEvent) => {
@@ -169,40 +356,9 @@ export function useTooltip() {
       },
       onBlur: () => release(id),
     },
-    tooltipProps: { id, role: "tooltip" as const },
+    // Put on a hidden element holding the text, for aria-describedby.
+    tooltipProps: { id, role: "tooltip" as const, hidden: true },
   };
-}
-
-export function TooltipBubble({
-  isOpen,
-  instant,
-  className,
-  children,
-  ...props
-}: {
-  isOpen: boolean;
-  instant: boolean;
-} & React.ComponentProps<"span">) {
-  return (
-    <span
-      {...props}
-      className={cn(
-        // Grows out of the trigger it describes.
-        "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2.5 -translate-x-1/2 origin-bottom",
-        "flex items-center gap-2 rounded-full bg-foreground px-3 py-1.5 text-[13px] font-medium whitespace-nowrap text-background",
-        "transition-[opacity,scale,translate,visibility] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[opacity,visibility]",
-        // Enters in 150ms and leaves in 100ms, like the copy button's
-        // tooltip: the exit should never hold the eye.
-        isOpen
-          ? "visible translate-y-0 scale-100 opacity-100 duration-150"
-          : "invisible translate-y-0.5 scale-[0.97] opacity-0 duration-100 motion-reduce:translate-y-0 motion-reduce:scale-100",
-        instant && "duration-0",
-        className,
-      )}
-    >
-      {children}
-    </span>
-  );
 }
 
 /* A text formatting toolbar built on it. */
@@ -316,19 +472,27 @@ function FormatButton({
   tabIndex: number;
   onFocus: () => void;
   onToggle: () => void;
-  ref: React.Ref<HTMLButtonElement>;
+  ref: (el: HTMLButtonElement | null) => void;
 }) {
-  const { isOpen, instant, triggerProps, tooltipProps } = useTooltip();
   const key = keyName(item.code);
   const glyphs = mac
     ? `⌘${item.shift ? "⇧" : ""}${key}`
     : `Ctrl+${item.shift ? "Shift+" : ""}${key}`;
   const shortcut = `${mac ? "Meta" : "Control"}+${item.shift ? "Shift+" : ""}${key}`;
+  const { anchorRef, triggerProps, tooltipProps } = useTooltip(
+    <>
+      {item.label}
+      <kbd className="font-sans text-background/55">{glyphs}</kbd>
+    </>,
+  );
 
   return (
-    <span className="relative flex">
+    <>
       <button
-        ref={ref}
+        ref={(el) => {
+          anchorRef(el);
+          ref(el);
+        }}
         type="button"
         aria-label={item.label}
         aria-pressed={pressed}
@@ -360,11 +524,10 @@ function FormatButton({
           {item.icon}
         </svg>
       </button>
-      <TooltipBubble isOpen={isOpen} instant={instant} {...tooltipProps}>
-        {item.label}
-        <kbd className="font-sans text-background/55">{glyphs}</kbd>
-      </TooltipBubble>
-    </span>
+      <span {...tooltipProps}>
+        {item.label}, {glyphs}
+      </span>
+    </>
   );
 }
 

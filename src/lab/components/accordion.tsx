@@ -99,19 +99,35 @@ export function Accordion({
               )}
             >
               <div className="min-h-0 overflow-hidden">
-                {/* Opening waits 60ms so the row has begun to part before the
-                    text arrives; closing starts at once and fades in 120ms,
+                {/* The answer is a flap folded up under its question: it
+                    swings down on a hinge along the header's bottom edge
+                    while the row parts, so the motion says where the text
+                    came from. The drawer curve lets it fall fast and settle
+                    flat; 280ms because the swing has ~70 degrees to cover.
+                    Closing folds only partway back and fades out in 150ms,
                     so the text is gone before the row finishes shutting. */}
-                <p
+                <div
                   className={cn(
-                    "pr-10 pb-5 text-[15px] leading-relaxed text-pretty text-muted ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
+                    "relative origin-top transition-[transform,opacity] motion-reduce:transform-none motion-reduce:transition-[opacity]",
                     isOpen
-                      ? "translate-y-0 opacity-100 transition-[opacity,translate] delay-60 duration-200"
-                      : "-translate-y-1 opacity-0 transition-[opacity,translate] duration-120",
+                      ? "[transform:perspective(640px)_rotateX(0deg)] opacity-100 duration-280 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                      : "[transform:perspective(640px)_rotateX(-72deg)] opacity-0 duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
                   )}
                 >
-                  {item.answer}
-                </p>
+                  <p className="pr-10 pb-5 text-[15px] leading-relaxed text-pretty text-muted">
+                    {item.answer}
+                  </p>
+                  {/* The crease: text nearest the hinge stays veiled in the
+                      page color until the flap lies flat, so the answer
+                      reads as unfolding out of the header, not sliding. */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "pointer-events-none absolute inset-0 bg-linear-to-b from-background to-transparent to-80% transition-[opacity] ease-out motion-reduce:hidden",
+                      isOpen ? "opacity-0 duration-280" : "opacity-100 duration-150",
+                    )}
+                  />
+                </div>
               </div>
             </div>
           </div>

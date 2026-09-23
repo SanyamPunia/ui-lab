@@ -9,8 +9,6 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/cn";
 
-// Movement across the row: critically damped, so nothing overshoots its slot.
-const SLIDE = { type: "spring", duration: 0.3, bounce: 0 } as const;
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
 type Slot = number | "start-gap" | "end-gap";
@@ -21,25 +19,37 @@ function slots(page: number, total: number): Slot[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   if (page <= 4) return [1, 2, 3, 4, 5, "end-gap", total];
   if (page >= total - 3)
-    return [1, "start-gap", ...Array.from({ length: 5 }, (_, i) => total - 4 + i)];
+    return [
+      1,
+      "start-gap",
+      ...Array.from({ length: 5 }, (_, i) => total - 4 + i),
+    ];
   return [1, "start-gap", page - 1, page, page + 1, "end-gap", total];
 }
 
-// The number you click never moves: the window rebuilds around its slot.
-// Null when no valid seven-slot layout puts it there (near the ends).
-function slotsAt(page: number, total: number, index: number): Slot[] | null {
-  if (total <= 7) return null;
-  const head: Slot[] = [1, 2, 3, 4, 5, "end-gap", total];
-  if (head[index] === page) return head;
-  const tail: Slot[] = [1, "start-gap", ...Array.from({ length: 5 }, (_, i) => total - 4 + i)];
-  if (tail[index] === page) return tail;
-  // A middle window starts at 4 or later and ends by total - 3, so each gap
-  // hides at least two pages.
-  const start = page - (index - 2);
-  if (index >= 2 && index <= 4 && start >= 4 && start <= total - 5)
-    return [1, "start-gap", start, start + 1, start + 2, "end-gap", total];
-  return null;
+// A gap counts as the middle of the pages it hides, so every slot has a
+// number to compare and knows which way to roll.
+function valueAt(layout: Slot[], i: number): number {
+  const slot = layout[i];
+  if (typeof slot === "number") return slot;
+  return ((layout[i - 1] as number) + (layout[i + 1] as number)) / 2;
 }
+
+const sameLayout = (a: Slot[], b: Slot[]) =>
+  a.length === b.length && a.every((slot, i) => slot === b[i]);
+
+// Slots are fixed places; only their labels change, rolling like an
+// odometer wheel. Critically damped, so a label never overshoots its slot.
+const ROLL = { type: "spring", duration: 0.35, bounce: 0 } as const;
+const GLIDE = { type: "spring", duration: 0.3, bounce: 0 } as const;
+// How far a label travels as it rolls: past the 20px line box, so the
+// incoming and outgoing numbers never sit on top of each other.
+const ROLL_DISTANCE = 14;
+// A finger has already lifted, so there is nothing under it to protect;
+// this only lets the tap's own feedback land before the numbers roll.
+const TOUCH_SETTLE_MS = 450;
+
+const slotBox = "relative flex size-9 items-center justify-center sm:size-10";
 
 const control =
   "relative flex size-9 touch-manipulation items-center justify-center rounded-full text-sm font-medium tabular-nums outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground sm:size-10 motion-reduce:transition-[color,background-color]";
@@ -59,20 +69,45 @@ export function Pagination({
 }) {
   const id = useId();
   const listRef = useRef<HTMLUListElement>(null);
+  const settle = useRef<ReturnType<typeof setTimeout>>(undefined);
   // Set by arrow keys, so focus follows the page only when the keyboard moved it.
   const focusCurrent = useRef(false);
-  // Where the last clicked number sat. Arrows and keys clear it, so they get
-  // the standard centred window.
-  const [anchor, setAnchor] = useState<{ page: number; index: number } | null>(
-    null,
-  );
-  const visible =
-    (anchor?.page === page && slotsAt(page, total, anchor.index)) ||
-    slots(page, total);
+  // The row as it stood when a number was clicked. It holds while the
+  // pointer is still over the control, so the number you just clicked stays
+  // under it (and the one beside it stays where you were aiming). Leaving
+  // the control recentres the window, the way a browser's tab strip waits
+  // for the mouse to leave before it closes up the gaps.
+  const [frozen, setFrozen] = useState<Slot[] | null>(null);
+  const standard = slots(page, total);
+  const visible = frozen && frozen.includes(page) ? frozen : standard;
+
+  // Each slot rolls up when its number grows and down when it shrinks.
+  // Worked out while rendering, from the layout that was on screen before.
+  const [shown, setShown] = useState<{ layout: Slot[]; dirs: number[] }>({
+    layout: visible,
+    dirs: [],
+  });
+  if (!sameLayout(shown.layout, visible)) {
+    setShown({
+      layout: visible,
+      dirs: visible.map((_, i) =>
+        i < shown.layout.length
+          ? Math.sign(valueAt(visible, i) - valueAt(shown.layout, i))
+          : 0,
+      ),
+    });
+  }
+
+  useEffect(() => () => clearTimeout(settle.current), []);
 
   const go = (next: number) => {
     const clamped = Math.min(Math.max(next, 1), total);
     if (clamped !== page) onPageChange(clamped);
+  };
+
+  const recenter = () => {
+    clearTimeout(settle.current);
+    setFrozen(null);
   };
 
   useEffect(() => {
@@ -93,7 +128,7 @@ export function Pagination({
     if (target === undefined) return;
     e.preventDefault();
     focusCurrent.current = true;
-    setAnchor(null);
+    recenter();
     go(target);
   };
 
@@ -101,111 +136,180 @@ export function Pagination({
   const atEnd = page >= total;
 
   return (
-    <nav aria-label={label} className={cn("flex justify-center", className)}>
-      <ul
-        ref={listRef}
-        onKeyDown={onKeyDown}
-        className="relative flex items-center gap-0.5 sm:gap-1"
+    <MotionConfig reducedMotion="user">
+      <nav
+        aria-label={label}
+        className={cn("flex justify-center", className)}
+        onPointerLeave={(e) => {
+          if (e.pointerType !== "touch") recenter();
+        }}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null))
+            recenter();
+        }}
       >
-        <li>
-          {/* aria-disabled rather than disabled, so a focused arrow keeps
-              focus when it reaches the end instead of dropping it to the page. */}
-          <button
-            type="button"
-            aria-label="Previous page"
-            aria-disabled={atStart}
-            onClick={() => {
-              setAnchor(null);
-              go(page - 1);
-            }}
-            className={cn(
-              control,
-              atStart
-                ? "cursor-not-allowed text-muted opacity-40"
-                : "text-foreground hover:bg-surface active:scale-[0.96]",
-            )}
-          >
-            <Chevron direction="left" />
-          </button>
-        </li>
-
-        <AnimatePresence mode="popLayout" initial={false}>
-          {visible.map((slot, index) => (
-            <motion.li
-              key={slot}
-              layout="position"
-              transition={SLIDE}
-              initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              // Quicker than the entrance: the leaving number shouldn't hold
-              // the eye while the row settles.
-              exit={{
-                opacity: 0,
-                scale: 0.9,
-                filter: "blur(4px)",
-                transition: { duration: 0.15, ease: EASE_OUT },
+        <ul
+          ref={listRef}
+          onKeyDown={onKeyDown}
+          className="relative flex items-center gap-0.5 sm:gap-1"
+        >
+          <li>
+            {/* aria-disabled rather than disabled, so a focused arrow keeps
+                focus when it reaches the end instead of dropping it to the page. */}
+            <button
+              type="button"
+              aria-label="Previous page"
+              aria-disabled={atStart}
+              onClick={() => {
+                recenter();
+                go(page - 1);
               }}
-              className="flex"
-            >
-              {typeof slot === "number" ? (
-                <button
-                  type="button"
-                  aria-label={`Page ${slot}`}
-                  aria-current={slot === page ? "page" : undefined}
-                  onClick={() => {
-                    setAnchor({ page: slot, index });
-                    go(slot);
-                  }}
-                  className={cn(
-                    control,
-                    slot === page
-                      ? "text-background"
-                      : "text-muted hover:bg-surface hover:text-foreground active:scale-[0.96]",
-                  )}
-                >
-                  {slot === page && (
-                    <motion.span
-                      layoutId={`${id}-pill`}
-                      transition={SLIDE}
-                      aria-hidden
-                      className="absolute inset-0 rounded-full bg-foreground"
-                    />
-                  )}
-                  <span className="relative">{slot}</span>
-                </button>
-              ) : (
-                <span
-                  aria-hidden
-                  className="flex size-9 items-center justify-center text-sm text-muted select-none sm:size-10"
-                >
-                  …
-                </span>
+              className={cn(
+                control,
+                atStart
+                  ? "cursor-not-allowed text-muted opacity-40"
+                  : "text-foreground hover:bg-surface active:scale-[0.96]",
               )}
-            </motion.li>
-          ))}
-        </AnimatePresence>
+            >
+              <Chevron direction="left" />
+            </button>
+          </li>
 
-        <li>
-          <button
-            type="button"
-            aria-label="Next page"
-            aria-disabled={atEnd}
-            onClick={() => {
-              setAnchor(null);
-              go(page + 1);
-            }}
-            className={cn(
-              control,
-              atEnd
-                ? "cursor-not-allowed text-muted opacity-40"
-                : "text-foreground hover:bg-surface active:scale-[0.96]",
-            )}
-          >
-            <Chevron direction="right" />
-          </button>
-        </li>
-      </ul>
-    </nav>
+          {/* Keyed by position, not page: the seven places never move or
+              remount, only the numbers printed on them change. */}
+          {visible.map((slot, index) => {
+            const current = slot === page;
+            const dir = shown.dirs[index] ?? 0;
+            return (
+              <li key={index} className={slotBox}>
+                {typeof slot === "number" ? (
+                  <button
+                    type="button"
+                    aria-label={`Page ${slot}`}
+                    aria-current={current ? "page" : undefined}
+                    onClick={(e) => {
+                      setFrozen(visible);
+                      go(slot);
+                      // Touch has no hover to wait out, so it recentres
+                      // on its own once the tap has registered.
+                      if (
+                        e.nativeEvent instanceof PointerEvent &&
+                        e.nativeEvent.pointerType === "touch"
+                      ) {
+                        clearTimeout(settle.current);
+                        settle.current = setTimeout(
+                          () => setFrozen(null),
+                          TOUCH_SETTLE_MS,
+                        );
+                      }
+                    }}
+                    className={cn(
+                      control,
+                      "peer absolute inset-0",
+                      !current &&
+                        "hover:bg-surface active:scale-[0.96] motion-reduce:active:scale-100",
+                    )}
+                  />
+                ) : null}
+                {current && (
+                  <motion.span
+                    layoutId={`${id}-pill`}
+                    transition={GLIDE}
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 rounded-full bg-foreground"
+                  />
+                )}
+                <Wheel
+                  value={slot}
+                  dir={dir}
+                  className={cn(
+                    "transition-[color,scale] duration-150 ease-out peer-active:scale-[0.96]",
+                    current
+                      ? "text-background"
+                      : typeof slot === "number"
+                        ? "text-muted peer-hover:text-foreground"
+                        : "text-muted",
+                  )}
+                />
+              </li>
+            );
+          })}
+
+          <li>
+            <button
+              type="button"
+              aria-label="Next page"
+              aria-disabled={atEnd}
+              onClick={() => {
+                recenter();
+                go(page + 1);
+              }}
+              className={cn(
+                control,
+                atEnd
+                  ? "cursor-not-allowed text-muted opacity-40"
+                  : "text-foreground hover:bg-surface active:scale-[0.96]",
+              )}
+            >
+              <Chevron direction="right" />
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </MotionConfig>
+  );
+}
+
+// One place on the odometer. The old label rolls out one way while the new
+// one rolls in from the other, blurred at the edges of travel so the two
+// read as one wheel turning rather than two numbers swapping.
+function Wheel({
+  value,
+  dir,
+  className,
+}: {
+  value: Slot;
+  dir: number;
+  className?: string;
+}) {
+  const label = typeof value === "number" ? String(value) : "…";
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "pointer-events-none relative grid h-5 place-items-center text-sm font-medium tabular-nums select-none",
+        className,
+      )}
+    >
+      <AnimatePresence initial={false} custom={dir}>
+        <motion.span
+          key={label}
+          custom={dir}
+          variants={{
+            in: (d: number) => ({
+              opacity: 0,
+              y: d * ROLL_DISTANCE,
+              filter: "blur(3px)",
+            }),
+            rest: { opacity: 1, y: 0, filter: "blur(0px)", transition: ROLL },
+            // Leaves quicker than the new label arrives, so the eye lands on
+            // the incoming number.
+            out: (d: number) => ({
+              opacity: 0,
+              y: -d * ROLL_DISTANCE,
+              filter: "blur(3px)",
+              transition: { duration: 0.2, ease: EASE_OUT },
+            }),
+          }}
+          initial="in"
+          animate="rest"
+          exit="out"
+          className="col-start-1 row-start-1"
+        >
+          {label}
+        </motion.span>
+      </AnimatePresence>
+    </span>
   );
 }
 
@@ -222,7 +326,13 @@ function Chevron({ direction }: { direction: "left" | "right" }) {
       strokeLinejoin="round"
       aria-hidden
     >
-      <path d={direction === "left" ? "M10 3.5 5.5 8l4.5 4.5" : "m6 3.5 4.5 4.5L6 12.5"} />
+      <path
+        d={
+          direction === "left"
+            ? "M10 3.5 5.5 8l4.5 4.5"
+            : "m6 3.5 4.5 4.5L6 12.5"
+        }
+      />
     </svg>
   );
 }

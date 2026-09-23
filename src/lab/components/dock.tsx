@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  animate,
   motion,
   useMotionValue,
   useReducedMotion,
   useSpring,
   useTransform,
+  type AnimationPlaybackControls,
   type MotionValue,
+  type Transition,
 } from "motion/react";
 import { cn } from "@/lib/cn";
 
@@ -20,14 +23,44 @@ const REACH = 140;
 const SIZE_SPRING = { mass: 0.1, stiffness: 170, damping: 12 };
 // The first label waits so a cursor passing through doesn't flash one.
 const TOOLTIP_DELAY = 300;
+// The launch: two hops, the second lower, like something being thrown up
+// and caught. 700ms is well past the UI budget on purpose: it is the
+// "starting up" signal itself, it happens once per app, and input is never
+// blocked while it plays.
+const HOP: { y: number[]; transition: Transition } = {
+  y: [0, -22, 0, -9, 0],
+  // Up fast and down with gravity; each landing is the quickest part.
+  transition: {
+    duration: 0.7,
+    times: [0, 0.3, 0.55, 0.78, 1],
+    ease: ["easeOut", "easeIn", "easeOut", "easeIn"],
+  },
+};
+// Squashes on each landing, so the icon reads as having weight.
+const SQUASH: { scaleX: number[]; scaleY: number[]; transition: Transition } =
+  {
+    scaleY: [1, 1.04, 0.9, 1.02, 0.96, 1],
+    scaleX: [1, 0.97, 1.08, 0.99, 1.03, 1],
+    transition: { duration: 0.7, times: [0, 0.3, 0.55, 0.7, 0.8, 1] },
+  };
 
 type Item = { label: string; icon: React.ReactNode };
 type Tip = { label: string; instant: boolean };
 
-export function Dock({ items }: { items: Item[] }) {
+export function Dock({
+  items,
+  defaultRunning = [],
+  onLaunch,
+}: {
+  items: Item[];
+  // Labels of the apps that start with a running light under them.
+  defaultRunning?: string[];
+  onLaunch?: (label: string) => void;
+}) {
   const reduceMotion = useReducedMotion();
   const mouseX = useMotionValue(Infinity);
   const [tip, setTip] = useState<Tip | null>(null);
+  const [running, setRunning] = useState(defaultRunning);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -71,6 +104,13 @@ export function Dock({ items }: { items: Item[] }) {
           onEnter={() => showTip(item.label)}
           onFocus={() => setTip({ label: item.label, instant: false })}
           onBlur={hideTip}
+          running={running.includes(item.label)}
+          onLaunch={() => {
+            setRunning((r) =>
+              r.includes(item.label) ? r : [...r, item.label],
+            );
+            onLaunch?.(item.label);
+          }}
         />
       ))}
     </nav>
@@ -84,6 +124,8 @@ function DockItem({
   onEnter,
   onFocus,
   onBlur,
+  running,
+  onLaunch,
 }: {
   item: Item;
   mouseX: MotionValue<number>;
@@ -91,8 +133,13 @@ function DockItem({
   onEnter: () => void;
   onFocus: () => void;
   onBlur: () => void;
+  running: boolean;
+  onLaunch: () => void;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
+  const reduceMotion = useReducedMotion();
+  const hop = useRef<AnimationPlaybackControls[]>([]);
+  useEffect(() => () => hop.current.forEach((a) => a.stop()), []);
 
   const distance = useTransform(mouseX, (x) => {
     const box = ref.current?.getBoundingClientRect();
@@ -102,33 +149,54 @@ function DockItem({
   const size = useSpring(target, SIZE_SPRING);
   const iconSize = useTransform(size, (s) => s * 0.45);
 
+  const launch = () => {
+    // Already running: a click just brings it forward, no fanfare.
+    if (running) return;
+    onLaunch();
+    if (reduceMotion || !ref.current) return;
+    hop.current.forEach((a) => a.stop());
+    hop.current = [
+      animate(ref.current, { y: HOP.y }, HOP.transition),
+      animate(
+        ref.current,
+        { scaleX: SQUASH.scaleX, scaleY: SQUASH.scaleY },
+        SQUASH.transition,
+      ),
+    ];
+  };
+
   // Width and height animate instead of scale on purpose: the neighbours have
   // to move apart, and a transform would let the icons overlap instead.
   return (
-    <motion.button
-      ref={ref}
-      type="button"
-      aria-label={item.label}
-      style={{ width: size, height: size }}
-      className="relative flex shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
-      onPointerEnter={(e) => {
-        if (e.pointerType !== "touch") onEnter();
-      }}
-      onFocus={onFocus}
-      onBlur={onBlur}
-    >
-      <motion.svg
-        viewBox="0 0 24 24"
-        style={{ width: iconSize, height: iconSize }}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
+    <span className="relative flex shrink-0">
+      <motion.button
+        ref={ref}
+        type="button"
+        aria-label={running ? `${item.label}, running` : item.label}
+        // Lands on its base, so the squash spreads along the dock.
+        style={{ width: size, height: size, originY: 1 }}
+        className="relative flex shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+        onPointerEnter={(e) => {
+          if (e.pointerType !== "touch") onEnter();
+        }}
+        onClick={launch}
+        onFocus={onFocus}
+        onBlur={onBlur}
       >
-        {item.icon}
-      </motion.svg>
+        <motion.svg
+          viewBox="0 0 24 24"
+          style={{ width: iconSize, height: iconSize }}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          {item.icon}
+        </motion.svg>
+      </motion.button>
+      {/* Outside the button, so the label holds still while the icon hops. */}
       <span
         aria-hidden
         className={cn(
@@ -139,7 +207,18 @@ function DockItem({
       >
         {item.label}
       </span>
-    </motion.button>
+      {/* The running light stays on the shelf while the icon hops, and
+          comes on as it first lands (0.55 of 700ms) rather than on click. */}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute top-full left-1/2 mt-1 -ml-0.5 size-1 rounded-full bg-foreground transition-[opacity,scale] ease-[cubic-bezier(0.23,1,0.32,1)]",
+          running
+            ? "scale-100 opacity-100 delay-[385ms] duration-200 motion-reduce:delay-0"
+            : "scale-50 opacity-0 duration-150",
+        )}
+      />
+    </span>
   );
 }
 
@@ -199,5 +278,5 @@ const ITEMS: Item[] = [
 ];
 
 export default function DockDemo() {
-  return <Dock items={ITEMS} />;
+  return <Dock items={ITEMS} defaultRunning={["Home", "Mail"]} />;
 }

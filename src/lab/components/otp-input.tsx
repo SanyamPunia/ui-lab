@@ -12,6 +12,9 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 // never feels blocked.
 const ERROR_HOLD = 700;
 const SUCCESS_HOLD = 2000;
+// Slot geometry, in px: w-10 slots with gap-2 between them.
+const GAP = 8;
+const SLOT_STEP = 40 + GAP;
 
 // Keyframes suit both: the caret loops forever and the shake is a one-shot
 // that nothing interrupts.
@@ -162,13 +165,41 @@ export function OtpInput({
           <Slot
             key={i}
             char={value[i]}
-            active={i === active}
             caret={i === active && value.length < length}
             caretKey={value.length}
             status={status}
+            // Distance to the row's middle, in slots: how far this one
+            // travels when the code seals.
+            offset={(length - 1) / 2 - i}
+            edge={i === 0 ? "start" : i === length - 1 ? "end" : "middle"}
             reduceMotion={reduceMotion}
           />
         ))}
+        {/* One focus ring for the whole code, gliding to the next slot as
+            each digit lands, so the eye is led along instead of watching
+            one box switch off and the next switch on. */}
+        <span
+          aria-hidden
+          style={{ translate: `${Math.max(active, 0) * SLOT_STEP}px 0` }}
+          className={cn(
+            "pointer-events-none absolute top-0 left-0 h-12 w-10 rounded-lg border border-foreground ring-1 ring-foreground",
+            "transition-[translate,opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-[opacity]",
+            active < 0 && "scale-[0.96] opacity-0",
+          )}
+        />
+        {/* The seal's single outline, drawn around where the slots end up,
+            so it has no seams where the six boxes meet. It waits until the
+            320ms close is nearly done, or the slots would overhang it. */}
+        <span
+          aria-hidden
+          style={{ insetInline: reduceMotion ? 0 : ((length - 1) * GAP) / 2 }}
+          className={cn(
+            "pointer-events-none absolute inset-y-0 rounded-lg border border-foreground",
+            status === "success"
+              ? "opacity-100 transition-[opacity] delay-[240ms] duration-200 ease-out"
+              : "opacity-0 transition-[opacity] duration-150 ease-out",
+          )}
+        />
       </div>
 
       {/* All three messages share one grid cell, so swapping never shifts
@@ -245,32 +276,44 @@ function Message({
 
 function Slot({
   char,
-  active,
   caret,
   caretKey,
   status,
+  offset,
+  edge,
   reduceMotion,
 }: {
   char: string | undefined;
-  active: boolean;
   caret: boolean;
   caretKey: number;
   status: Status;
+  offset: number;
+  edge: "start" | "middle" | "end";
   reduceMotion: boolean | null;
 }) {
+  // A verified code seals: the slots slide together into one bar, their
+  // inner walls and corners dissolve, and the six boxes become one field.
+  const sealed = status === "success";
   return (
     <div
       aria-hidden
+      style={{
+        translate: sealed && !reduceMotion ? `${offset * GAP}px 0` : undefined,
+      }}
       className={cn(
         "flex h-12 w-10 items-center justify-center rounded-lg border bg-surface font-mono text-lg text-foreground tabular-nums",
-        "transition-[border-color,box-shadow,color] duration-150 ease-out",
+        sealed
+          ? // 320ms, over the usual cap: it plays once per code, as the
+            // payoff, and a faster close reads as a glitch rather than a seal.
+            "border-transparent transition-[translate,border-color,border-radius,color] duration-[320ms] ease-[cubic-bezier(0.77,0,0.175,1)]"
+          : "transition-[translate,border-color,border-radius,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+        // The walls between digits stay as hairlines, so the code still
+        // reads in groups of one.
+        sealed && edge !== "start" && "rounded-l-none border-l-border",
+        sealed && edge !== "end" && "rounded-r-none",
         status === "error"
           ? "border-danger text-danger"
-          : status === "success"
-            ? "border-foreground/40"
-            : active
-              ? "border-foreground ring-1 ring-foreground"
-              : "border-border",
+          : !sealed && "border-border",
       )}
     >
       {char ? (

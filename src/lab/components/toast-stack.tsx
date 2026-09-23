@@ -18,6 +18,19 @@ const LEAVE_MS = 200;
 const FLICK_VELOCITY = 0.11;
 const DISMISS_DISTANCE = 40;
 
+// The toast's own edge is its timer: a hairline that drains around the
+// outline, clockwise from the top left, and stops the moment you hover or
+// switch tabs, because the dismiss timers above stop then too. Linear,
+// because it is a clock. A keyframe, since it runs once per toast and only
+// ever pauses, never retargets.
+const CSS = `
+@keyframes toast-drain {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -1; }
+}
+.toast-drain { animation: toast-drain ${DURATION}ms linear forwards; }
+`;
+
 export function ToastStack({
   toasts,
   onDismiss,
@@ -84,6 +97,9 @@ export function ToastStack({
       aria-live="polite"
       className="fixed bottom-6 left-1/2 z-50 w-[356px] max-w-[calc(100vw-2rem)] -translate-x-1/2"
     >
+      <style href="toast-stack" precedence="default">
+        {CSS}
+      </style>
       {/* Grows with the fanned-out stack, so moving between toasts never
           leaves the hover area and collapses them. */}
       <ol
@@ -103,6 +119,7 @@ export function ToastStack({
               toast={toast}
               index={index}
               expanded={hovered}
+              paused={hovered || hidden}
               leaving={leaveIndex !== undefined}
               onDismiss={() => dismiss(toast.id, index)}
             />
@@ -117,12 +134,14 @@ function ToastItem({
   toast,
   index,
   expanded,
+  paused,
   leaving,
   onDismiss,
 }: {
   toast: Toast;
   index: number;
   expanded: boolean;
+  paused: boolean;
   leaving: boolean;
   onDismiss: () => void;
 }) {
@@ -214,6 +233,29 @@ function ToastItem({
         e.currentTarget.style.translate = "";
       }}
     >
+      <svg
+        aria-hidden
+        className="pointer-events-none absolute inset-0 size-full overflow-visible text-foreground"
+      >
+        {/* Traces the li's own 16px corners, half a pixel in so the 1px
+            stroke sits inside the edge rather than straddling it. */}
+        <rect
+          x="0.5"
+          y="0.5"
+          rx="15.5"
+          style={{
+            width: "calc(100% - 1px)",
+            height: "calc(100% - 1px)",
+            animationPlayState: paused ? "paused" : "running",
+          }}
+          pathLength={1}
+          strokeDasharray="1 1"
+          fill="none"
+          stroke="currentColor"
+          strokeOpacity={0.35}
+          className="toast-drain"
+        />
+      </svg>
       <p className="text-sm font-medium">{toast.title}</p>
       <p className="truncate text-sm text-muted">{toast.description}</p>
     </li>

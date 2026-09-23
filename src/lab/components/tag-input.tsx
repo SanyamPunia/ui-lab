@@ -31,6 +31,10 @@ export function TagInput({
   const [draft, setDraft] = useState("");
   // Index of the chip the first Backspace armed; the second one removes it.
   const [armed, setArmed] = useState(-1);
+  // The tag just typed into the field, if any. It becomes a chip right
+  // where its letters already are: the words stay put and the chip forms
+  // around them, rather than the text vanishing and a chip popping in.
+  const [formed, setFormed] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const chipRefs = useRef(new Map<string, HTMLSpanElement>());
@@ -57,7 +61,7 @@ export function TagInput({
     shakes.current.set(key(tag), animation);
   };
 
-  const add = (raw: string[]) => {
+  const add = (raw: string[], typed = false) => {
     const next = [...tags];
     const added: string[] = [];
     for (const part of raw) {
@@ -73,6 +77,9 @@ export function TagInput({
       added.push(tag);
     }
     if (added.length) {
+      // Only a single typed tag sits where the draft was. Pasted lists pop
+      // in as usual, since most of their chips land away from the caret.
+      setFormed(typed && added.length === 1 ? key(added[0]) : null);
       onTagsChange(next);
       setAnnouncement(`Added ${added.join(", ")}`);
     }
@@ -114,9 +121,13 @@ export function TagInput({
                 key={key(tag)}
                 layout="position"
                 initial={
-                  reduceMotion
-                    ? { opacity: 0, scale: 1, filter: "blur(0px)" }
-                    : { opacity: 0, scale: 0.9, filter: "blur(4px)" }
+                  formed === key(tag)
+                    ? // Its letters are already on screen, so the chip
+                      // itself does not fade or blur; only its body forms.
+                      { opacity: 1, scale: 1, filter: "blur(0px)" }
+                    : reduceMotion
+                      ? { opacity: 0, scale: 1, filter: "blur(0px)" }
+                      : { opacity: 0, scale: 0.9, filter: "blur(4px)" }
                 }
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                 exit={{
@@ -134,44 +145,82 @@ export function TagInput({
                     else chipRefs.current.delete(key(tag));
                   }}
                   className={cn(
-                    // 8px radius inside 6px padding keeps the 14px field concentric.
-                    "flex h-8 max-w-full items-center gap-0.5 rounded-lg pr-1 pl-2.5 text-sm transition-[background-color,color] duration-150 ease-out",
-                    armed === i
-                      ? "bg-foreground text-background"
-                      : "bg-background text-foreground shadow-raised",
+                    "relative flex h-8 max-w-full items-center gap-0.5 pr-1 pl-2.5 text-sm transition-[color] duration-150 ease-out",
+                    armed === i ? "text-background" : "text-foreground",
                   )}
                 >
-                  <span className="truncate">{tag}</span>
-                  <button
-                    type="button"
-                    aria-label={`Remove ${tag}`}
-                    // Keeps focus in the input, so typing carries straight on.
-                    onPointerDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      remove(i);
-                      inputRef.current?.focus();
-                    }}
+                  {/* The chip's body, separate from its text, so a freshly
+                      typed tag can grow a chip around words that never move. */}
+                  <motion.span
+                    aria-hidden
+                    initial={
+                      formed === key(tag) && !reduceMotion
+                        ? { opacity: 0, scale: 0.9 }
+                        : formed === key(tag)
+                          ? { opacity: 0 }
+                          : false
+                    }
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={POP}
                     className={cn(
-                      "relative flex size-6 shrink-0 items-center justify-center rounded-md outline-hidden transition-[scale,color,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
-                      // Grows the hit area to 32px without growing the icon.
-                      "after:absolute after:-inset-1",
+                      // 8px radius inside 6px padding keeps the 14px field concentric.
+                      "absolute inset-0 rounded-lg transition-[background-color] duration-150 ease-out",
                       armed === i
-                        ? "text-background/70 hover:text-background"
-                        : "text-muted hover:bg-foreground/[0.06] hover:text-foreground",
+                        ? "bg-foreground"
+                        : "bg-background shadow-raised",
                     )}
+                  />
+                  <span className="relative truncate">{tag}</span>
+                  <motion.span
+                    className="relative flex"
+                    // The remove button arrives just after the body, as the
+                    // last piece of the chip, with the icon swap's values.
+                    initial={
+                      formed === key(tag)
+                        ? reduceMotion
+                          ? { opacity: 0 }
+                          : { opacity: 0, scale: 0.25, filter: "blur(4px)" }
+                        : false
+                    }
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    transition={{
+                      type: "spring",
+                      duration: 0.3,
+                      bounce: 0,
+                      delay: 0.06,
+                    }}
                   >
-                    <svg
-                      viewBox="0 0 16 16"
-                      aria-hidden
-                      className="size-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                      strokeLinecap="round"
+                    <button
+                      type="button"
+                      aria-label={`Remove ${tag}`}
+                      // Keeps focus in the input, so typing carries straight on.
+                      onPointerDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        remove(i);
+                        inputRef.current?.focus();
+                      }}
+                      className={cn(
+                        "relative flex size-6 shrink-0 items-center justify-center rounded-md outline-hidden transition-[scale,color,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+                        // Grows the hit area to 32px without growing the icon.
+                        "after:absolute after:-inset-1",
+                        armed === i
+                          ? "text-background/70 hover:text-background"
+                          : "text-muted hover:bg-foreground/[0.06] hover:text-foreground",
+                      )}
                     >
-                      <path d="m4.5 4.5 7 7M11.5 4.5l-7 7" />
-                    </svg>
-                  </button>
+                      <svg
+                        viewBox="0 0 16 16"
+                        aria-hidden
+                        className="size-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        strokeLinecap="round"
+                      >
+                        <path d="m4.5 4.5 7 7M11.5 4.5l-7 7" />
+                      </svg>
+                    </button>
+                  </motion.span>
                 </span>
               </motion.li>
             ))}
@@ -192,7 +241,7 @@ export function TagInput({
                 onChange={(e) => {
                   const value = e.target.value;
                   // Mobile keyboards often never fire a comma keydown.
-                  if (value.includes(",")) add(value.split(","));
+                  if (value.includes(",")) add(value.split(","), true);
                   else {
                     setDraft(value);
                     setArmed(-1);
@@ -208,7 +257,7 @@ export function TagInput({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === ",") {
                     e.preventDefault();
-                    add([draft]);
+                    add([draft], true);
                   } else if (
                     e.key === "Backspace" &&
                     draft === "" &&
@@ -222,7 +271,9 @@ export function TagInput({
                     setArmed(-1);
                   }
                 }}
-                className="h-8 w-full min-w-0 bg-transparent px-2 text-sm text-foreground outline-hidden placeholder:text-muted"
+                // 10px in, the same as a chip's text, so a typed tag becomes a
+                // chip without its letters shifting.
+                className="h-8 w-full min-w-0 bg-transparent pr-2 pl-2.5 text-sm text-foreground outline-hidden placeholder:text-muted"
               />
             </motion.li>
           </AnimatePresence>

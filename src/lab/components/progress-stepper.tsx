@@ -1,7 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  type AnimationPlaybackControls,
+} from "motion/react";
 import { cn } from "@/lib/cn";
 
 const ICON_SWAP = { type: "spring", duration: 0.3, bounce: 0 } as const;
@@ -14,6 +21,16 @@ const STAGGER_MS = 120;
 // The step a line is heading for lights up just before the fill reaches it,
 // so the circle reads as the line's destination rather than a separate event.
 const ARRIVE_MS = 160;
+// The "you are here" halo is one capsule that inches along the track: the
+// head leaves with the line fill and lands as it does, the tail lets go this
+// much later and catches up, so the halo stretches over the connector and
+// then pulls itself in around the new step. Longer than the 300ms budget in
+// total (up to ~600ms on a full reset) because it is the travel the fill
+// already takes, with the tail's short lag on the end.
+const TAIL_LAG = 0.12;
+const INCH_EASE = [0.77, 0, 0.175, 1] as const;
+// 36px circle plus a 4px halo on each side.
+const HALO = 22;
 
 type Status = "complete" | "current" | "upcoming";
 
@@ -35,6 +52,45 @@ export function ProgressStepper({
   if (move.to !== current) setMove({ from: move.to, to: current });
   const { from } = move;
   const last = steps.length - 1;
+  const n = steps.length;
+
+  const olRef = useRef<HTMLOListElement>(null);
+  const rtl = useRef(false);
+  const head = useMotionValue(current);
+  const tail = useMotionValue(current);
+  const runs = useRef<AnimationPlaybackControls[]>([]);
+  const prev = useRef(current);
+
+  useEffect(() => {
+    const start = prev.current;
+    prev.current = current;
+    if (start === current) return;
+    if (olRef.current) rtl.current = getComputedStyle(olRef.current).direction === "rtl";
+    runs.current.forEach((r) => r.stop());
+    if (reduceMotion) {
+      head.jump(current);
+      tail.jump(current);
+      return;
+    }
+    // Matches the relay: the last connector finishes filling at this point.
+    const travel = ((Math.abs(current - start) - 1) * STAGGER_MS + LINE_MS) / 1000;
+    runs.current = [
+      animate(head, current, { duration: travel, ease: INCH_EASE }),
+      animate(tail, current, { duration: travel, ease: INCH_EASE, delay: TAIL_LAG }),
+    ];
+  }, [current, reduceMotion, head, tail]);
+
+  useEffect(() => () => runs.current.forEach((r) => r.stop()), []);
+
+  // One strip the width of the list, clipped down to a capsule between the
+  // centres of the two ends. clip-path keeps it off layout, and percentages
+  // follow the grid's equal columns at any width.
+  const clip = useTransform([head, tail], ([h, t]: number[]) => {
+    const lo = ((Math.min(h, t) + 0.5) / n) * 100;
+    const hi = ((Math.max(h, t) + 0.5) / n) * 100;
+    const [l, r] = rtl.current ? [100 - hi, lo] : [lo, 100 - hi];
+    return `inset(0 calc(${r}% - ${HALO}px) 0 calc(${l}% - ${HALO}px) round ${HALO}px)`;
+  });
 
   const lineDelay = (k: number) => {
     if (reduceMotion) return 0;
@@ -59,10 +115,18 @@ export function ProgressStepper({
   return (
     <div className={cn("w-[min(520px,100%)]", className)}>
       <ol
+        ref={olRef}
         aria-label={label}
-        className="grid"
+        className="relative grid"
         style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}
       >
+        <motion.span
+          aria-hidden
+          style={{ clipPath: clip }}
+          // Sits under the circles and the connector, so at rest only a 4px
+          // ring shows and in flight the line runs through it like a tube.
+          className="pointer-events-none absolute inset-x-0 -top-1 h-11 bg-foreground/10"
+        />
         {steps.map((step, j) => {
           const status = statusOf(j);
           // The last step is a destination, not a task: reaching it completes it.
@@ -96,14 +160,12 @@ export function ProgressStepper({
               <span
                 aria-hidden
                 className={cn(
-                  "relative grid size-9 place-items-center rounded-full text-sm font-medium tabular-nums inset-ring ring-foreground/10 transition-[background-color,color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                  "relative grid size-9 place-items-center rounded-full text-sm font-medium tabular-nums inset-ring transition-[background-color,color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
                   checked
                     ? "bg-foreground text-background inset-ring-foreground"
                     : status === "current"
                       ? "bg-background text-foreground inset-ring-foreground"
                       : "bg-background text-muted inset-ring-border",
-                  // A soft 4px halo marks where you are without another color.
-                  status === "current" ? "ring-4" : "ring-0",
                 )}
                 style={{ transitionDelay: `${delay}ms` }}
               >

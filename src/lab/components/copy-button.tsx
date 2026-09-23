@@ -72,13 +72,8 @@ export function CopyButton({
       >
         {/* Both icons share one grid cell so the swap never shifts layout. */}
         <span className="grid" aria-hidden>
-          <Icon visible={status !== "copied"} reduceMotion={reduceMotion}>
-            <rect x="5.25" y="5.25" width="8" height="8" rx="1.75" />
-            <path d="M10.75 5.25V4.5a1.75 1.75 0 0 0-1.75-1.75H4.5A1.75 1.75 0 0 0 2.75 4.5V9a1.75 1.75 0 0 0 1.75 1.75h.75" />
-          </Icon>
-          <Icon visible={status === "copied"} reduceMotion={reduceMotion}>
-            <path d="m3.5 8.5 3 3 6-7" />
-          </Icon>
+          <CopyGlyph copied={status === "copied"} reduceMotion={reduceMotion} />
+          <CheckGlyph copied={status === "copied"} reduceMotion={reduceMotion} />
         </span>
       </button>
 
@@ -104,33 +99,103 @@ export function CopyButton({
   );
 }
 
-function Icon({
-  visible,
+const GLYPH = {
+  viewBox: "0 0 16 16",
+  className: "col-start-1 row-start-1 size-4",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.5,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+} as const;
+
+// The front sheet is offset from the back one by 2.5 units each way, so
+// sliding it back by exactly that lays it over the rear outline.
+const SHEET_OFFSET = 2.5;
+const MERGE = { duration: 0.12, ease: [0.77, 0, 0.175, 1] } as const;
+
+// The copy icon acts the copy out: the front sheet slides onto the back one
+// until the two pages are one, and only then does that page give way to a
+// check that draws itself in. Returning, the page splits back into two.
+function CopyGlyph({
+  copied,
   reduceMotion,
-  children,
 }: {
-  visible: boolean;
+  copied: boolean;
   reduceMotion: boolean | null;
-  children: React.ReactNode;
 }) {
-  // Reduced motion keeps the cross-fade but drops the scale and blur.
-  const hidden = reduceMotion
-    ? { opacity: 0 }
-    : { scale: 0.25, opacity: 0, filter: "blur(4px)" };
+  const shown = { scale: 1, opacity: 1, filter: "blur(0px)" };
   return (
     <motion.svg
-      viewBox="0 0 16 16"
-      className="col-start-1 row-start-1 size-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      {...GLYPH}
       initial={false}
-      animate={visible ? { scale: 1, opacity: 1, filter: "blur(0px)" } : hidden}
-      transition={ICON_SWAP}
+      animate={
+        copied
+          ? reduceMotion
+            ? { opacity: 0 }
+            : {
+                scale: 0.25,
+                opacity: 0,
+                filter: "blur(4px)",
+                // Waits for the sheets to merge before it leaves.
+                transition: { ...ICON_SWAP, delay: MERGE.duration },
+              }
+          : { ...shown, transition: ICON_SWAP }
+      }
     >
-      {children}
+      <path d="M10.75 5.25V4.5a1.75 1.75 0 0 0-1.75-1.75H4.5A1.75 1.75 0 0 0 2.75 4.5V9a1.75 1.75 0 0 0 1.75 1.75h.75" />
+      <motion.rect
+        x="5.25"
+        y="5.25"
+        width="8"
+        height="8"
+        rx="1.75"
+        initial={false}
+        animate={
+          copied && !reduceMotion
+            ? { x: -SHEET_OFFSET, y: -SHEET_OFFSET, transition: MERGE }
+            : // Splits a beat after the page has faded back in.
+              { x: 0, y: 0, transition: { ...MERGE, delay: 0.1 } }
+        }
+      />
+    </motion.svg>
+  );
+}
+
+function CheckGlyph({
+  copied,
+  reduceMotion,
+}: {
+  copied: boolean;
+  reduceMotion: boolean | null;
+}) {
+  return (
+    <motion.svg
+      {...GLYPH}
+      initial={false}
+      animate={
+        copied
+          ? { opacity: 1, transition: { duration: 0.1, delay: MERGE.duration } }
+          : // Softer than the entrance: fades rather than un-draws.
+            { opacity: 0, transition: { duration: 0.12 } }
+      }
+    >
+      <motion.path
+        d="m3.5 8.5 3 3 6-7"
+        initial={false}
+        animate={
+          copied || reduceMotion
+            ? {
+                pathLength: 1,
+                transition: reduceMotion
+                  ? { duration: 0 }
+                  : // A pen stroke: fast off the mark, easing into the tip.
+                    { duration: 0.22, delay: MERGE.duration, ease: [0.65, 0, 0.35, 1] },
+              }
+            : // Rewinds only once invisible, ready for the next copy.
+              { pathLength: 0, transition: { duration: 0, delay: 0.12 } }
+        }
+      />
     </motion.svg>
   );
 }

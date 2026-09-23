@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import {
   motion,
-  useMotionTemplate,
   useMotionValue,
   useReducedMotion,
   useSpring,
@@ -19,6 +18,14 @@ const STRENGTH = 0.5;
 const FOLLOW = { stiffness: 180, damping: 14, mass: 0.2 };
 // The label travels further than the button, so it reads as a layer above it.
 const LABEL_DEPTH = 0.5;
+// The body stretches toward the pull like something soft on a magnet: 1% per
+// 1.2px of pull, capped at 12% so the pill never turns into a blob. It thins
+// by half as much across, which roughly keeps its area.
+const STRETCH_PER_PX = 1 / 120;
+const MAX_STRETCH = 0.12;
+// Much looser than the follow (damping ratio about 0.4), so when the cursor
+// lets go the pill jiggles through a squash or two before it settles.
+const WOBBLE = { stiffness: 320, damping: 10, mass: 0.5 };
 
 export function MagneticButton({
   children,
@@ -31,10 +38,33 @@ export function MagneticButton({
   const pullY = useMotionValue(0);
   const x = useSpring(pullX, FOLLOW);
   const y = useSpring(pullY, FOLLOW);
-  const transform = useMotionTemplate`translate(${x}px, ${y}px)`;
-  const labelX = useTransform(x, (v) => v * LABEL_DEPTH);
-  const labelY = useTransform(y, (v) => v * LABEL_DEPTH);
-  const labelTransform = useMotionTemplate`translate(${labelX}px, ${labelY}px)`;
+  const stretchTarget = useTransform(() =>
+    Math.min(Math.hypot(x.get(), y.get()) * STRETCH_PER_PX, MAX_STRETCH),
+  );
+  const stretch = useSpring(stretchTarget, WOBBLE);
+  // The pull's direction, held once the pull fades out: a spring settling
+  // around zero has no direction of its own, and the jiggle should stay on
+  // the axis the pill was stretched along.
+  const heading = useRef(0);
+  const angle = useTransform(() => {
+    const dx = x.get();
+    const dy = y.get();
+    if (Math.hypot(dx, dy) > 1) heading.current = Math.atan2(dy, dx);
+    return heading.current;
+  });
+  // Stretch along the pull: turn to its axis, scale, turn back.
+  const transform = useTransform(() => {
+    const s = stretch.get();
+    const a = angle.get();
+    return `translate(${x.get()}px, ${y.get()}px) rotate(${a}rad) scale(${1 + s}, ${1 - s / 2}) rotate(${-a}rad)`;
+  });
+  // The exact inverse of the stretch, so the label never distorts, plus its
+  // own parallax.
+  const labelTransform = useTransform(() => {
+    const s = stretch.get();
+    const a = angle.get();
+    return `translate(${x.get() * LABEL_DEPTH}px, ${y.get() * LABEL_DEPTH}px) rotate(${a}rad) scale(${1 / (1 + s)}, ${1 / (1 - s / 2)}) rotate(${-a}rad)`;
+  });
 
   const release = () => {
     pullX.set(0);

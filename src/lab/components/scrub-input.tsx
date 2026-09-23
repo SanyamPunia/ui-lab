@@ -6,6 +6,8 @@ import { cn } from "@/lib/cn";
 // Below this the press is a click on the label (which focuses the field),
 // not the start of a scrub.
 const DRAG_THRESHOLD = 3;
+// Spacing of the tape's minor ticks; majors land every fifth.
+const TICK = 6;
 
 type Scrub = {
   id: number;
@@ -70,6 +72,11 @@ export function ScrubInput({
   const [scrubbing, setScrubbing] = useState(false);
   // What the user is typing; null means the field shows the live value.
   const [draft, setDraft] = useState<string | null>(null);
+
+  // The tape pattern repeats every major tick, so only the remainder
+  // matters, which also keeps huge values from losing precision.
+  const period = TICK * 5;
+  const tape = ((((value / step) * pixelsPerStep) % period) + period) % period;
 
   const clamp = (n: number) => Math.min(Math.max(n, min), max);
   const round = (n: number) => Number(n.toFixed(precision));
@@ -138,10 +145,44 @@ export function ScrubInput({
   return (
     <div
       className={cn(
-        "flex h-10 items-center rounded-lg bg-background outline-foreground has-[input:focus-visible]:outline-2",
+        "relative flex h-10 items-center overflow-hidden rounded-lg bg-background outline-foreground has-[input:focus-visible]:outline-2",
         className,
       )}
     >
+      {/* A tape measure surfaces along the bottom edge while scrubbing and
+          runs under a fixed needle, higher values arriving from the right,
+          like the dial on a lens. One step of value is one pixel of tape
+          (at the normal gear), so the ticks travel exactly as far as the
+          pointer does: the number changing is visibly the tape moving. */}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 bottom-0 h-2 text-muted",
+          "transition-[opacity,translate] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:translate-y-0",
+          scrubbing
+            ? "translate-y-0 opacity-100 duration-150"
+            : "translate-y-1 opacity-0 duration-200",
+        )}
+        style={{
+          // Fades the tape out toward both ends, so it reads as endless.
+          maskImage:
+            "linear-gradient(to right, transparent, #000 30%, #000 70%, transparent)",
+        }}
+      >
+        <span
+          className="absolute inset-0"
+          style={{
+            // Minor ticks every 6px, a taller major tick every 30px.
+            backgroundImage:
+              "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to right, currentColor 1px, transparent 1px)",
+            backgroundSize: `${TICK}px 3px, ${TICK * 5}px 6px`,
+            backgroundRepeat: "repeat-x",
+            backgroundPositionY: "bottom",
+            backgroundPositionX: `calc(50% - ${tape}px)`,
+          }}
+        />
+        <span className="absolute bottom-0 left-1/2 h-2 w-px -translate-x-1/2 bg-foreground" />
+      </span>
       <label
         ref={labelRef}
         htmlFor={id}

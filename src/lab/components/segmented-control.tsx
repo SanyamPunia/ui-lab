@@ -1,7 +1,25 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import {
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+} from "motion/react";
 import { cn } from "@/lib/cn";
+
+// The pill travels like an inchworm: the edge facing the move leaves first
+// and lands first, the trailing edge follows on a softer spring and settles
+// with a touch of give. Both springs keep their velocity, so a second click
+// mid-move bends the pill toward the new target instead of restarting it.
+// The trailing edge settles by ~360ms; the leading edge has already landed
+// at ~180ms, which is the moment the label turns and the eye reads "done".
+const LEAD = { type: "spring", visualDuration: 0.18, bounce: 0 } as const;
+const TRAIL = { type: "spring", visualDuration: 0.36, bounce: 0.15 } as const;
+// Arrow keys fire in quick runs: both edges move together, briefly.
+const KEYS = { type: "spring", visualDuration: 0.15, bounce: 0 } as const;
 
 export function SegmentedControl({
   options,
@@ -16,11 +34,19 @@ export function SegmentedControl({
   label: string;
   className?: string;
 }) {
+  const reduceMotion = useReducedMotion();
   const listRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef(new Map<string, HTMLButtonElement>());
-  // Starts true so the pill is placed without sliding in on page load.
-  const instant = useRef(true);
+  // Clip insets as motion values: the pill is drawn by clip-path alone, and
+  // no frame of the move re-renders React.
+  const top = useMotionValue(0);
+  const right = useMotionValue(0);
+  const bottom = useMotionValue(0);
+  const left = useMotionValue(0);
+  const clipPath = useMotionTemplate`inset(${top}px ${right}px ${bottom}px ${left}px round 9999px)`;
+  // Starts "place" so the pill is set without sliding in on page load.
+  const mode = useRef<"place" | "click" | "key">("place");
 
   useLayoutEffect(() => {
     const list = listRef.current;
@@ -28,25 +54,40 @@ export function SegmentedControl({
     const tab = tabRefs.current.get(value);
     if (!list || !overlay || !tab) return;
 
-    const measure = () => {
-      const top = tab.offsetTop;
-      const left = tab.offsetLeft;
-      const right = list.clientWidth - left - tab.offsetWidth;
-      const bottom = list.clientHeight - top - tab.offsetHeight;
-      overlay.dataset.instant = String(instant.current);
-      overlay.style.clipPath = `inset(${top}px ${right}px ${bottom}px ${left}px round 9999px)`;
+    const measure = (resize: boolean) => {
+      const nextLeft = tab.offsetLeft;
+      const nextRight = list.clientWidth - nextLeft - tab.offsetWidth;
+      top.jump(tab.offsetTop);
+      bottom.jump(list.clientHeight - tab.offsetTop - tab.offsetHeight);
+      const how = resize || reduceMotion ? "place" : mode.current;
+      if (how === "place") {
+        left.jump(nextLeft);
+        right.jump(nextRight);
+      } else if (how === "key") {
+        animate(left, nextLeft, KEYS);
+        animate(right, nextRight, KEYS);
+      } else {
+        // Moving right, the right edge leads; moving left, the left does.
+        const toRight = nextLeft > left.get();
+        animate(left, nextLeft, toRight ? TRAIL : LEAD);
+        animate(right, nextRight, toRight ? LEAD : TRAIL);
+      }
       overlay.style.visibility = "visible";
     };
 
-    measure();
-    const observer = new ResizeObserver(measure);
+    measure(false);
+    let first = true;
+    const observer = new ResizeObserver(() => {
+      // The observer fires once on subscribe; that is not a resize.
+      if (first) first = false;
+      else measure(true);
+    });
     observer.observe(list);
     return () => observer.disconnect();
-  }, [value]);
+  }, [value, reduceMotion, top, right, bottom, left]);
 
   const select = (next: string, fromKeyboard: boolean) => {
-    // Keyboard moves happen in quick succession, so they jump instead of slide.
-    instant.current = fromKeyboard;
+    mode.current = fromKeyboard ? "key" : "click";
     onChange(next);
   };
 
@@ -96,10 +137,11 @@ export function SegmentedControl({
 
       {/* An inverted copy of the row, clipped to the selected option. Moving
           the clip recolors each label exactly as the pill's edge crosses it. */}
-      <div
+      <motion.div
         ref={overlayRef}
         aria-hidden
-        className="pointer-events-none invisible absolute inset-0 flex rounded-full bg-foreground p-1 text-background transition-[clip-path] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)] data-[instant=true]:transition-none motion-reduce:transition-none"
+        style={{ clipPath }}
+        className="pointer-events-none invisible absolute inset-0 flex rounded-full bg-foreground p-1 text-background"
       >
         {options.map((option) => (
           <span
@@ -109,7 +151,7 @@ export function SegmentedControl({
             {option}
           </span>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

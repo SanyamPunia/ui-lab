@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
-type Slide = { title: string; text: string };
+type Slide = {
+  title: string;
+  text: string;
+  /** A small illustration above the text. Any CSS animation inside it only
+   *  runs while its card is the centered one. */
+  visual?: React.ReactNode;
+};
 
 type Drag = {
   id: number;
@@ -54,6 +60,14 @@ const CSS = `
     }
   }
 }
+/* Only the centered card plays, and only while the carousel is on screen:
+   the neighbours hold whatever frame they reached, so a card picks its loop
+   back up the moment it arrives in the middle. */
+.snap-carousel-visual * { animation-play-state: paused; }
+[data-onscreen] [data-active] .snap-carousel-visual * { animation-play-state: running; }
+@media (prefers-reduced-motion: reduce) {
+  .snap-carousel-visual * { animation: none !important; }
+}
 `;
 
 export function SnapCarousel({
@@ -94,8 +108,28 @@ export function SnapCarousel({
     };
     const observer = new ResizeObserver(update);
     observer.observe(el);
+    // Marks the fully visible (centered) card straight on the DOM, so which
+    // card is playing never costs a render.
+    const centered = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const slide = entry.target as HTMLElement;
+          if (entry.intersectionRatio >= 0.9) slide.dataset.active = "";
+          else delete slide.dataset.active;
+        }
+      },
+      { root: el, threshold: [0, 0.9] },
+    );
+    for (const child of el.children) centered.observe(child);
+    const onscreen = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) el.dataset.onscreen = "";
+      else delete el.dataset.onscreen;
+    });
+    onscreen.observe(el);
     return () => {
       observer.disconnect();
+      centered.disconnect();
+      onscreen.disconnect();
       settle.current?.();
     };
   }, []);
@@ -259,6 +293,14 @@ export function SnapCarousel({
               className="shrink-0 snap-center"
             >
               <div className="snap-carousel-card flex h-[200px] w-[280px] flex-col justify-end gap-1.5 rounded-3xl bg-surface p-6 shadow-raised">
+                {slide.visual && (
+                  <div
+                    aria-hidden
+                    className="snap-carousel-visual relative mb-auto h-[68px] w-full"
+                  >
+                    {slide.visual}
+                  </div>
+                )}
                 <p className="text-[15px] font-medium text-foreground">
                   {slide.title}
                 </p>
@@ -330,15 +372,203 @@ function Arrow({
   );
 }
 
+// Each card acts out its own principle. These loops are explanatory, not UI
+// feedback, so they run well past the usual 300ms: the eye needs time to
+// compare. The track is the card's 232px content box, minus the 10px dot.
+const DEMO_CSS = `
+.sc-dot { position: absolute; left: 0; top: 50%; margin-top: -5px; width: 10px; height: 10px; border-radius: 999px; }
+.sc-track { position: absolute; left: 5px; right: 5px; top: 50%; height: 1px; }
+
+/* Same distance, same 1.3s: only the curve differs. */
+.sc-linear { animation: sc-linear 2.6s infinite; }
+.sc-eased { animation: sc-eased 2.6s infinite; }
+@keyframes sc-linear {
+  0% { translate: 0 0; opacity: 0; animation-timing-function: linear; }
+  6% { translate: 0 0; opacity: 1; animation-timing-function: linear; }
+  56% { translate: 222px 0; opacity: 1; }
+  88% { translate: 222px 0; opacity: 1; }
+  96%, 100% { translate: 222px 0; opacity: 0; }
+}
+@keyframes sc-eased {
+  0% { translate: 0 0; opacity: 0; }
+  6% { translate: 0 0; opacity: 1; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+  56% { translate: 222px 0; opacity: 1; }
+  88% { translate: 222px 0; opacity: 1; }
+  96%, 100% { translate: 222px 0; opacity: 0; }
+}
+
+/* Sampled from a real spring (stiffness 170, damping 16) heading for the
+   right tick, retargeted to the left one 260ms in. It overshoots and swings
+   back without a stop, because it kept the speed it already had. */
+.sc-spring { animation: sc-spring 2.6s linear infinite; }
+@keyframes sc-spring {
+  0% { translate: 0 0; opacity: 0; } 5% { opacity: 1; } 7.7% { translate: 0 0; } 9.2% { translate: 24.4px 0; } 10.8% { translate: 72px 0; } 12.3% { translate: 120.2px 0; } 13.8% { translate: 163.9px 0; } 15.4% { translate: 192.8px 0; } 16.9% { translate: 208.9px 0; } 18.5% { translate: 210.4px 0; } 20% { translate: 181.4px 0; } 21.5% { translate: 141.9px 0; } 23.1% { translate: 100.8px 0; } 24.6% { translate: 70.1px 0; } 26.2% { translate: 50.7px 0; } 27.7% { translate: 39.6px 0; } 29.2% { translate: 36.2px 0; } 30.8% { translate: 37px 0; } 32.3% { translate: 40.2px 0; } 33.8% { translate: 43.7px 0; } 35.4% { translate: 46.7px 0; } 36.9% { translate: 49.1px 0; } 38.5% { translate: 50.4px 0; } 40% { translate: 51px 0; } 41.5% { translate: 51.2px 0; } 44.6% { translate: 50.7px 0; } 47.7% { translate: 50.2px 0; } 50.8% { translate: 50px 0; }
+  86% { translate: 50px 0; opacity: 1; }
+  94%, 100% { translate: 50px 0; opacity: 0; }
+}
+/* The tick the spring is chasing is the solid one. */
+.sc-target-a { animation: sc-target-a 2.6s step-end infinite; }
+.sc-target-b { animation: sc-target-b 2.6s step-end infinite; }
+@keyframes sc-target-a { 0% { opacity: 1; } 17.7% { opacity: 0.2; } 94% { opacity: 1; } }
+@keyframes sc-target-b { 0% { opacity: 0.2; } 17.7% { opacity: 1; } 94% { opacity: 0.2; } }
+
+.sc-bar { animation: sc-bar 2.2s infinite; transform-origin: bottom; }
+@keyframes sc-bar {
+  0% { opacity: 0; translate: 0 10px; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+  16% { opacity: 1; translate: 0 0; }
+  84% { opacity: 1; translate: 0 0; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+  94%, 100% { opacity: 0; translate: 0 0; }
+}
+
+/* Two crossfades of the same square into the same circle; only the right
+   one passes through a 4px blur, and reads as one shape changing. */
+.sc-from, .sc-to { animation: 2.4s cubic-bezier(0.77, 0, 0.175, 1) infinite; }
+.sc-from { animation-name: sc-from; }
+.sc-to { animation-name: sc-to; }
+.sc-soft.sc-from { animation-name: sc-from-blur; }
+.sc-soft.sc-to { animation-name: sc-to-blur; }
+@keyframes sc-from { 0%, 30% { opacity: 1; } 50%, 80% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes sc-to { 0%, 30% { opacity: 0; } 50%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes sc-from-blur { 0%, 30% { opacity: 1; filter: blur(0); } 50%, 80% { opacity: 0; filter: blur(4px); } 100% { opacity: 1; filter: blur(0); } }
+@keyframes sc-to-blur { 0%, 30% { opacity: 0; filter: blur(4px); } 50%, 80% { opacity: 1; filter: blur(0); } 100% { opacity: 0; filter: blur(4px); } }
+
+/* The trigger dips as if pressed, then the panel grows out of its corner. */
+.sc-trigger { animation: sc-trigger 2.4s infinite; }
+@keyframes sc-trigger {
+  0%, 4% { scale: 1; animation-timing-function: ease-out; }
+  8% { scale: 0.96; animation-timing-function: ease-out; }
+  14%, 100% { scale: 1; }
+}
+.sc-panel { animation: sc-panel 2.4s infinite; transform-origin: 0 100%; }
+@keyframes sc-panel {
+  0%, 8% { opacity: 0; scale: 0.6; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+  22% { opacity: 1; scale: 1; }
+  82% { opacity: 1; scale: 1; animation-timing-function: ease-out; }
+  90%, 100% { opacity: 0; scale: 0.96; }
+}
+`;
+
+function Legend({ children }: { children: React.ReactNode }) {
+  return <span className="font-mono text-xs text-muted">{children}</span>;
+}
+
+function EaseVisual() {
+  return (
+    <div className="flex h-full flex-col justify-center gap-3">
+      {[
+        { name: "linear", dot: "sc-linear bg-foreground/25" },
+        { name: "ease-out", dot: "sc-eased bg-foreground" },
+      ].map((row) => (
+        <div key={row.name} className="flex flex-col gap-1">
+          <Legend>{row.name}</Legend>
+          <div className="relative h-2.5">
+            <span className="sc-track bg-border" />
+            <span className={cn("sc-dot", row.dot)} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SpringVisual() {
+  return (
+    <div className="relative h-full">
+      <span className="sc-track bg-border" />
+      {/* Ticks sit under the dot's center at 50px and 200px of travel. */}
+      <span className="sc-target-b absolute top-1/2 left-[54.5px] h-4 w-px -translate-y-1/2 bg-foreground" />
+      <span className="sc-target-a absolute top-1/2 left-[204.5px] h-4 w-px -translate-y-1/2 bg-foreground" />
+      <span className="sc-dot sc-spring bg-foreground" />
+    </div>
+  );
+}
+
+function StaggerVisual() {
+  const heights = [26, 42, 34, 52, 38, 46];
+  return (
+    <div className="flex h-full items-end gap-2">
+      {heights.map((h, i) => (
+        <span
+          key={i}
+          className="sc-bar w-6 rounded-md bg-foreground/15 last:bg-foreground"
+          style={{ height: h, animationDelay: `${i * 40}ms` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function BlurVisual() {
+  return (
+    <div className="flex h-full items-center justify-around">
+      {[
+        { name: "fade", soft: false },
+        { name: "fade + blur", soft: true },
+      ].map((pair) => (
+        <div key={pair.name} className="flex flex-col items-center gap-2">
+          <div className="grid">
+            <span
+              className={cn(
+                "sc-from col-start-1 row-start-1 size-10 rounded-lg bg-foreground",
+                pair.soft && "sc-soft",
+              )}
+            />
+            <span
+              className={cn(
+                "sc-to col-start-1 row-start-1 size-10 rounded-full bg-foreground",
+                pair.soft && "sc-soft",
+              )}
+            />
+          </div>
+          <Legend>{pair.name}</Legend>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OriginVisual() {
+  return (
+    <div className="relative h-full">
+      <span className="sc-trigger absolute bottom-0 left-0 h-5 w-14 rounded-full bg-foreground" />
+      {/* Its corner sits on the trigger, which is where it grows from. */}
+      <div className="sc-panel absolute bottom-7 left-1 flex h-11 w-32 flex-col justify-center gap-1.5 rounded-xl bg-background px-3 shadow-raised">
+        <span className="h-1.5 w-16 rounded-full bg-foreground/20" />
+        <span className="h-1.5 w-10 rounded-full bg-foreground/10" />
+      </div>
+    </div>
+  );
+}
+
+function RestraintVisual() {
+  // The one card with nothing moving, on purpose.
+  return (
+    <div className="relative h-full">
+      <span className="sc-track bg-border" />
+      <span className="sc-dot bg-foreground" style={{ left: "calc(50% - 5px)" }} />
+      <span className="absolute top-[calc(50%+12px)] left-1/2 -translate-x-1/2">
+        <Legend>0ms</Legend>
+      </span>
+    </div>
+  );
+}
+
 const SLIDES: Slide[] = [
-  { title: "Ease out", text: "Starts fast, settles gently." },
-  { title: "Spring", text: "Keeps its velocity when interrupted." },
-  { title: "Stagger", text: "Forty milliseconds between each item." },
-  { title: "Blur", text: "Bridges two states into one motion." },
-  { title: "Origin", text: "Grows from where you pointed." },
-  { title: "Restraint", text: "Often the best animation is none." },
+  { title: "Ease out", text: "Starts fast, settles gently.", visual: <EaseVisual /> },
+  { title: "Spring", text: "Keeps its velocity when interrupted.", visual: <SpringVisual /> },
+  { title: "Stagger", text: "Forty milliseconds between each item.", visual: <StaggerVisual /> },
+  { title: "Blur", text: "Bridges two states into one motion.", visual: <BlurVisual /> },
+  { title: "Origin", text: "Grows from where you pointed.", visual: <OriginVisual /> },
+  { title: "Restraint", text: "Often the best animation is none.", visual: <RestraintVisual /> },
 ];
 
 export default function SnapCarouselDemo() {
-  return <SnapCarousel slides={SLIDES} label="Motion principles" />;
+  return (
+    <>
+      <style href="snap-carousel-demo" precedence="default">
+        {DEMO_CSS}
+      </style>
+      <SnapCarousel slides={SLIDES} label="Motion principles" />
+    </>
+  );
 }

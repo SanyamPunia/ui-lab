@@ -8,19 +8,22 @@ import { cn } from "@/lib/cn";
 // around 8 to 14 keys a second, the pace of someone who knows the word.
 const TYPE_BASE = 62;
 const TYPE_JITTER = 64;
-// Held backspace repeats evenly and quickly, so deletion barely varies.
-const DELETE_BASE = 30;
-const DELETE_JITTER = 14;
-// The first letter comes after a beat, as if choosing the next word.
-const FIRST_KEY = 140;
 // Long enough to read the finished sentence once.
 const HOLD = 1800;
-// A short breath between clearing one word and starting the next.
-const GAP = 320;
+// How long the word sits selected before the first key replaces it: the
+// beat where a person decides on the new word. Includes the 220ms sweep.
+const SELECTED_FOR = 620;
 // Reduced motion swaps whole words on this interval instead of typing.
 const SWAP_EVERY = 2800;
 
 // A macOS-length blink with short fades, rather than a hard on/off flash.
+// The caret goes solid while keys move and disappears while a selection is
+// up, as it does in a real text field.
+// The selection sweeps in from the word's end (shift + option + left) in
+// 220ms, but vanishes the instant a key replaces it: an editor never fades
+// a selection out.
+// Each new letter lands with a 140ms ink-in (opacity and a 2px blur) so a
+// keystroke reads as struck rather than popped in.
 const CSS = `
 @keyframes typewriter-caret {
   0%, 45% { opacity: 1; }
@@ -29,6 +32,22 @@ const CSS = `
 }
 .typewriter-caret { animation: typewriter-caret 1.06s linear infinite; }
 [data-typing="true"] .typewriter-caret { animation: none; }
+[data-selecting="true"] .typewriter-caret { visibility: hidden; }
+.typewriter-selection {
+  scale: 0 1;
+  transform-origin: right;
+  transition: scale 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+[data-selecting="false"] .typewriter-selection { transition: none; }
+[data-selecting="true"] .typewriter-selection { scale: 1 1; }
+@keyframes typewriter-ink {
+  from { opacity: 0; filter: blur(2px); }
+}
+.typewriter-letter { animation: typewriter-ink 140ms cubic-bezier(0.23, 1, 0.32, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-selection { transition: none; }
+  .typewriter-letter { animation: none; }
+}
 `;
 
 // Deterministic, and smooth from key to key: a slow wave carries a rhythm
@@ -63,43 +82,54 @@ export function Typewriter({
 
     let word = 0;
     let length = words[0].length;
-    let deleting = false;
     let timer: ReturnType<typeof setTimeout>;
 
-    const step = () => {
-      let delay: number;
-      if (deleting) {
-        if (length > 0) {
-          length--;
-          delay = DELETE_BASE + jitter(word, length) * DELETE_JITTER;
-        } else {
-          deleting = false;
-          word = (word + 1) % words.length;
-          delay = GAP;
-        }
-      } else if (length < words[word].length) {
+    const strike = (char: string) => {
+      const letter = document.createElement("span");
+      letter.className = "typewriter-letter";
+      letter.textContent = char;
+      text.append(letter);
+    };
+
+    const type = () => {
+      const target = words[word];
+      if (length < target.length) {
+        strike(target[length]);
         length++;
-        delay =
-          length === words[word].length
-            ? HOLD
-            : TYPE_BASE + jitter(word, length) * TYPE_JITTER;
-      } else {
-        deleting = true;
-        delay = 0;
       }
-      if (!deleting && length === 0) delay = GAP + FIRST_KEY;
-      text.textContent = words[word].slice(0, length);
+      const finished = length === target.length;
       // Solid while keys are moving, blinking while it waits.
-      const idle = !deleting && length === words[word].length;
-      root.dataset.typing = String(!idle);
-      timer = setTimeout(step, delay);
+      root.dataset.typing = String(!finished);
+      timer = finished
+        ? setTimeout(select, HOLD)
+        : setTimeout(type, TYPE_BASE + jitter(word, length) * TYPE_JITTER);
+    };
+
+    // Rewrites the way people do: select the word, then type over it. The
+    // first key replaces the whole selection at once.
+    const select = () => {
+      if (words.length < 2) return;
+      root.dataset.selecting = "true";
+      timer = setTimeout(() => {
+        word = (word + 1) % words.length;
+        length = 0;
+        text.textContent = "";
+        root.dataset.selecting = "false";
+        type();
+      }, SELECTED_FOR);
     };
 
     // Starts on the finished first word, which is also what the server
     // rendered, so nothing flashes empty before hydration.
     root.dataset.typing = "false";
-    timer = setTimeout(step, HOLD);
-    return () => clearTimeout(timer);
+    timer = setTimeout(select, HOLD);
+    return () => {
+      clearTimeout(timer);
+      // Leaves the DOM as React rendered it, so a words change or remount
+      // starts clean instead of from a half typed, selected word.
+      text.textContent = words[0] ?? "";
+      root.dataset.selecting = "false";
+    };
   }, [reduceMotion, words]);
 
   useEffect(() => {
@@ -132,6 +162,7 @@ export function Typewriter({
         ref={rootRef}
         aria-hidden
         data-typing="false"
+        data-selecting="false"
         className="col-start-1 row-start-1 text-left"
       >
         {prefix}{" "}
@@ -153,7 +184,15 @@ export function Typewriter({
           </span>
         ) : (
           <>
-            <span ref={textRef}>{words[0]}</span>
+            <span className="relative inline-block">
+              {/* A text selection highlight: the ink stays, a tinted block
+                  sits behind it. Slightly taller than the glyphs, like the
+                  line box a browser paints. */}
+              <span className="typewriter-selection absolute -inset-x-px -inset-y-[0.06em] rounded-[3px] bg-foreground/15 dark:bg-foreground/25" />
+              <span ref={textRef} className="relative">
+                {words[0]}
+              </span>
+            </span>
             <Caret />
           </>
         )}

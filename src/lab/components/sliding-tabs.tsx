@@ -1,11 +1,15 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   LayoutGroup,
+  animate,
   motion,
+  useMotionTemplate,
+  useMotionValue,
   useReducedMotion,
+  type AnimationPlaybackControls,
 } from "motion/react";
 import { cn } from "@/lib/cn";
 
@@ -22,9 +26,14 @@ type Hover = {
 };
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
-// The underline answers "where am I", so it travels at UI speed with no
-// bounce. The hover pill only echoes the pointer, so it is quicker still.
-const UNDERLINE = { type: "spring", visualDuration: 0.25, bounce: 0 } as const;
+// The underline travels like a stretched band: the edge facing the new tab
+// leaves first and fast, the far edge lets go later and catches up, so the
+// line reaches toward the tab, then pulls its tail in. No bounce, it answers
+// "where am I". The tail settles by ~340ms, over the usual 300ms, because
+// the stretch is the part that reads; the lead lands inside 200ms.
+const LEAD = { type: "spring", visualDuration: 0.2, bounce: 0 } as const;
+const TAIL = { type: "spring", visualDuration: 0.34, bounce: 0 } as const;
+// The hover pill only echoes the pointer, so it is quicker still.
 const HOVER = { type: "spring", visualDuration: 0.15, bounce: 0 } as const;
 const INSTANT = { duration: 0 } as const;
 
@@ -55,9 +64,9 @@ const panel = {
 /*
  * The lab's segmented control clips an inverted copy of the whole row, so
  * each label recolors exactly as the pill's edge crosses it. An underline is
- * too thin to cover any text, so there is nothing to recolor here, and a
- * shared layoutId is simpler: Motion measures both tabs and morphs between
- * them, so tabs of any width work without offset math.
+ * too thin to cover any text, so there is nothing to recolor here. Instead
+ * its two ends move separately, which a shared layoutId can't do: the line
+ * stretches toward the new tab and then gathers itself under it.
  */
 export function SlidingTabs({
   tabs,
@@ -89,6 +98,62 @@ export function SlidingTabs({
   );
   const active = tabs[index];
 
+  // The underline's two edges, in px from the list's left, moved on their
+  // own springs. It is one full-width line clipped down to the tab, so the
+  // stretch costs no layout.
+  const listRef = useRef<HTMLDivElement>(null);
+  const edgeL = useMotionValue(0);
+  const edgeR = useMotionValue(0);
+  const runs = useRef<AnimationPlaybackControls[]>([]);
+  const activeId = useRef(active.id);
+  const clip = useMotionTemplate`inset(0 calc(100% - ${edgeR}px) 0 ${edgeL}px round 1px)`;
+
+  const measure = (id: string) => {
+    const el = tabRefs.current.get(id);
+    return el ? [el.offsetLeft, el.offsetLeft + el.offsetWidth] : null;
+  };
+
+  useLayoutEffect(() => {
+    const target = measure(active.id);
+    const list = listRef.current;
+    if (!target || !list) return;
+    const [l, r] = target;
+    const first = list.dataset.ready !== "true";
+    activeId.current = active.id;
+    runs.current.forEach((run) => run.stop());
+    if (first || reduce) {
+      edgeL.jump(l);
+      edgeR.jump(r);
+      // Hands over from the server-rendered underline to the clipped one.
+      list.dataset.ready = "true";
+      return;
+    }
+    const rightward = r > edgeR.get();
+    runs.current = [
+      animate(edgeL, l, rightward ? TAIL : LEAD),
+      animate(edgeR, r, rightward ? LEAD : TAIL),
+    ];
+  }, [active.id, reduce, edgeL, edgeR]);
+
+  // Tabs change width with the viewport (padding and text size step at sm),
+  // so the underline re-fits without animating.
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const observer = new ResizeObserver(() => {
+      const target = measure(activeId.current);
+      if (!target) return;
+      runs.current.forEach((run) => run.stop());
+      edgeL.jump(target[0]);
+      edgeR.jump(target[1]);
+    });
+    observer.observe(list);
+    return () => {
+      observer.disconnect();
+      runs.current.forEach((run) => run.stop());
+    };
+  }, [edgeL, edgeR]);
+
   const select = (next: string) => {
     const nextIndex = tabs.findIndex((t) => t.id === next);
     if (nextIndex === index) return;
@@ -115,7 +180,8 @@ export function SlidingTabs({
         <div
           role="tablist"
           aria-label={label}
-          className="flex gap-0.5 border-b border-border px-0.5"
+          ref={listRef}
+          className="group/tabs relative flex gap-0.5 border-b border-border px-0.5"
           onPointerLeave={() =>
             setHover((h) => (h.visible ? { ...h, visible: false } : h))
           }
@@ -184,17 +250,22 @@ export function SlidingTabs({
                   {tab.label}
                 </span>
                 {selected && (
-                  <motion.span
-                    layoutId="underline"
+                  // What the server renders, so the line is there before
+                  // hydration; the clipped underline takes over once measured.
+                  <span
                     aria-hidden
-                    // Overlaps the list's 1px border so the two read as one line.
-                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-foreground"
-                    transition={reduce ? INSTANT : UNDERLINE}
+                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-foreground group-data-[ready=true]/tabs:hidden"
                   />
                 )}
               </button>
             );
           })}
+          <motion.span
+            aria-hidden
+            style={{ clipPath: clip }}
+            // Overlaps the list's 1px border so the two read as one line.
+            className="pointer-events-none absolute inset-x-0 -bottom-px hidden h-0.5 bg-foreground group-data-[ready=true]/tabs:block"
+          />
         </div>
 
         {/* Both panels share one grid cell while they cross, so the old one

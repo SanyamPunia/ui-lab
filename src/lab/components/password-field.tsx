@@ -12,6 +12,48 @@ const ANNOUNCE_DELAY = 900;
 // only 120ms after the first.
 const STAGGER = 40;
 
+// The reveal: each dot slides out to where its letter sits and resolves
+// into it, left to right like reading; hiding runs it back from the right
+// and the dots close ranks. Per character it is a quick 200ms swap. The wave
+// across the word is capped at 160ms however long the password is, so the
+// whole gesture stays near 360ms: long enough to read as one sweep.
+const CHAR_MS = 200;
+const WAVE_MS = 160;
+const MORPH_CSS = `
+@keyframes pw-slide { from { translate: var(--pw-from) 0; } to { translate: var(--pw-to) 0; } }
+@keyframes pw-show { from { opacity: 0; filter: blur(4px); scale: 0.6; } }
+@keyframes pw-hide { to { opacity: 0; filter: blur(4px); scale: 0.6; } }
+`;
+
+type Morph = {
+  id: number;
+  reveal: boolean;
+  chars: string[];
+  // Left edge of each character as text, and as a password dot.
+  letterX: number[];
+  dotX: number[];
+};
+
+let measureCanvas: HTMLCanvasElement | null = null;
+
+// Where each character starts in both renderings, measured with the input's
+// own font, so the overlay lands exactly on what the input will draw.
+function measure(input: HTMLInputElement, chars: string[]) {
+  measureCanvas ??= document.createElement("canvas");
+  const ctx = measureCanvas.getContext("2d");
+  if (!ctx) return null;
+  const style = getComputedStyle(input);
+  ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const dot = ctx.measureText("•").width;
+  const letterX: number[] = [];
+  let prefix = "";
+  for (const c of chars) {
+    letterX.push(ctx.measureText(prefix).width);
+    prefix += c;
+  }
+  return { letterX, dotX: chars.map((_, i) => i * dot) };
+}
+
 const WORDS = ["", "Weak", "Good", "Good", "Strong"] as const;
 const VERDICTS = ["Weak", "Good", "Strong"] as const;
 // Weak is the one level worth alarm; past that, the meter just gets bolder.
@@ -97,12 +139,37 @@ export function PasswordField({
     selection.current = null;
   }, [revealed]);
 
+  const [morph, setMorph] = useState<Morph | null>(null);
+  const morphTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(morphTimer.current), []);
+
   const toggle = () => {
     const input = inputRef.current;
     if (input && input.selectionStart !== null && input.selectionEnd !== null)
       selection.current = [input.selectionStart, input.selectionEnd];
-    setRevealed((r) => !r);
+    const next = !revealed;
+    setRevealed(next);
+    clearTimeout(morphTimer.current);
+    setMorph(null);
+    const chars = [...value];
+    // Skipped when the text is scrolled inside the field: the overlay only
+    // knows where characters sit when the field starts at its first one.
+    if (
+      !input ||
+      reduceMotion ||
+      chars.length === 0 ||
+      input.scrollWidth > input.clientWidth ||
+      input.scrollLeft > 0
+    )
+      return;
+    const spots = measure(input, chars);
+    if (!spots) return;
+    const id = (morph?.id ?? 0) + 1;
+    setMorph({ id, reveal: next, chars, ...spots });
+    morphTimer.current = setTimeout(() => setMorph(null), CHAR_MS + WAVE_MS);
   };
+
+  const step = morph ? Math.min(24, WAVE_MS / Math.max(morph.chars.length - 1, 1)) : 0;
 
   return (
     <div className={cn("flex flex-col", className)}>
@@ -124,11 +191,65 @@ export function PasswordField({
           value={value}
           aria-describedby={rulesId}
           onChange={(e) => {
+            // Typing wins over the flourish: the real text shows at once.
+            clearTimeout(morphTimer.current);
+            setMorph(null);
             setValue(e.target.value);
             onValueChange?.(e.target.value);
           }}
-          className="h-11 w-full rounded-xl border border-border bg-background pr-12 pl-3.5 text-[15px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground"
+          className={cn(
+            "h-11 w-full rounded-xl border border-border bg-background pr-12 pl-3.5 text-[15px] caret-foreground outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground",
+            // The overlay draws the characters while it runs; the caret stays.
+            morph ? "text-transparent" : "text-foreground",
+          )}
         />
+        {morph && (
+          <span
+            key={morph.id}
+            aria-hidden
+            // Same box and type as the input's text: 1px border + 14px padding.
+            className="pointer-events-none absolute inset-y-0 right-12 left-[15px] overflow-hidden text-[15px] whitespace-pre text-foreground"
+          >
+            <style href="password-field" precedence="default">
+              {MORPH_CSS}
+            </style>
+            {morph.chars.map((char, i) => {
+              // Reveal sweeps left to right; hiding starts from the end.
+              const order = morph.reveal ? i : morph.chars.length - 1 - i;
+              const timing = `${CHAR_MS}ms cubic-bezier(0.23, 1, 0.32, 1) ${order * step}ms both`;
+              const from = morph.reveal ? morph.dotX[i] : morph.letterX[i];
+              const to = morph.reveal ? morph.letterX[i] : morph.dotX[i];
+              return (
+                <span
+                  key={i}
+                  // Left-aligned, so the dot and the letter share the left
+                  // edge the measurements describe.
+                  className="absolute inset-y-0 left-0 grid items-center justify-items-start"
+                  style={
+                    {
+                      "--pw-from": `${from}px`,
+                      "--pw-to": `${to}px`,
+                      animation: `pw-slide ${timing}`,
+                    } as React.CSSProperties
+                  }
+                >
+                  <span
+                    className="col-start-1 row-start-1"
+                    style={{ animation: `${morph.reveal ? "pw-show" : "pw-hide"} ${timing}` }}
+                  >
+                    {char}
+                  </span>
+                  <span
+                    className="col-start-1 row-start-1"
+                    style={{ animation: `${morph.reveal ? "pw-hide" : "pw-show"} ${timing}` }}
+                  >
+                    {"•"}
+                  </span>
+                </span>
+              );
+            })}
+          </span>
+        )}
         {/* 8px radius inside the 12px field with 4px of inset: concentric. */}
         <button
           type="button"

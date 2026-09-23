@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  animate,
   motion,
   useInView,
+  useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
   useSpring,
   useTransform,
+  type AnimationPlaybackControls,
 } from "motion/react";
 import { cn } from "@/lib/cn";
 
@@ -16,18 +19,36 @@ import { cn } from "@/lib/cn";
 // in magnitude, not just notice one.
 const FILL = { visualDuration: 0.6, bounce: 0 };
 
-// Arc geometry in viewBox units. A half circle centred on (CX, CY), drawn
-// left to right so pathLength 0 to 1 reads as 0 to 100.
+// Instrument geometry in viewBox units: a half circle of ticks centred on
+// (CX, CY), read left to right as 0 to 100.
 const CX = 100;
 const CY = 100;
 const R = 84;
-const STROKE = 12;
-const ARC = `M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}`;
+// 41 ticks is one every 2.5%, about 6.6 units apart on the arc: dense
+// enough to read as a sweep, sparse enough that each tick is its own mark.
+const TICKS = 41;
+const TICK_IN = R - 8;
+const TICK_OUT = R + 8;
+// The peak marker reaches past the ticks on both sides so it stays legible
+// on top of a lit run.
+const PEAK_IN = R - 13;
+const PEAK_OUT = R + 13;
+// Peak hold, as on an audio meter: after a drop the marker waits where the
+// value was, long enough to be seen (the fill settles in ~600ms), then falls.
+const PEAK_HOLD = 900;
+// An ease-in on purpose: the marker is let go and drops under its own
+// weight, so it starts slow and lands fast.
+const PEAK_FALL = { duration: 0.45, ease: [0.55, 0, 1, 0.45] } as const;
 
 function pointAt(percent: number, radius: number) {
   const angle = Math.PI * (1 - percent / 100);
-  return [CX + radius * Math.cos(angle), CY - radius * Math.sin(angle)];
+  // Rounded because the server's and the browser's trig can differ in the
+  // last float digits, which would fail hydration on every tick.
+  const round = (n: number) => Math.round(n * 1000) / 1000;
+  return [round(CX + radius * Math.cos(angle)), round(CY - radius * Math.sin(angle))];
 }
+
+const TICK_PERCENTS = Array.from({ length: TICKS }, (_, i) => (i / (TICKS - 1)) * 100);
 
 export function Gauge({
   value,
@@ -42,37 +63,64 @@ export function Gauge({
 }) {
   const reduceMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const arcRef = useRef<SVGPathElement>(null);
+  const tickRefs = useRef<(SVGLineElement | null)[]>([]);
+  const lit = useRef(0);
   // Fills in when first seen, so a gauge below the fold still gets its
   // entrance instead of finishing offscreen.
   const inView = useInView(rootRef, { once: true });
   const clamped = Math.round(Math.min(Math.max(value, 0), 100));
   const high = clamped > threshold;
 
-  // One spring drives both the arc and the number so they never drift apart.
+  // One spring drives the ticks, the number and the peak so they never
+  // drift apart.
   const progress = useSpring(0, FILL);
-  const length = useTransform(progress, (v) => v / 100);
-  // Round caps would otherwise leave a dot on an empty arc.
-  const visible = useTransform(progress, (v) => (v < 0.5 ? 0 : 1));
   const shown = useTransform(progress, (v) => Math.round(v));
+  const peak = useMotionValue(0);
+  const fall = useRef<AnimationPlaybackControls>(undefined);
 
   useEffect(() => {
     if (!inView) return;
     if (reduceMotion) progress.jump(clamped);
     else progress.set(clamped);
-  }, [clamped, inView, reduceMotion, progress]);
+    if (clamped >= peak.get()) return;
+    const timer = setTimeout(() => {
+      fall.current?.stop();
+      if (reduceMotion) peak.jump(clamped);
+      else fall.current = animate(peak, clamped, PEAK_FALL);
+    }, PEAK_HOLD);
+    return () => clearTimeout(timer);
+  }, [clamped, inView, reduceMotion, progress, peak]);
 
-  // Colour follows the arc rather than the target, so it turns red the
-  // moment the fill passes the threshold tick. Written to the DOM directly
-  // to avoid a React render per frame.
+  useEffect(() => () => fall.current?.stop(), []);
+
+  // Lights ticks as the fill passes them, writing only the ticks that
+  // changed straight to the DOM, so a frame costs a handful of attribute
+  // writes and never a React render. The peak rides the fill upward.
   useMotionValueEvent(progress, "change", (v) => {
-    const el = arcRef.current;
-    if (el) el.dataset.danger = String(v > threshold);
+    if (v > peak.get()) {
+      fall.current?.stop();
+      peak.set(v);
+    }
+    // Half a percent of slack so a spring settling at 50 still lights 50.
+    const count = v < 0.5 ? 0 : TICK_PERCENTS.filter((p) => p <= v + 0.5).length;
+    const before = lit.current;
+    if (count === before) return;
+    for (let i = Math.min(count, before); i < Math.max(count, before); i++) {
+      const tick = tickRefs.current[i];
+      if (tick) tick.dataset.lit = String(i < count);
+    }
+    lit.current = count;
   });
 
-  // A small tick just outside the track marks where danger starts.
-  const [tx1, ty1] = pointAt(threshold, R + STROKE / 2 + 4);
-  const [tx2, ty2] = pointAt(threshold, R + STROKE / 2 + 9);
+  // The marker only shows once it has come apart from the fill, fading in
+  // over the first few percent of separation instead of popping.
+  const peakOpacity = useTransform([peak, progress], ([p, v]: number[]) =>
+    Math.min(Math.max((p - v - 1) / 3, 0), 1),
+  );
+  const px1 = useTransform(peak, (p) => pointAt(p, PEAK_IN)[0]);
+  const py1 = useTransform(peak, (p) => pointAt(p, PEAK_IN)[1]);
+  const px2 = useTransform(peak, (p) => pointAt(p, PEAK_OUT)[0]);
+  const py2 = useTransform(peak, (p) => pointAt(p, PEAK_OUT)[1]);
 
   return (
     <div
@@ -87,33 +135,50 @@ export function Gauge({
     >
       <div className="relative w-full">
         <svg
-          viewBox="0 0 200 108"
+          viewBox="0 0 200 110"
           className="block w-full overflow-visible"
           fill="none"
           aria-hidden
         >
-          <path
-            d={ARC}
-            className="stroke-border"
-            strokeWidth={STROKE}
+          {TICK_PERCENTS.map((p, i) => {
+            const [x1, y1] = pointAt(p, TICK_IN);
+            const [x2, y2] = pointAt(p, TICK_OUT);
+            const danger = p > threshold;
+            return (
+              <line
+                key={i}
+                ref={(el) => {
+                  tickRefs.current[i] = el;
+                }}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                data-lit="false"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                // A short fade per tick turns the spring's sweep into a
+                // smooth wave instead of ticks snapping on one by one. The
+                // danger zone is faintly tinted even when unlit, so the
+                // limit is visible before the value gets there.
+                className={cn(
+                  "transition-[stroke] duration-150 ease-out motion-reduce:transition-none",
+                  danger
+                    ? "stroke-danger/25 data-[lit=true]:stroke-danger"
+                    : "stroke-border data-[lit=true]:stroke-foreground",
+                )}
+              />
+            );
+          })}
+          <motion.line
+            x1={px1}
+            y1={py1}
+            x2={px2}
+            y2={py2}
+            style={{ opacity: peakOpacity }}
+            strokeWidth={2}
             strokeLinecap="round"
-          />
-          <line
-            x1={tx1}
-            y1={ty1}
-            x2={tx2}
-            y2={ty2}
-            className="stroke-muted"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-          />
-          <motion.path
-            ref={arcRef}
-            d={ARC}
-            strokeWidth={STROKE}
-            strokeLinecap="round"
-            style={{ pathLength: length, opacity: visible }}
-            className="stroke-foreground transition-[stroke] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] data-[danger=true]:stroke-danger"
+            className="stroke-foreground"
           />
         </svg>
 
