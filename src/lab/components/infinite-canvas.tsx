@@ -539,7 +539,7 @@ export function InfiniteCanvas({
   const initialGrid = gridState(initial);
 
   const toolButton =
-    "flex h-9 touch-manipulation items-center justify-center rounded-full text-sm font-medium text-foreground outline-none transition-[scale,background-color] duration-150 ease-out select-none hover:bg-surface focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]";
+    "flex h-9 touch-manipulation items-center justify-center rounded-full text-sm font-medium text-foreground outline-hidden transition-[scale,background-color] duration-150 ease-out select-none hover:bg-surface focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]";
 
   return (
     <div
@@ -550,7 +550,7 @@ export function InfiniteCanvas({
       aria-describedby={hintId}
       tabIndex={0}
       className={cn(
-        "relative isolate h-[380px] w-[min(560px,100%)] cursor-grab touch-none overflow-clip rounded-3xl bg-surface shadow-wheel outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:cursor-grabbing",
+        "relative isolate h-[380px] w-[min(560px,100%)] cursor-grab touch-none overflow-clip rounded-3xl bg-surface shadow-wheel outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:cursor-grabbing",
         className,
       )}
       style={{

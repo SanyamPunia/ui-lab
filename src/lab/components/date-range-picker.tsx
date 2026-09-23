@@ -343,7 +343,7 @@ export function DateRangePicker({
                 aria-pressed={active}
                 onClick={() => setRange(chip.range)}
                 className={cn(
-                  "h-9 shrink-0 rounded-full px-3.5 text-sm whitespace-nowrap outline-none select-none",
+                  "h-9 shrink-0 rounded-full px-3.5 text-sm whitespace-nowrap outline-hidden select-none",
                   "transition-[scale,color,background-color,box-shadow] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,box-shadow]",
                   active
                     ? "bg-foreground text-background"
@@ -423,7 +423,7 @@ export function DateRangePicker({
             onClick={() => setRange(null)}
             inert={!start}
             className={cn(
-              "h-9 rounded-full px-3.5 text-sm text-muted outline-none select-none",
+              "h-9 rounded-full px-3.5 text-sm text-muted outline-hidden select-none",
               "transition-[scale,color,background-color,opacity] duration-150 ease-out hover:bg-foreground/[0.05] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color,opacity]",
               !start && "opacity-40",
             )}
@@ -442,7 +442,7 @@ export function DateRangePicker({
               appliedTimer.current = setTimeout(() => setApplied(false), 1600);
             }}
             className={cn(
-              "flex h-9 items-center gap-1.5 rounded-full bg-foreground px-4 text-sm font-medium text-background outline-none select-none",
+              "flex h-9 items-center gap-1.5 rounded-full bg-foreground px-4 text-sm font-medium text-background outline-hidden select-none",
               "transition-[scale,opacity] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:opacity-40 motion-reduce:transition-[opacity]",
             )}
           >
@@ -638,7 +638,7 @@ function MonthGrid({
                         if (e.pointerType !== "touch") onHover(iso);
                       }}
                       className={cn(
-                        "relative mx-auto flex size-9 touch-manipulation items-center justify-center rounded-full text-sm tabular-nums outline-none select-none",
+                        "relative mx-auto flex size-9 touch-manipulation items-center justify-center rounded-full text-sm tabular-nums outline-hidden select-none",
                         "transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none",
                         "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-foreground",
                         committed
@@ -682,7 +682,7 @@ function NavButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="pointer-events-auto flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-none select-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+      className="pointer-events-auto flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden select-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
     >
       <svg aria-hidden {...STROKE} className="size-4">
         {children}

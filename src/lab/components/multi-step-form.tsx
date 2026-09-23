@@ -280,7 +280,7 @@ function Footer({
         onClick={onBack}
         disabled={!canGoBack}
         className={cn(
-          "h-11 touch-manipulation rounded-full px-4 text-[15px] font-medium text-muted outline-none transition-[scale,opacity,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+          "h-11 touch-manipulation rounded-full px-4 text-[15px] font-medium text-muted outline-hidden transition-[scale,opacity,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
           !canGoBack && "pointer-events-none opacity-0",
         )}
       >
@@ -289,7 +289,7 @@ function Footer({
       <button
         type="submit"
         disabled={!valid}
-        className="h-11 touch-manipulation rounded-full bg-foreground px-5 text-[15px] font-medium text-background outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-11 touch-manipulation rounded-full bg-foreground px-5 text-[15px] font-medium text-background outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {/* Every label shares one grid cell, so the button holds the width of
             the longest and never resizes as the label changes. */}
@@ -347,7 +347,7 @@ function PanelContent({
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Acme Inc"
           autoComplete="organization"
-          className="h-11 rounded-xl bg-background px-3.5 text-[15px] text-foreground shadow-raised outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground"
+          className="h-11 rounded-xl bg-background px-3.5 text-[15px] text-foreground shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground"
         />
       </div>
     );
@@ -445,7 +445,7 @@ function PanelContent({
         <h3
           tabIndex={-1}
           data-autofocus
-          className="text-[20px] font-medium text-foreground outline-none"
+          className="text-[20px] font-medium text-foreground outline-hidden"
         >
           Workspace created
         </h3>
@@ -473,7 +473,7 @@ function Heading({
       <h3
         tabIndex={focusable ? -1 : undefined}
         data-autofocus={focusable ? "" : undefined}
-        className="text-[20px] font-medium text-foreground outline-none"
+        className="text-[20px] font-medium text-foreground outline-hidden"
       >
         {title}
       </h3>

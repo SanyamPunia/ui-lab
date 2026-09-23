@@ -93,7 +93,7 @@ export function Sparkline({
         aria-label={`${title}, ${data.length} points. Use arrow keys to read values.`}
         // pan-y leaves vertical scrolling to the page and hands sideways
         // drags to the scrubber.
-        className="relative mt-12 aspect-[520/160] w-full touch-pan-y rounded-sm outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+        className="relative mt-12 aspect-[520/160] w-full touch-pan-y rounded-sm outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
         onPointerDown={(e) => {
           if (e.pointerType !== "touch") return;
           setIndex(nearest(e.clientX));

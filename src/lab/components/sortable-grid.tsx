@@ -433,7 +433,7 @@ function Tile({
         boxShadow: lifted ? LIFTED_SHADOW : "var(--shadow-raised)",
       }}
       className={cn(
-        "absolute top-0 left-0 flex aspect-square origin-center touch-manipulation flex-col items-center justify-center gap-2.5 rounded-2xl bg-background text-foreground outline-none transition-[box-shadow] duration-200 ease-out select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "absolute top-0 left-0 flex aspect-square origin-center touch-manipulation flex-col items-center justify-center gap-2.5 rounded-2xl bg-background text-foreground outline-hidden transition-[box-shadow] duration-200 ease-out select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
         lifted ? "cursor-grabbing" : "cursor-grab",
       )}
     >

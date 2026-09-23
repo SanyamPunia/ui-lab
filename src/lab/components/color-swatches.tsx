@@ -99,7 +99,7 @@ export function ColorSwatches({
               onClick={() => onChange(swatch.name)}
               style={{ backgroundColor: swatch.color, color: swatch.ink }}
               className={cn(
-                "relative flex size-8 touch-manipulation items-center justify-center rounded-full outline-none transition-[scale] duration-150 ease-out select-none active:scale-[0.96] motion-reduce:transition-none",
+                "relative flex size-8 touch-manipulation items-center justify-center rounded-full outline-hidden transition-[scale] duration-150 ease-out select-none active:scale-[0.96] motion-reduce:transition-none",
                 // The image outline recipe, so a light swatch keeps its edge
                 // on a light background and a dark one on a dark background.
                 "shadow-[inset_0_0_0_1px_oklch(0_0_0/0.1)] dark:shadow-[inset_0_0_0_1px_oklch(1_0_0/0.1)]",

@@ -264,7 +264,7 @@ export function MorphingNav({
                   }}
                   onKeyDown={(e) => onTriggerKeyDown(index, e)}
                   className={cn(
-                    "flex h-10 touch-manipulation items-center gap-1 rounded-[10px] px-2.5 text-sm whitespace-nowrap outline-none transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color] sm:px-3",
+                    "flex h-10 touch-manipulation items-center gap-1 rounded-[10px] px-2.5 text-sm whitespace-nowrap outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color] sm:px-3",
                     on
                       ? "bg-surface text-foreground"
                       : "text-muted hover:text-foreground",
@@ -419,7 +419,7 @@ function SectionLinks({
               e.preventDefault();
               onNavigate?.();
             }}
-            className="flex items-start gap-3 rounded-lg p-3 pr-4 outline-none transition-[background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground hover:bg-surface"
+            className="flex items-start gap-3 rounded-lg p-3 pr-4 outline-hidden transition-[background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground hover:bg-surface"
           >
             <svg
               viewBox="0 0 24 24"
@@ -594,7 +594,7 @@ export default function MorphingNavDemo() {
           <a
             href="#"
             onClick={(e) => e.preventDefault()}
-            className="flex h-10 items-center rounded-[10px] bg-foreground px-3.5 text-sm font-medium text-background outline-none transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+            className="flex h-10 items-center rounded-[10px] bg-foreground px-3.5 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
           >
             Sign in
           </a>

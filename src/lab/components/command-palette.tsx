@@ -201,7 +201,7 @@ export function CommandPalette({
         aria-keyshortcuts={isMac ? "Meta+K" : "Control+K"}
         onClick={show}
         className={cn(
-          "flex h-9 w-60 touch-manipulation items-center gap-2 rounded-lg bg-surface pr-1.5 pl-3 text-sm text-muted shadow-raised outline-none transition-[scale,color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+          "flex h-9 w-60 touch-manipulation items-center gap-2 rounded-lg bg-surface pr-1.5 pl-3 text-sm text-muted shadow-raised outline-hidden transition-[scale,color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
           className,
         )}
       >
@@ -270,7 +270,7 @@ export function CommandPalette({
                         setActive(0);
                       }}
                       onKeyDown={onInputKeyDown}
-                      className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
+                      className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-hidden placeholder:text-muted"
                     />
                   </div>
 

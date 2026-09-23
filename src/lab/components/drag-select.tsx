@@ -331,7 +331,7 @@ export function DragSelect({
                   }}
                   onClick={(e) => onTileClick(index, e)}
                   onFocus={() => setFocusIndex(index)}
-                  className="group flex cursor-default flex-col items-center gap-1.5 rounded-xl px-1 pt-2.5 pb-2 outline-none transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+                  className="group flex cursor-default flex-col items-center gap-1.5 rounded-xl px-1 pt-2.5 pb-2 outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
                 >
                   <span
                     className={cn(
@@ -369,7 +369,7 @@ export function DragSelect({
         <button
           type="button"
           onClick={toggleAll}
-          className="grid h-8 touch-manipulation items-center rounded-lg px-2.5 text-sm text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+          className="grid h-8 touch-manipulation items-center rounded-lg px-2.5 text-sm text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
         >
           {/* Both labels share one cell, so the button never changes width. */}
           <Swap visible={count === 0}>Select all</Swap>

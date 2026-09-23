@@ -91,7 +91,7 @@ export function StoryProgress({
       aria-label="Stories"
       tabIndex={0}
       className={cn(
-        "relative flex h-[480px] w-[min(320px,100%)] touch-manipulation flex-col overflow-hidden rounded-3xl bg-surface text-foreground shadow-raised outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative flex h-[480px] w-[min(320px,100%)] touch-manipulation flex-col overflow-hidden rounded-3xl bg-surface text-foreground shadow-raised outline-hidden select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
         className,
       )}
       onPointerDown={(e) => {
@@ -197,14 +197,14 @@ export function StoryProgress({
           type="button"
           tabIndex={-1}
           aria-label="Previous story"
-          className="flex-1 outline-none"
+          className="flex-1 outline-hidden"
           onClick={(e) => e.detail === 0 && go(-1)}
         />
         <button
           type="button"
           tabIndex={-1}
           aria-label="Next story"
-          className="flex-1 outline-none"
+          className="flex-1 outline-hidden"
           onClick={(e) => e.detail === 0 && go(1)}
         />
       </div>

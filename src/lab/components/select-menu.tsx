@@ -241,7 +241,7 @@ export function SelectMenu({
         onClick={() => (open ? close() : openList())}
         onKeyDown={onKeyDown}
         onBlur={close}
-        className="flex h-10 w-full touch-manipulation items-center gap-2 rounded-lg bg-surface pr-2.5 pl-3 text-left text-sm text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="flex h-10 w-full touch-manipulation items-center gap-2 rounded-lg bg-surface pr-2.5 pl-3 text-left text-sm text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         <span id={`${id}-value`} className="flex-1 truncate">
           {options[selected]?.label}

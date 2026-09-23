@@ -116,7 +116,7 @@ export function ToggleSwitch({
         // The knob's stretch is the press feedback, so the track doesn't
         // also scale: shrinking it would shift the knob under the finger
         // mid-drag. The pseudo-element grows the hit area to 56x44.
-        className="relative h-7 w-12 shrink-0 cursor-pointer touch-none rounded-full bg-foreground/15 outline-none select-none after:absolute after:-inset-x-1 after:-inset-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground dark:bg-foreground/25"
+        className="relative h-7 w-12 shrink-0 cursor-pointer touch-none rounded-full bg-foreground/15 outline-hidden select-none after:absolute after:-inset-x-1 after:-inset-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground dark:bg-foreground/25"
         onPointerDown={(e) => {
           if (e.button !== 0 || gesture.current) return;
           swallowClick.current = false;

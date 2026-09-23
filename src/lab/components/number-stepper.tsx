@@ -224,7 +224,7 @@ export function NumberStepper({
         if (e.detail === 0) stepBy(delta);
       }}
       className={cn(
-        "flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-foreground outline-none select-none",
+        "flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-foreground outline-hidden select-none",
         "transition-[scale,opacity,background-color] duration-150 ease-out hover:bg-foreground/[0.06] active:scale-[0.96] motion-reduce:transition-[opacity,background-color]",
         atLimit && "opacity-35 hover:bg-transparent",
       )}
@@ -292,7 +292,7 @@ export function NumberStepper({
           // The text stays invisible until typing starts; the rolling copy
           // above sits exactly on it.
           className={cn(
-            "col-start-1 row-start-1 w-full bg-transparent text-center text-[15px] font-medium tabular-nums caret-foreground outline-none",
+            "col-start-1 row-start-1 w-full bg-transparent text-center text-[15px] font-medium tabular-nums caret-foreground outline-hidden",
             editing ? "text-foreground" : "text-transparent",
           )}
         />

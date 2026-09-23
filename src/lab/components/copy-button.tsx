@@ -64,7 +64,7 @@ export function CopyButton({
         aria-label={label}
         onClick={copy}
         className={cn(
-          "relative flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+          "relative flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
           // Grows the hit area to 40px without growing the visible circle.
           "after:absolute after:-inset-1 after:rounded-full",
           visible && "text-foreground",

@@ -341,7 +341,7 @@ function FormatButton({
           triggerProps.onFocus(e);
         }}
         className={cn(
-          "flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-none select-none hover:text-foreground",
+          "flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden select-none hover:text-foreground",
           "transition-[scale,color,background-color,box-shadow] duration-150 ease-out motion-reduce:transition-[color,background-color,box-shadow]",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]",
           pressed && "bg-background text-foreground shadow-raised",

@@ -99,7 +99,7 @@ export function StarRating({
         aria-valuemax={max}
         aria-valuenow={value}
         aria-valuetext={`${value} out of ${max}, ${wordFor(value, max)}`}
-        className="flex cursor-pointer touch-manipulation rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+        className="flex cursor-pointer touch-manipulation rounded-md outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
         onPointerMove={(e) => {
           // Touch has no hover; a tap goes straight to commit.
           if (e.pointerType === "touch") return;

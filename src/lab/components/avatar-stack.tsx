@@ -162,7 +162,7 @@ export function AvatarStack({
             aria-label={item.name}
             onFocus={() => setActive(i)}
             className={cn(
-              "group relative flex size-full touch-manipulation items-center justify-center rounded-full text-sm font-medium text-foreground ring-2 ring-background outline-none select-none",
+              "group relative flex size-full touch-manipulation items-center justify-center rounded-full text-sm font-medium text-foreground ring-2 ring-background outline-hidden select-none",
               "transition-[translate,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
               "motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-105 motion-safe:focus-visible:-translate-y-0.5 motion-safe:focus-visible:scale-105",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]",

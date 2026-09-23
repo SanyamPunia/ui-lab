@@ -88,7 +88,7 @@ export function InlineEdit({
         // inherits its exact width and starting height.
         className={cn(
           box,
-          "cursor-text outline-none transition-[background-color] duration-150 ease-out",
+          "cursor-text outline-hidden transition-[background-color] duration-150 ease-out",
           "hover:bg-foreground/[0.04] focus-visible:outline-2 focus-visible:outline-foreground",
           editing && "invisible",
           empty && "text-muted",
@@ -122,7 +122,7 @@ export function InlineEdit({
             }}
             className={cn(
               box,
-              "h-full resize-none overflow-hidden bg-background text-foreground ring-[1.5px] ring-foreground/25 outline-none placeholder:text-muted",
+              "h-full resize-none overflow-hidden bg-background text-foreground ring-[1.5px] ring-foreground/25 outline-hidden placeholder:text-muted",
             )}
           />
         ) : (
@@ -144,7 +144,7 @@ export function InlineEdit({
             }}
             className={cn(
               box,
-              "h-full bg-background text-foreground ring-[1.5px] ring-foreground/25 outline-none placeholder:text-muted",
+              "h-full bg-background text-foreground ring-[1.5px] ring-foreground/25 outline-hidden placeholder:text-muted",
             )}
           />
         ))}

@@ -143,7 +143,7 @@ export function ExpandingCards({
                   // for the scale instead of letting the corners stretch.
                   style={{ borderRadius: CARD_RADIUS }}
                   className={cn(
-                    "relative block w-full touch-manipulation bg-surface text-left shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none",
+                    "relative block w-full touch-manipulation bg-surface text-left shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none",
                     returningId === item.id && "z-50",
                   )}
                 >
@@ -239,7 +239,7 @@ export function ExpandingCards({
                       aria-label="Close"
                       onClick={close}
                       className={cn(
-                        "relative -mt-2 -mr-2 flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                        "relative -mt-2 -mr-2 flex size-8 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                         // Grows the hit area to 44px around the 32px circle.
                         "after:absolute after:-inset-1.5 after:rounded-full",
                       )}

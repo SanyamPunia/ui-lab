@@ -364,7 +364,7 @@ export function SpringPlayground({ className }: { className?: string }) {
           <button
             type="button"
             onClick={play}
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-foreground pr-4 pl-3 text-sm font-medium text-background outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-foreground pr-4 pl-3 text-sm font-medium text-background outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
           >
             {/* Nudged right: a triangle's visual center sits left of its box. */}
             <svg viewBox="0 0 16 16" className="size-4 translate-x-px" fill="currentColor" aria-hidden>
@@ -509,7 +509,7 @@ export function SpringPlayground({ className }: { className?: string }) {
                 onFocus={() => setPreviewPreset(i)}
                 onBlur={() => setPreviewPreset(null)}
                 className={cn(
-                  "h-9 rounded-full px-3 text-[13px] font-medium outline-none transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+                  "h-9 rounded-full px-3 text-[13px] font-medium outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                   activePreset === i
                     ? "bg-surface text-foreground"
                     : "text-muted hover:bg-surface/60 hover:text-foreground",
@@ -612,7 +612,7 @@ function ModeToggle({
           tabIndex={mode === o.id ? 0 : -1}
           onClick={() => onChange(o.id)}
           className={cn(
-            "relative rounded-full px-3.5 text-[13px] font-medium outline-none transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground",
+            "relative rounded-full px-3.5 text-[13px] font-medium outline-hidden transition-[color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground",
             mode === o.id ? "text-foreground" : "text-muted hover:text-foreground",
           )}
         >
@@ -670,7 +670,7 @@ function Range({
         onChange={(e) => onChange(Number(e.target.value))}
         style={{ "--fill": `${fill}%` } as React.CSSProperties}
         className={cn(
-          "h-8 w-full cursor-pointer appearance-none rounded-full bg-transparent outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+          "h-8 w-full cursor-pointer appearance-none rounded-full bg-transparent outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
           // The filled part is a hard color stop at the value, not a blend.
           "[&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--foreground)_var(--fill),var(--border)_var(--fill))]",
           "[&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[linear-gradient(to_right,var(--foreground)_var(--fill),var(--border)_var(--fill))]",
@@ -715,7 +715,7 @@ function CopyButton({ value }: { value: string }) {
       type="button"
       aria-label="Copy config"
       onClick={copy}
-      className="relative flex size-8 shrink-0 items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none after:absolute after:-inset-1 hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+      className="relative flex size-8 shrink-0 items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none after:absolute after:-inset-1 hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
     >
       <span className="grid" aria-hidden>
         <motion.svg viewBox="0 0 16 16" className="col-start-1 row-start-1 size-4" {...STROKE} initial={false} animate={copied ? hidden : shown} transition={ICON_SWAP}>

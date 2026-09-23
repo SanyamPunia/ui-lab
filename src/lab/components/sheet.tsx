@@ -83,7 +83,7 @@ export function Sheet({
         tabIndex={-1}
         inert={!open}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md cursor-grab touch-none rounded-t-[28px] bg-background px-6 pt-3 pb-8 shadow-[0_0_0_1px_var(--border),0_-8px_40px_oklch(0_0_0/0.15)] outline-none select-none active:cursor-grabbing motion-reduce:transition-none!",
+          "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md cursor-grab touch-none rounded-t-[28px] bg-background px-6 pt-3 pb-8 shadow-[0_0_0_1px_var(--border),0_-8px_40px_oklch(0_0_0/0.15)] outline-hidden select-none active:cursor-grabbing motion-reduce:transition-none!",
           // The surface continues below the screen edge, so pulling the sheet
           // up reveals more sheet rather than a gap.
           "after:absolute after:inset-x-0 after:top-full after:h-[50vh] after:bg-background after:shadow-[1px_0_0_var(--border),-1px_0_0_var(--border)]",

@@ -145,7 +145,7 @@ export function ExpandingSearch({
           aria-keyshortcuts={shortcut ?? undefined}
           onClick={expand}
           className={cn(
-            "absolute inset-0 rounded-full outline-none",
+            "absolute inset-0 rounded-full outline-hidden",
             open && "invisible",
           )}
         />
@@ -171,7 +171,7 @@ export function ExpandingSearch({
           }}
           style={{ width }}
           className={cn(
-            "absolute inset-y-0 left-0 bg-transparent pr-10 pl-9 text-sm outline-none [&::-webkit-search-cancel-button]:appearance-none",
+            "absolute inset-y-0 left-0 bg-transparent pr-10 pl-9 text-sm outline-hidden [&::-webkit-search-cancel-button]:appearance-none",
             !open && "invisible",
           )}
         />
@@ -207,7 +207,7 @@ export function ExpandingSearch({
                 setQuery("");
                 inputRef.current?.focus();
               }}
-              className="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full text-muted outline-none transition-[color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+              className="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full text-muted outline-hidden transition-[color] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
             >
               <svg
                 viewBox="0 0 16 16"

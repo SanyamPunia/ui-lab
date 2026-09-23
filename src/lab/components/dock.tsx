@@ -110,7 +110,7 @@ function DockItem({
       type="button"
       aria-label={item.label}
       style={{ width: size, height: size }}
-      className="relative flex shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+      className="relative flex shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
       onPointerEnter={(e) => {
         if (e.pointerType !== "touch") onEnter();
       }}

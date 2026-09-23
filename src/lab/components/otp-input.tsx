@@ -156,7 +156,7 @@ export function OtpInput({
           aria-invalid={status === "error"}
           spellCheck={false}
           // 16px text stops iOS from zooming the page on focus.
-          className="absolute inset-0 z-10 cursor-text bg-transparent text-base text-transparent caret-transparent outline-none selection:bg-transparent"
+          className="absolute inset-0 z-10 cursor-text bg-transparent text-base text-transparent caret-transparent outline-hidden selection:bg-transparent"
         />
         {Array.from({ length }, (_, i) => (
           <Slot

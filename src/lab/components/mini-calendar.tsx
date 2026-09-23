@@ -348,7 +348,7 @@ function MonthGrid({
                         aria-current={iso === today ? "date" : undefined}
                         onClick={() => onSelect(iso)}
                         className={cn(
-                          "relative flex size-11 touch-manipulation items-center justify-center rounded-full text-sm tabular-nums outline-none select-none",
+                          "relative flex size-11 touch-manipulation items-center justify-center rounded-full text-sm tabular-nums outline-hidden select-none",
                           "transition-[scale,color,background-color] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-[color,background-color]",
                           "focus-visible:outline-2 focus-visible:outline-foreground",
                           isSelected
@@ -417,7 +417,7 @@ function MonthButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+      className="flex size-10 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
     >
       <svg
         viewBox="0 0 16 16"

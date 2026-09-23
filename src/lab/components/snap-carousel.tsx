@@ -246,7 +246,7 @@ export function SnapCarousel({
           role="region"
           aria-roledescription="carousel"
           aria-label={label}
-          className="relative flex cursor-grab snap-x snap-mandatory gap-4 data-dragging:cursor-grabbing data-dragging:select-none overflow-x-auto overscroll-x-contain rounded-3xl px-[calc((100%-280px)/2)] py-4 outline-none [mask-image:linear-gradient(to_right,transparent,black_32px,black_calc(100%-32px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="relative flex cursor-grab snap-x snap-mandatory gap-4 data-dragging:cursor-grabbing data-dragging:select-none overflow-x-auto overscroll-x-contain rounded-3xl px-[calc((100%-280px)/2)] py-4 outline-hidden [mask-image:linear-gradient(to_right,transparent,black_32px,black_calc(100%-32px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {slides.map((slide, i) => (
             // Snaps on the outer box and animates the inner one, so the
@@ -310,7 +310,7 @@ function Arrow({
         if (!disabled) onClick();
       }}
       className={cn(
-        "flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-[opacity]",
+        "flex size-10 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-[opacity]",
         disabled ? "cursor-default opacity-40" : "active:scale-[0.96]",
       )}
     >

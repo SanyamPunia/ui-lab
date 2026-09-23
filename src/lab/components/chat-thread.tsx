@@ -275,7 +275,7 @@ export function ChatThread({
           onClick={toEnd}
           inert={!unseen}
           className={cn(
-            "absolute bottom-3 left-1/2 flex h-8 -translate-x-1/2 touch-manipulation items-center gap-1.5 rounded-full bg-background pr-3 pl-2.5 text-[13px] font-medium text-foreground shadow-raised outline-none select-none",
+            "absolute bottom-3 left-1/2 flex h-8 -translate-x-1/2 touch-manipulation items-center gap-1.5 rounded-full bg-background pr-3 pl-2.5 text-[13px] font-medium text-foreground shadow-raised outline-hidden select-none",
             "transition-[opacity,translate,scale] ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]",
             unseen
               ? "translate-y-0 opacity-100 duration-200"
@@ -321,13 +321,13 @@ export function ChatThread({
             }
           }}
           // Grows with its content up to five lines, then scrolls.
-          className="max-h-[120px] min-h-10 flex-1 resize-none rounded-[20px] bg-surface px-4 py-2.5 text-[15px] leading-5 text-foreground outline-none [field-sizing:content] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-foreground"
+          className="max-h-[120px] min-h-10 flex-1 resize-none rounded-[20px] bg-surface px-4 py-2.5 text-[15px] leading-5 text-foreground outline-hidden [field-sizing:content] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-foreground"
         />
         <button
           type="submit"
           aria-label="Send"
           disabled={!draft.trim()}
-          className="flex size-10 shrink-0 touch-manipulation items-center justify-center rounded-full bg-foreground text-background outline-none transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-30 disabled:active:scale-100 motion-reduce:transition-[opacity]"
+          className="flex size-10 shrink-0 touch-manipulation items-center justify-center rounded-full bg-foreground text-background outline-hidden transition-[scale,opacity] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] disabled:opacity-30 disabled:active:scale-100 motion-reduce:transition-[opacity]"
         >
           <svg
             viewBox="0 0 16 16"

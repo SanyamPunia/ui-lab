@@ -64,7 +64,7 @@ export function AnnouncementBanner({
           inert={!open}
           tabIndex={-1}
           className={cn(
-            "flex h-11 items-center gap-2.5 bg-foreground pr-1.5 pl-4 text-sm text-background outline-none",
+            "flex h-11 items-center gap-2.5 bg-foreground pr-1.5 pl-4 text-sm text-background outline-hidden",
             className,
           )}
           style={{
@@ -84,7 +84,7 @@ export function AnnouncementBanner({
           {link && (
             <a
               href={link.href}
-              className="shrink-0 rounded-sm font-medium underline decoration-background/40 underline-offset-[3px] outline-none transition-[text-decoration-color] duration-150 ease-out hover:decoration-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-background"
+              className="shrink-0 rounded-sm font-medium underline decoration-background/40 underline-offset-[3px] outline-hidden transition-[text-decoration-color] duration-150 ease-out hover:decoration-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-background"
             >
               {link.label}
             </a>
@@ -94,7 +94,7 @@ export function AnnouncementBanner({
             aria-label="Dismiss announcement"
             onClick={onDismiss}
             className={cn(
-              "relative ml-auto flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-full text-background/70 outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-background/15 hover:text-background focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+              "relative ml-auto flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-full text-background/70 outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-background/15 hover:text-background focus-visible:outline-2 focus-visible:outline-background active:scale-[0.96] motion-reduce:transition-[color,background-color]",
               // Grows the hit area to 40px without growing the circle.
               "after:absolute after:-inset-1 after:rounded-full",
             )}
@@ -246,7 +246,7 @@ export default function AnnouncementBannerDemo() {
         onClick={restore}
         inert={open !== false}
         className={cn(
-          "absolute right-3 bottom-3 flex h-9 touch-manipulation items-center rounded-full bg-surface px-3.5 text-sm font-medium text-foreground shadow-raised outline-none transition-[opacity,filter,translate,scale] ease-[cubic-bezier(0.23,1,0.32,1)] select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]",
+          "absolute right-3 bottom-3 flex h-9 touch-manipulation items-center rounded-full bg-surface px-3.5 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[opacity,filter,translate,scale] ease-[cubic-bezier(0.23,1,0.32,1)] select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[opacity]",
           open !== false
             ? "translate-y-1 opacity-0 blur-[2px] duration-100 motion-reduce:translate-y-0 motion-reduce:blur-[0px]"
             : "translate-y-0 opacity-100 blur-[0px] delay-200 duration-200",

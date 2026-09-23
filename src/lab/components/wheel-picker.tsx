@@ -248,7 +248,7 @@ const Column = memo(function Column({
       aria-valuenow={index}
       aria-valuetext={options[index]}
       style={{ height: HEIGHT, paddingBlock: PAD }}
-      className="relative w-[72px] cursor-grab snap-y snap-mandatory overflow-y-auto overscroll-contain rounded-[12px] outline-none select-none [perspective:520px] [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-foreground active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+      className="relative w-[72px] cursor-grab snap-y snap-mandatory overflow-y-auto overscroll-contain rounded-[12px] outline-hidden select-none [perspective:520px] [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-foreground active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       onWheel={interrupt}
       onTouchStart={interrupt}
       onPointerDown={(e) => {

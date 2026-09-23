@@ -127,7 +127,7 @@ export function PasswordField({
             setValue(e.target.value);
             onValueChange?.(e.target.value);
           }}
-          className="h-11 w-full rounded-xl border border-border bg-background pr-12 pl-3.5 text-[15px] text-foreground outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground"
+          className="h-11 w-full rounded-xl border border-border bg-background pr-12 pl-3.5 text-[15px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground"
         />
         {/* 8px radius inside the 12px field with 4px of inset: concentric. */}
         <button
@@ -142,7 +142,7 @@ export function PasswordField({
           }}
           onClick={toggle}
           className={cn(
-            "absolute top-1 right-1 flex size-9 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+            "absolute top-1 right-1 flex size-9 touch-manipulation items-center justify-center rounded-lg text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
             revealed && "text-foreground",
           )}
         >

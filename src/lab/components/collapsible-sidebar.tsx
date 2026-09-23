@@ -109,7 +109,7 @@ export function CollapsibleSidebar({
                     }}
                     onBlur={hideTip}
                     className={cn(
-                      "group relative flex h-10 w-full touch-manipulation items-center gap-3 rounded-lg pl-3.5 text-sm font-medium whitespace-nowrap text-muted outline-none transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground",
+                      "group relative flex h-10 w-full touch-manipulation items-center gap-3 rounded-lg pl-3.5 text-sm font-medium whitespace-nowrap text-muted outline-hidden transition-[color] duration-150 ease-out select-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground",
                       current && "text-foreground",
                     )}
                   >
@@ -179,7 +179,7 @@ export function CollapsibleSidebar({
               aria-controls={navId}
               aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
               onClick={toggle}
-              className="relative flex size-10 shrink-0 touch-manipulation items-center justify-center rounded-lg text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+              className="relative flex size-10 shrink-0 touch-manipulation items-center justify-center rounded-lg text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
             >
               <svg className="size-5" {...STROKE} aria-hidden>
                 <rect x="2.25" y="2.75" width="11.5" height="10.5" rx="2" />

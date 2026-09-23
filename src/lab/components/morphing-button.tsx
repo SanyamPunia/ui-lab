@@ -109,7 +109,7 @@ export function MorphingButton({
         animate={{ width: compact ? CIRCLE : "auto" }}
         transition={reduceMotion ? { duration: 0 } : MORPH}
         className={cn(
-          "relative flex h-10 touch-manipulation items-center justify-center overflow-hidden rounded-full px-5 text-sm font-medium outline-none select-none",
+          "relative flex h-10 touch-manipulation items-center justify-center overflow-hidden rounded-full px-5 text-sm font-medium outline-hidden select-none",
           "transition-[scale,background-color,color] duration-200 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
           "active:scale-[0.96] aria-disabled:cursor-default aria-disabled:active:scale-100 motion-reduce:transition-[background-color,color]",
           status === "error"

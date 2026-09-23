@@ -88,7 +88,7 @@ export function SegmentedControl({
           aria-checked={option === value}
           tabIndex={option === value ? 0 : -1}
           onClick={() => select(option, false)}
-          className="flex h-8 items-center rounded-full px-4 text-sm font-medium text-muted transition-[color] duration-150 ease-out outline-none hover:text-foreground"
+          className="flex h-8 items-center rounded-full px-4 text-sm font-medium text-muted transition-[color] duration-150 ease-out outline-hidden hover:text-foreground"
         >
           {option}
         </button>

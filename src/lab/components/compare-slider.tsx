@@ -223,7 +223,7 @@ export function CompareSlider({
           aria-valuemax={100}
           aria-valuenow={percent(initial)}
           aria-valuetext={valueText(initial)}
-          className="pointer-events-auto absolute top-1/2 left-0 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out group-data-[dragging]:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none"
+          className="pointer-events-auto absolute top-1/2 left-0 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out group-data-[dragging]:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none"
           onKeyDown={(e) => {
             const next = {
               ArrowLeft: target.current - STEP,

@@ -100,7 +100,7 @@ export function FilterList({
             e.preventDefault();
             setQuery("");
           }}
-          className="h-12 w-full rounded-[14px] border border-border bg-background pr-12 pl-11 text-[15px] text-foreground outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
+          className="h-12 w-full rounded-[14px] border border-border bg-background pr-12 pl-11 text-[15px] text-foreground outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
         />
         {/* 10px radius inside the 14px field with 4px of inset: concentric.
             Kept mounted so it swaps with the icon recipe both ways. */}
@@ -111,7 +111,7 @@ export function FilterList({
           aria-hidden={query === "" || undefined}
           onClick={clear}
           className={cn(
-            "absolute top-1 right-1 flex size-10 touch-manipulation items-center justify-center rounded-[10px] text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
+            "absolute top-1 right-1 flex size-10 touch-manipulation items-center justify-center rounded-[10px] text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
             query === "" && "pointer-events-none",
           )}
         >
@@ -152,7 +152,7 @@ export function FilterList({
               aria-pressed={active}
               onClick={() => setCategory(c)}
               className={cn(
-                "relative h-8 flex-1 touch-manipulation rounded-full text-sm font-medium outline-none transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+                "relative h-8 flex-1 touch-manipulation rounded-full text-sm font-medium outline-hidden transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
                 active ? "text-foreground" : "text-muted hover:text-foreground",
               )}
             >

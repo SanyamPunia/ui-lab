@@ -152,7 +152,7 @@ export function TagInput({
                       inputRef.current?.focus();
                     }}
                     className={cn(
-                      "relative flex size-6 shrink-0 items-center justify-center rounded-md outline-none transition-[scale,color,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+                      "relative flex size-6 shrink-0 items-center justify-center rounded-md outline-hidden transition-[scale,color,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
                       // Grows the hit area to 32px without growing the icon.
                       "after:absolute after:-inset-1",
                       armed === i
@@ -222,7 +222,7 @@ export function TagInput({
                     setArmed(-1);
                   }
                 }}
-                className="h-8 w-full min-w-0 bg-transparent px-2 text-sm text-foreground outline-none placeholder:text-muted"
+                className="h-8 w-full min-w-0 bg-transparent px-2 text-sm text-foreground outline-hidden placeholder:text-muted"
               />
             </motion.li>
           </AnimatePresence>

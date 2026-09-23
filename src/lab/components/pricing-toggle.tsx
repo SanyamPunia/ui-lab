@@ -65,7 +65,7 @@ export function BillingToggle({
                   buttons.current[next]?.focus();
                 }}
                 className={cn(
-                  "relative h-9 touch-manipulation rounded-full px-4 text-sm font-medium outline-none transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
+                  "relative h-9 touch-manipulation rounded-full px-4 text-sm font-medium outline-hidden transition-[scale,color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color]",
                   checked ? "text-foreground" : "text-muted hover:text-foreground",
                 )}
               >
@@ -260,7 +260,7 @@ export function PricingTable({
               <button
                 type="button"
                 className={cn(
-                  "mt-5 h-10 touch-manipulation rounded-lg text-sm font-medium outline-none transition-[scale,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]",
+                  "mt-5 h-10 touch-manipulation rounded-lg text-sm font-medium outline-hidden transition-[scale,background-color] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[background-color]",
                   plan.featured
                     ? "bg-foreground text-background hover:bg-foreground/90"
                     : "bg-surface text-foreground hover:bg-foreground/[0.08]",

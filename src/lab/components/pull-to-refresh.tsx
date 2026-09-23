@@ -284,7 +284,7 @@ export function PullToRefresh({
               });
               startRefresh();
             }}
-            className="flex size-9 items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] aria-disabled:opacity-50 motion-reduce:transition-[color,background-color]"
+            className="flex size-9 items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] aria-disabled:opacity-50 motion-reduce:transition-[color,background-color]"
           >
             <svg
               viewBox="0 0 16 16"

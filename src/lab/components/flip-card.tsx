@@ -100,7 +100,7 @@ export function FlipCard({
   // Reduced motion swaps faces with a short cross-fade in place of the turn.
   const fade = "transition-[opacity] duration-200 ease-out";
   const hitArea =
-    "absolute inset-0 z-10 cursor-pointer rounded-[inherit] outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground";
+    "absolute inset-0 z-10 cursor-pointer rounded-[inherit] outline-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground";
 
   return (
     <div

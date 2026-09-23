@@ -264,7 +264,7 @@ function ThumbHandle({
         onKeyDown={onKeyDown}
         data-dragging={dragging || undefined}
         className={cn(
-          "group pointer-events-auto absolute top-1/2 left-0 size-5 -translate-x-1/2 -translate-y-1/2 touch-none rounded-full bg-background shadow-raised outline-none",
+          "group pointer-events-auto absolute top-1/2 left-0 size-5 -translate-x-1/2 -translate-y-1/2 touch-none rounded-full bg-background shadow-raised outline-hidden",
           "transition-[scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground data-dragging:scale-[0.96] motion-reduce:transition-none",
           // A 44px hit area around the 20px knob.
           "after:absolute after:-inset-3 after:rounded-full",
@@ -333,7 +333,7 @@ function ValueField({
           if (e.key === "Enter") commit();
           if (e.key === "Escape") setDraft(null);
         }}
-        className="w-16 min-w-0 bg-transparent text-right text-foreground tabular-nums outline-none"
+        className="w-16 min-w-0 bg-transparent text-right text-foreground tabular-nums outline-hidden"
       />
     </label>
   );

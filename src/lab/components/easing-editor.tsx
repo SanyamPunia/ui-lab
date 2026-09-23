@@ -311,7 +311,7 @@ export function EasingEditor({
                 type="button"
                 aria-label={`Control point ${i + 1}: time ${num(t)}, progress ${num(p)}`}
                 aria-describedby={hintId}
-                className="absolute size-4 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full border-2 border-foreground bg-background outline-none transition-[scale] duration-150 ease-out after:absolute after:-inset-3 after:rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[1.1] active:cursor-grabbing motion-reduce:transition-none"
+                className="absolute size-4 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full border-2 border-foreground bg-background outline-hidden transition-[scale] duration-150 ease-out after:absolute after:-inset-3 after:rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[1.1] active:cursor-grabbing motion-reduce:transition-none"
                 style={{ left: pct(X(t)), top: pct(Y(p)) }}
                 onPointerDown={(e) => {
                   if (e.button !== 0 || dragging.current !== null) return;
@@ -354,7 +354,7 @@ export function EasingEditor({
               type="button"
               aria-label={isPaused ? "Play preview" : "Pause preview"}
               onClick={() => setOverride(!isPaused)}
-              className="relative flex size-8 items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out after:absolute after:-inset-1 hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+              className="relative flex size-8 items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out after:absolute after:-inset-1 hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
             >
               <span className="grid" aria-hidden>
                 <SwapIcon visible={isPaused} reduceMotion={reduceMotion}>
@@ -409,7 +409,7 @@ export function EasingEditor({
                 tabIndex={duration === d ? 0 : -1}
                 onClick={() => setDuration(d)}
                 className={cn(
-                  "h-8 rounded-full text-[13px] font-medium tabular-nums outline-none transition-[color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+                  "h-8 rounded-full text-[13px] font-medium tabular-nums outline-hidden transition-[color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
                   duration === d ? "bg-background text-foreground shadow-raised" : "text-muted hover:text-foreground",
                 )}
               >
@@ -429,7 +429,7 @@ export function EasingEditor({
               aria-pressed={active === p}
               onClick={() => setCurve(p.curve)}
               className={cn(
-                "h-9 rounded-lg px-3 font-mono text-[13px] outline-none transition-[color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
+                "h-9 rounded-lg px-3 font-mono text-[13px] outline-hidden transition-[color,background-color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]",
                 active === p ? "bg-foreground text-background" : "bg-surface text-muted hover:text-foreground",
               )}
             >
@@ -505,7 +505,7 @@ function CopyButton({ value }: { value: string }) {
       type="button"
       aria-label="Copy easing"
       onClick={copy}
-      className="relative flex size-8 shrink-0 items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none after:absolute after:-inset-1 hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
+      className="relative flex size-8 shrink-0 items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none after:absolute after:-inset-1 hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96]"
     >
       <span className="grid" aria-hidden>
         <SwapIcon visible={!copied} reduceMotion={reduceMotion}>

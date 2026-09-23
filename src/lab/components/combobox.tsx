@@ -182,7 +182,7 @@ export function Combobox({
             }}
             onKeyDown={onKeyDown}
             onBlur={() => setOpen(false)}
-            className="h-full min-w-0 flex-1 bg-transparent pr-11 text-[15px] text-foreground outline-none placeholder:text-muted"
+            className="h-full min-w-0 flex-1 bg-transparent pr-11 text-[15px] text-foreground outline-hidden placeholder:text-muted"
           />
           <button
             type="button"
@@ -192,7 +192,7 @@ export function Combobox({
             onMouseDown={(e) => e.preventDefault()}
             onClick={clear}
             className={cn(
-              "absolute right-1 grid size-9 place-items-center rounded-lg text-muted outline-none select-none",
+              "absolute right-1 grid size-9 place-items-center rounded-lg text-muted outline-hidden select-none",
               "transition-[scale,color,background-color] duration-150 ease-out hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]",
             )}
           >

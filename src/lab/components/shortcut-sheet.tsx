@@ -253,7 +253,7 @@ export function ShortcutSheet({
         aria-keyshortcuts="?"
         onClick={show}
         className={cn(
-          "flex h-10 touch-manipulation items-center gap-2.5 rounded-full bg-surface pr-2 pl-4 text-sm font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none",
+          "flex h-10 touch-manipulation items-center gap-2.5 rounded-full bg-surface pr-2 pl-4 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none",
           className,
         )}
       >
@@ -303,7 +303,7 @@ export function ShortcutSheet({
                       type="button"
                       aria-label="Close"
                       onClick={close}
-                      className="relative flex size-9 touch-manipulation items-center justify-center rounded-full text-muted outline-none transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
+                      className="relative flex size-9 touch-manipulation items-center justify-center rounded-full text-muted outline-hidden transition-[scale,color,background-color] duration-150 ease-out select-none hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-[color,background-color]"
                     >
                       <svg
                         viewBox="0 0 16 16"
@@ -342,7 +342,7 @@ export function ShortcutSheet({
                       autoComplete="off"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      className="h-10 w-full rounded-lg bg-surface pr-3 pl-9 text-[15px] text-foreground outline-none placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:hidden"
+                      className="h-10 w-full rounded-lg bg-surface pr-3 pl-9 text-[15px] text-foreground outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:hidden"
                     />
                   </div>
 
@@ -359,7 +359,7 @@ export function ShortcutSheet({
                     aria-label="Shortcuts"
                     // Focusable, so the list can be scrolled from the keyboard.
                     tabIndex={0}
-                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-b-[20px] px-3 pb-3 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground"
+                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-b-[20px] px-3 pb-3 outline-hidden focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground"
                   >
                     {results.groups.map(({ group, items }) => (
                       <section key={group} aria-labelledby={`${id}-g-${group}`}>

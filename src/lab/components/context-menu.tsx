@@ -133,7 +133,7 @@ export function ContextMenuArea({
       onPointerUp={cancelPress}
       onPointerCancel={cancelPress}
       className={cn(
-        "relative flex h-[320px] w-[min(520px,100%)] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-3xl px-6 text-center border border-dashed border-border outline-none select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "relative flex h-[320px] w-[min(520px,100%)] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-3xl px-6 text-center border border-dashed border-border outline-hidden select-none [-webkit-touch-callout:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
         className,
       )}
     >
@@ -269,7 +269,7 @@ function Menu({
       }}
       exit={{ opacity: 0, transition: { duration: 0.1, ease: "easeOut" } }}
       className={cn(
-        "fixed top-0 left-0 z-50 w-55 rounded-[14px] bg-background p-1.5 shadow-raised outline-none",
+        "fixed top-0 left-0 z-50 w-55 rounded-[14px] bg-background p-1.5 shadow-raised outline-hidden",
         !isPresent && "pointer-events-none",
       )}
     >
@@ -299,7 +299,7 @@ function Menu({
             // 8px items inside 6px padding keep the corners concentric with
             // the menu's 14px.
             className={cn(
-              "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-sm outline-none select-none",
+              "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-sm outline-hidden select-none",
               item.disabled
                 ? "cursor-default text-muted opacity-60 focus:bg-foreground/[0.04]"
                 : item.destructive

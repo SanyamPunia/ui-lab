@@ -283,7 +283,7 @@ function Row({
         onKeyDown={onKeyDown}
         onBlur={onBlur}
         className={cn(
-          "relative flex size-10 shrink-0 cursor-grab touch-none items-center justify-center rounded-[10px] text-muted outline-none transition-[color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing",
+          "relative flex size-10 shrink-0 cursor-grab touch-none items-center justify-center rounded-[10px] text-muted outline-hidden transition-[color,background-color] duration-150 ease-out select-none hover:bg-foreground/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:cursor-grabbing",
           lifted && "bg-foreground/5 text-foreground",
         )}
       >

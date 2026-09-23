@@ -114,7 +114,7 @@ export function ScrollReveal({
         tabIndex={0}
         role="region"
         aria-label={label}
-        className="scroll-reveal h-full overflow-y-auto overscroll-contain rounded-3xl outline-none [mask-image:linear-gradient(to_bottom,transparent,black_44px,black_calc(100%-44px),transparent)] [scrollbar-width:none]"
+        className="scroll-reveal h-full overflow-y-auto overscroll-contain rounded-3xl outline-hidden [mask-image:linear-gradient(to_bottom,transparent,black_44px,black_calc(100%-44px),transparent)] [scrollbar-width:none]"
       >
         {/* The padding adds up to the box height (136 + 224 = 360), so the
             reveal edge holds still about 40% down while the text moves

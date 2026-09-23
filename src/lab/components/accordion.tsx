@@ -62,7 +62,7 @@ export function Accordion({
                   e.preventDefault();
                   focusHeader(target);
                 }}
-                className="group flex h-14 w-full items-center justify-between gap-5 rounded-md text-left text-[15px] font-medium text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                className="group flex h-14 w-full items-center justify-between gap-5 rounded-md text-left text-[15px] font-medium text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
                 {item.question}
                 <svg

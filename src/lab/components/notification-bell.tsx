@@ -107,7 +107,7 @@ export function NotificationBell({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => (open ? close() : setOpen(true))}
-          className="relative flex size-11 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+          className="relative flex size-11 touch-manipulation items-center justify-center rounded-full bg-surface text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
         >
           <svg
             ref={iconRef}
@@ -289,7 +289,7 @@ export default function NotificationBellDemo() {
         ref={simulateRef}
         type="button"
         onClick={simulate}
-        className="h-11 touch-manipulation rounded-full bg-surface px-5 text-[15px] font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="h-11 touch-manipulation rounded-full bg-surface px-5 text-[15px] font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         Simulate notification
       </button>

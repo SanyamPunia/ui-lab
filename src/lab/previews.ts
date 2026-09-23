@@ -90,6 +90,30 @@ import DragSelectDemo from "./components/drag-select";
 import SortableGridDemo from "./components/sortable-grid";
 import MagnetLinesDemo from "./components/magnet-lines";
 import MorphingNavDemo from "./components/morphing-nav";
+import ColorPickerDemo from "./components/color-picker";
+import CardInputDemo from "./components/card-input";
+import RadioCardsDemo from "./components/radio-cards";
+import CheckboxGroupDemo from "./components/checkbox-group";
+import ProgressStepperDemo from "./components/progress-stepper";
+import PromiseToastDemo from "./components/promise-toast";
+import ConfirmPopoverDemo from "./components/confirm-popover";
+import ActivityTimelineDemo from "./components/activity-timeline";
+import BreadcrumbsDemo from "./components/breadcrumbs";
+import OverflowTabsDemo from "./components/overflow-tabs";
+import TabBarDemo from "./components/tab-bar";
+import SelectionToolbarDemo from "./components/selection-toolbar";
+import Carousel3dDemo from "./components/carousel-3d";
+import LensRevealDemo from "./components/lens-reveal";
+import ElasticStringDemo from "./components/elastic-string";
+import ParticleTextDemo from "./components/particle-text";
+import ThemeToggleDemo from "./components/theme-toggle";
+import BookmarkButtonDemo from "./components/bookmark-button";
+import SendButtonDemo from "./components/send-button";
+import DownloadButtonDemo from "./components/download-button";
+import ContributionHeatmapDemo from "./components/contribution-heatmap";
+import DonutChartDemo from "./components/donut-chart";
+import StatCounterDemo from "./components/stat-counter";
+import LeaderboardDemo from "./components/leaderboard";
 // new-component:imports
 
 // The index shows every demo at once, so one static bundle beats 27 separate
@@ -186,5 +210,29 @@ export const previews: Record<string, ComponentType> = {
   "sortable-grid": SortableGridDemo,
   "magnet-lines": MagnetLinesDemo,
   "morphing-nav": MorphingNavDemo,
+  "color-picker": ColorPickerDemo,
+  "card-input": CardInputDemo,
+  "radio-cards": RadioCardsDemo,
+  "checkbox-group": CheckboxGroupDemo,
+  "progress-stepper": ProgressStepperDemo,
+  "promise-toast": PromiseToastDemo,
+  "confirm-popover": ConfirmPopoverDemo,
+  "activity-timeline": ActivityTimelineDemo,
+  "breadcrumbs": BreadcrumbsDemo,
+  "overflow-tabs": OverflowTabsDemo,
+  "tab-bar": TabBarDemo,
+  "selection-toolbar": SelectionToolbarDemo,
+  "carousel-3d": Carousel3dDemo,
+  "lens-reveal": LensRevealDemo,
+  "elastic-string": ElasticStringDemo,
+  "particle-text": ParticleTextDemo,
+  "theme-toggle": ThemeToggleDemo,
+  "bookmark-button": BookmarkButtonDemo,
+  "send-button": SendButtonDemo,
+  "download-button": DownloadButtonDemo,
+  "contribution-heatmap": ContributionHeatmapDemo,
+  "donut-chart": DonutChartDemo,
+  "stat-counter": StatCounterDemo,
+  "leaderboard": LeaderboardDemo,
   // new-component:entries
 };

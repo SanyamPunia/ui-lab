@@ -229,7 +229,7 @@ export function DropdownMenu({
             openMenu("last");
           }
         }}
-        className="flex h-9 touch-manipulation items-center gap-1.5 rounded-lg bg-surface pr-2.5 pl-3.5 text-sm font-medium text-foreground shadow-raised outline-none transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
+        className="flex h-9 touch-manipulation items-center gap-1.5 rounded-lg bg-surface pr-2.5 pl-3.5 text-sm font-medium text-foreground shadow-raised outline-hidden transition-[scale] duration-150 ease-out select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96] motion-reduce:transition-none"
       >
         {label}
         <svg
@@ -304,7 +304,7 @@ export function DropdownMenu({
                   // No transition on the highlight: it moves on every hover,
                   // so any easing reads as lag.
                   className={cn(
-                    "flex h-8 cursor-default items-center gap-2.5 rounded-lg px-2 text-sm outline-none select-none",
+                    "flex h-8 cursor-default items-center gap-2.5 rounded-lg px-2 text-sm outline-hidden select-none",
                     item.destructive ? "text-danger" : "text-foreground",
                     highlighted &&
                       (item.destructive ? "bg-danger/10" : "bg-foreground/[0.06]"),
@@ -392,7 +392,7 @@ function Panel({
       style={{ transformOrigin: align === "end" ? "top right" : "top left" }}
       // 12px radius around 4px padding keeps the 8px items concentric.
       className={cn(
-        "absolute top-full z-50 mt-1.5 w-52 rounded-xl bg-surface p-1 shadow-raised outline-none",
+        "absolute top-full z-50 mt-1.5 w-52 rounded-xl bg-surface p-1 shadow-raised outline-hidden",
         align === "end" ? "right-0" : "left-0",
         !isPresent && "pointer-events-none",
       )}
