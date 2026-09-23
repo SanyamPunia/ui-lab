@@ -1,7 +1,8 @@
 "use client";
 
 import { memo, useCallback, useRef, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Layout in sheet units; everything is placed in percentages of these, so

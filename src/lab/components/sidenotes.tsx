@@ -14,10 +14,10 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 /* The teachable part: notes are laid out like a tiny column typesetter.

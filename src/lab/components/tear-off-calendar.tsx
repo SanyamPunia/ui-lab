@@ -12,11 +12,11 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 type Flight = {

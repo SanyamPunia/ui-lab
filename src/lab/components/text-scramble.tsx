@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { useReducedMotion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789#%&*+=/<>";
 // Head start before the first character settles, so the noise registers.

@@ -6,10 +6,10 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Half a turn is a lot of travel for a physical object; under ~300ms it reads

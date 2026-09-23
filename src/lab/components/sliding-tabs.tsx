@@ -8,9 +8,9 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   type AnimationPlaybackControls,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 type Tab = { id: string; label: string; content: React.ReactNode };

@@ -8,12 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useInView,
-  useReducedMotion,
-} from "motion/react";
+import { AnimatePresence, motion, useInView } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Testimonial = {

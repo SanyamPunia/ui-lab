@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
-import {
-  animate,
-  useReducedMotion,
-  type AnimationPlaybackControls,
-} from "motion/react";
+import { animate, type AnimationPlaybackControls } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type CanvasNote = {

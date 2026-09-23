@@ -2,13 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { AnimatePresence, motion, useSpring, useTransform } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Player = { id: string; name: string; score: number; avatar?: string };

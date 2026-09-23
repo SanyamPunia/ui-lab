@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  animate,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useTransform,
-} from "motion/react";
+import { animate, motion, useMotionValue, useTransform } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 type Tension = { name: string; stiffness: number; damping: number; weight: number };

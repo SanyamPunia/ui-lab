@@ -1,12 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  type Variants,
-} from "motion/react";
+import { AnimatePresence, motion, type Variants } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;

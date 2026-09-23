@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import {
-  animate,
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-} from "motion/react";
+import { animate, motion, useMotionTemplate, useMotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type SortableGridItem = { id: string; label: string; icon: React.ReactNode };

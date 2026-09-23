@@ -6,10 +6,10 @@ import {
   motion,
   motionValue,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 const FRAME_H = 560;

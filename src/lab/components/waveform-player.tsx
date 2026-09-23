@@ -7,9 +7,9 @@ import {
   motion,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   type AnimationPlaybackControls,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 /* The teachable part: the waveform is drawn twice, a quiet copy and an inked

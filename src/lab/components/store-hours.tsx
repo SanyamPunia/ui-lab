@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useMemo, useState, useSyncExternalStore } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // "HH:MM" in the store's own time. A close earlier than the open runs past

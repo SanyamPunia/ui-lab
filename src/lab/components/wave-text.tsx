@@ -5,11 +5,11 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Enough lift to read as a wave at 44px without letters touching the line above.

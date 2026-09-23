@@ -15,13 +15,13 @@ import {
   motion,
   motionValue,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
   useVelocity,
   type MotionValue,
   type Variants,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type KanbanCard = { id: string; title: string };

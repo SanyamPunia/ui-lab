@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
+import { animate, motion, useMotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Everything is drawn in a 280 unit square; pointer math scales into it.

@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import {
-  animate,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-} from "motion/react";
+import { animate, motion, useMotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 type Brand = "visa" | "mastercard" | "amex" | "discover" | "unknown";

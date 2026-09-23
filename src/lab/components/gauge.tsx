@@ -7,11 +7,11 @@ import {
   useInView,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   useSpring,
   useTransform,
   type AnimationPlaybackControls,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // No bounce: an arc that overshoots would briefly show a value that isn't

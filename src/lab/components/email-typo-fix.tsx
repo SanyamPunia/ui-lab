@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  LayoutGroup,
-  motion,
-  useReducedMotion,
-} from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // The domains people actually sign up with, most common first so a tie in

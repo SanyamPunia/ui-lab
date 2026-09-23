@@ -1,7 +1,8 @@
 "use client";
 
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { animate, useReducedMotion } from "motion/react";
+import { animate } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Time = { hour: number; minute: number; period: "AM" | "PM" };

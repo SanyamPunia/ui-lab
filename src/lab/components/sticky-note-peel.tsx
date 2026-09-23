@@ -6,11 +6,11 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { Caveat } from "next/font/google";
 import { cn } from "@/lib/cn";
 

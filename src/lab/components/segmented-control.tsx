@@ -1,13 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import {
-  animate,
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-} from "motion/react";
+import { animate, motion, useMotionTemplate, useMotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // The pill travels like an inchworm: the edge facing the move leaves first

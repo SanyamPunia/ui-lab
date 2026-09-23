@@ -5,12 +5,12 @@ import {
   animate,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   useSpring,
   useTransform,
   motion,
   type AnimationPlaybackControls,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Everything is drawn in a 360 x 280 viewBox that scales with the card.

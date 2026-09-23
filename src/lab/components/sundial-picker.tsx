@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
+import { motion, useSpring, useTransform, type MotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 const VB_W = 460;

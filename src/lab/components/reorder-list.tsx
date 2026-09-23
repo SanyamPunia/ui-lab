@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import {
-  Reorder,
-  motion,
-  useDragControls,
-  useReducedMotion,
-  type Variants,
-} from "motion/react";
+import { Reorder, motion, useDragControls, type Variants } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type ReorderListItem = { id: string; label: string; meta?: string };

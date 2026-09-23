@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useIsPresent,
-  useReducedMotion,
-} from "motion/react";
+import { AnimatePresence, motion, useIsPresent } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Crumb = { label: string; href: string };

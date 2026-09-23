@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { LayoutGroup, motion, useReducedMotion } from "motion/react";
+import { LayoutGroup, motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type TreeNode = { name: string; children?: TreeNode[] };

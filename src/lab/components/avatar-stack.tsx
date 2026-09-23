@@ -1,13 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
+import { motion, useSpring, useTransform, type MotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 

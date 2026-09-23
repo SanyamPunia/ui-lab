@@ -1,12 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useAnimate,
-  useReducedMotion,
-} from "motion/react";
+import { AnimatePresence, motion, useAnimate } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 const BOOKMARK =

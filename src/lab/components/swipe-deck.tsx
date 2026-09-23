@@ -6,11 +6,11 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 // Dragged this far, the card is committed and the deck has fully advanced.
 const THROW_DISTANCE = 120;

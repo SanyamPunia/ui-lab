@@ -6,12 +6,12 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
   type ValueAnimationTransition,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Verdict = "approved" | "rejected";

@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // No bounce: an icon that overshoots reads as a wobble, not a morph. 0.4s

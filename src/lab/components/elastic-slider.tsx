@@ -6,10 +6,10 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 // The furthest the track can stretch past either end, in px.
 const MAX_STRETCH = 24;

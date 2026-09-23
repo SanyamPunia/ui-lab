@@ -1,12 +1,8 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  LayoutGroup,
-  motion,
-  useReducedMotion,
-} from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type TabBarItem = {

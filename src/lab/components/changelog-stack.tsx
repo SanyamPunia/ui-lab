@@ -5,13 +5,13 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
   type PanInfo,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type ChangeTag = "New" | "Improved" | "Fixed";

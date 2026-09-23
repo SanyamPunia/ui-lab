@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { animate, useMotionValue, useReducedMotion } from "motion/react";
+import { animate, useMotionValue } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // A click glides rather than teleports, so you see which way the divider

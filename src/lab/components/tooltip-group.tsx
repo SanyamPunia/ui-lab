@@ -17,9 +17,9 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
-  useReducedMotion,
   type Variants,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 /* The teachable part: one shared clock, and one shared bubble, for every

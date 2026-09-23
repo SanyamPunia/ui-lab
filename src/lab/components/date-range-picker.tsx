@@ -12,9 +12,9 @@ import {
   MotionConfig,
   motion,
   useIsPresent,
-  useReducedMotion,
   type Variants,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Range = { start: string; end: string };

@@ -5,13 +5,13 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
   type Transition,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 const REST = 40;

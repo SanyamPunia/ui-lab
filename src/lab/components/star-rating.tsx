@@ -5,9 +5,9 @@ import {
   animate,
   AnimatePresence,
   motion,
-  useReducedMotion,
   type AnimationPlaybackControls,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Starting at rest and kicked upward, the spring peaks near 1.15 about 50ms

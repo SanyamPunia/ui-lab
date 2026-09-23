@@ -6,9 +6,9 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   type AnimationPlaybackControls,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type Region = { x: number; y: number; w: number; h: number };

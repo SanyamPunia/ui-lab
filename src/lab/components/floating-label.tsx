@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 type Status = "idle" | "error" | "valid";

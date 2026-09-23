@@ -6,9 +6,9 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 /* The teachable part: one label card for every hotspot. The picture sits

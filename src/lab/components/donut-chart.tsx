@@ -6,11 +6,11 @@ import {
   motion,
   useInView,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 export type DonutSlice = { label: string; value: number; color: string };

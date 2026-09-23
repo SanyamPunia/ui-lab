@@ -6,11 +6,11 @@ import {
   motion,
   motionValue,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type AnimationPlaybackControlsWithThen,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/cn";
 
 // Panel size when the map unfolds sideways: four panels make a 576px sheet.
