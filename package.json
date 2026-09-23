@@ -10,6 +10,7 @@
     "new": "bun scripts/new-component.ts"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "motion": "^13.4.1",
     "next": "16.3.6",
