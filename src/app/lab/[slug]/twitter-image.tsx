@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getEntry, lab } from "@/lab/registry";
 import { componentImage, ogContentType, ogSize } from "@/lib/og";
 
-export const alt = "A component from ui lab, an interaction design component collection";
+export const alt = "An interaction experiment from ui lab, a personal lab by xevrion";
 export const size = ogSize;
 export const contentType = ogContentType;
 
