@@ -409,12 +409,15 @@ function CopyCode({ value }: { value: string }) {
         onClick={copy}
         aria-label="Copy this step"
         className={cn(
-          "relative flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-lg text-muted outline-hidden hover:text-foreground",
+          "relative grid size-9 shrink-0 touch-manipulation place-items-center rounded-lg text-muted outline-hidden hover:text-foreground",
           "transition-[scale,color] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-[color]",
           "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-foreground",
         )}
       >
-        <AnimatePresence initial={false} mode="popLayout">
+        {/* Both icons share one grid cell, so the outgoing one stays centred
+            under the incoming one. popLayout re-measured the exit mid-press
+            and let the two sit side by side in the flex row. */}
+        <AnimatePresence initial={false}>
           <motion.svg
             key={done ? "check" : "copy"}
             initial={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
@@ -422,7 +425,7 @@ function CopyCode({ value }: { value: string }) {
             exit={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
             transition={ICON_SWAP}
             viewBox="0 0 16 16"
-            className="size-4"
+            className="col-start-1 row-start-1 size-4"
             fill="none"
             stroke="currentColor"
             strokeWidth={1.5}
