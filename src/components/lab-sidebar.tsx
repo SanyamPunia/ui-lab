@@ -43,7 +43,7 @@ export function LabSidebar() {
         <span className="text-[13px] text-muted">by xevrion</span>
       </Link>
       <nav
-        aria-label="All components"
+        aria-label="Everything in the lab"
         // Fades at both ends, so the list reads as continuing out of view
         // rather than being cut.
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pt-6 pb-12 [mask-image:linear-gradient(to_bottom,transparent,black_20px,black_calc(100%-40px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"

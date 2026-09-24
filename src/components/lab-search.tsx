@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { cn } from "@/lib/cn";
+import { SEARCH_EVENT, SEARCH_HASH } from "./header-search";
 
 type Entry = {
   name: string;
@@ -84,6 +85,23 @@ export function LabSearch({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  // The header's search button, or arriving from another page at /#search.
+  useEffect(() => {
+    const focus = () => {
+      const input = inputRef.current;
+      if (!input) return;
+      input.focus({ preventScroll: true });
+      input.scrollIntoView({ block: "center", behavior: "smooth" });
+    };
+    if (location.hash === SEARCH_HASH) {
+      history.replaceState(history.state, "", location.pathname + location.search);
+      // After the index has restored its scroll position.
+      requestAnimationFrame(focus);
+    }
+    window.addEventListener(SEARCH_EVENT, focus);
+    return () => window.removeEventListener(SEARCH_EVENT, focus);
+  }, []);
+
   // Every word has to appear somewhere, in any order, so "drag card" finds
   // the swipe deck without the exact phrase.
   const words = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -112,7 +130,7 @@ export function LabSearch({
         >
           {filtered
             ? `${count} of ${entries.length}`
-            : `${entries.length} components`}
+            : `${entries.length} experiments`}
         </p>
         <div className="relative w-full max-w-64">
           <svg
@@ -137,18 +155,21 @@ export function LabSearch({
               if (query) setQuery("");
               else e.currentTarget.blur();
             }}
-            placeholder="Search components"
-            aria-label="Search components"
+            placeholder="Search the lab"
+            aria-label="Search the lab"
             aria-keyshortcuts="/"
             spellCheck={false}
             autoComplete="off"
-            className="h-9 w-full rounded-full bg-surface pr-9 pl-9 text-sm text-foreground shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
+            // 16px on phones: iOS Safari zooms the page into any smaller
+            // input it focuses.
+            className="h-9 w-full rounded-full bg-surface pr-3 pl-9 text-base text-foreground sm:pr-9 sm:text-sm shadow-raised outline-hidden placeholder:text-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-search-cancel-button]:appearance-none"
           />
-          {/* Hidden once typing starts, so it never sits under the text. */}
+          {/* Hidden once typing starts, so it never sits under the text, and
+              on phones, which have no key to press. */}
           {!query && (
             <kbd
               aria-hidden
-              className="pointer-events-none absolute top-1/2 right-2.5 flex h-5 min-w-5 -translate-y-1/2 items-center justify-center rounded border border-border px-1 font-mono text-[11px] text-muted"
+              className="pointer-events-none absolute top-1/2 right-2.5 hidden h-5 sm:flex min-w-5 -translate-y-1/2 items-center justify-center rounded border border-border px-1 font-mono text-[11px] text-muted"
             >
               /
             </kbd>
@@ -198,9 +219,14 @@ export function LabSearch({
       {/* grid-cols-1 rather than no template: its minmax(0, 1fr) caps the
           column at the screen, where an implicit column grows to fit the
           widest demo and scrolls the whole page sideways on phones. */}
-      <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {cards.filter((_, i) => visible[i])}
-      </ul>
+      {/* Three across only when a card is at least as wide as the 316px
+          the previews are scaled for; the sidebar makes the page width a
+          poor guide, so the grid asks its own container. */}
+      <div className="@container mt-4">
+        <ul className="grid grid-cols-1 gap-3 @min-[600px]:grid-cols-2 @min-[1000px]:grid-cols-3">
+          {cards.filter((_, i) => visible[i])}
+        </ul>
+      </div>
 
       {count === 0 && (
         <p className="py-16 text-center text-sm text-muted">

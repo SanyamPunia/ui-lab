@@ -18,7 +18,7 @@ Stack: Next.js 16 App Router (read `node_modules/next/dist/docs/` before using a
 
 1. **Understand the brief.** When Yash describes a component, follow his spec closely; ask only if something is genuinely ambiguous. If he gives a reference image, keep the idea but render it in this lab's style (monochrome tokens, restrained, one accent at most).
 2. **Scaffold:** `bun run new <slug> <category>`. It creates `src/lab/components/<slug>.tsx` and registers it in three files: `src/lab/registry.ts` (metadata only, never import components there), `src/lab/demos.tsx` (code-split loader for its own page) and `src/lab/previews.ts` (static bundle for the index). Never remove the `// new-component:` markers. Categories: `buttons`, `inputs`, `navigation`, `feedback`, `data`, `cards`, `objects`, `playground`, `text` (text effects are ranked last on the index).
-3. **Flag it new:** add `isNew: true,` under its `slug:` line in the registry. New entries lead the index and get the hand-drawn red "new" mark. When a new *batch* lands, clear the previous batch's flags; single additions can stay alongside the latest batch.
+3. **Flag it new:** add `isNew: true,` under its `slug:` line in the registry. New entries lead the index and get a quiet "New" tag (a static pill with a red dot; the old self-drawing circle was too loud in a grid), and the newest one is linked from the hero's "New" pill. When a new *batch* lands, clear the previous batch's flags; single additions can stay alongside the latest batch.
 4. **Build it** (rules below). Export the reusable component by name with sensible props, and `export default function <Name>Demo()` with believable, real content.
 5. **Verify visually** (see "Seeing it"): light and dark, mid-animation frames, 375px width, console clean, reduced motion.
 6. **Register:** `bun scripts/register.ts '[{"slug":"x","description":"...","keywords":"..."}]'`. Description: one short present-tense line about what it *does* ("Leans toward your cursor before you even reach it."). Keywords: 4 to 8 lowercase search words. Add `"anchor":"top"` if the demo grows downward.
@@ -65,7 +65,7 @@ Helper scripts live in `scripts/` (not the scratchpad, which gets wiped): `new-c
 
 - Index cards are `LabCard` (`src/components/lab-card.tsx`) with a stretched title link, so demos may contain links. Previews render inside an `inert`, CSS-scaled box.
 - **Double-scale trap:** in a card, `getBoundingClientRect`/`getClientRects` are post-scale. Divide by `rect.width / el.offsetWidth` (or use `offset*`) before drawing inside the component.
-- **Hover-to-play:** demos read `usePreviewPlay()` from `@/lab/preview-play`: `null` on the component's own page, `false` in an idle card, `true` while the card is hovered or focused. On `true`, run a short, natural show through the component's real state (a person briefly using it), looping calmly; on `false`, cancel timers and ease back to rest. Idle cards must cost nothing: no JS timers, rAF or observers (pause loops when `usePreviewPlay() === false`; cheap CSS ambience is fine). No global side effects from a show: never write the clipboard, change the theme, vibrate, steal focus or fire full-screen effects.
+- **Hover-to-play:** demos read `usePreviewPlay()` from `@/lab/preview-play`: `null` on the component's own page, `false` in an idle card, `true` while the card is hovered or focused, or, on touch devices (no hover), while it's at least 60% on screen, so phones see every show as they scroll. Design shows so they read well without a cursor. On `true`, run a short, natural show through the component's real state (a person briefly using it), looping calmly; on `false`, cancel timers and ease back to rest. Idle cards must cost nothing: no JS timers, rAF or observers (pause loops when `usePreviewPlay() === false`; cheap CSS ambience is fine). No global side effects from a show: never write the clipboard, change the theme, vibrate, steal focus or fire full-screen effects.
 - Left-aligned fixed-width demo boxes look off-centre in a scaled card; centre them when `usePreviewPlay() !== null`.
 
 ## Seeing it
@@ -74,6 +74,7 @@ Background browser tabs freeze animations, so verify with headless Chrome throug
 
 ## Site framing
 
-- Copy is personal: "Things I made because I liked how they felt". Never "components library".
+- Copy is personal: "Things I made because I liked how they felt". It is a lab to experiment in and enjoy, never a UI library: say "experiments", "things", "the lab", not "components" or "library", in visible copy and labels.
+- Phones are a first-class audience (most visitors): check every change at 320 to 430px, inputs are 16px on phones (iOS zooms smaller ones), no keyboard hints on touch, nothing widens the page.
 - Never put the component count in SEO, OG images, metadata, JSON-LD or hero copy; it keeps changing and social caches go stale. The live count in the index search UI is fine.
 - Each component page gets its own OG image automatically (`src/app/lab/[slug]/opengraph-image.tsx` with `generateStaticParams`, drawn by `src/lib/og.tsx`).

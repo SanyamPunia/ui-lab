@@ -109,7 +109,7 @@ export default async function LabPage({ params }: PageProps<"/lab/[slug]">) {
     <>
       <JsonLd data={jsonLd} />
       <SiteHeader title={entry.name} />
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-4 pt-4 pb-4 sm:px-6 sm:pt-6">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 pt-4 pb-4 sm:px-6 sm:pt-6">
         {/* The stage: a quiet dotted canvas the demo sits on, so every piece
             is shown the same way, like work pinned to a board. Clipped
             sideways so thrown or dragged demos can't widen the page; `clip`
@@ -157,7 +157,7 @@ export default async function LabPage({ params }: PageProps<"/lab/[slug]">) {
 
         {/* Walks the lab in the sidebar's order, so you can browse without
             going back to the index. */}
-        <nav aria-label="More components" className="grid grid-cols-2 gap-3">
+        <nav aria-label="More from the lab" className="grid grid-cols-2 gap-3">
           {[
             { entry: previous, label: "Previous", align: "items-start" },
             { entry: next, label: "Next", align: "items-end text-right" },

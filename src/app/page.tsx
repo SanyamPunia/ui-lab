@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { siGithub } from "simple-icons";
 import { JsonLd } from "@/components/json-ld";
 import { LabCard } from "@/components/lab-card";
+import { Arrow } from "@/components/arrow";
 import { LabSearch } from "@/components/lab-search";
+import { Underline } from "@/components/underline";
 import { NewMark } from "@/components/new-mark";
 import { ScrollMemory } from "@/components/scroll-memory";
 import { SiteHeader } from "@/components/site-header";
@@ -18,6 +21,8 @@ import { absoluteUrl, labPath, site } from "@/lib/site";
 const rank = (e: (typeof lab)[number]) =>
   (e.category === "text" ? 2 : 0) + (e.isNew ? 0 : 1);
 const shown = [...lab].sort((a, b) => rank(a) - rank(b));
+// The registry appends, so the last flagged entry is the newest.
+const latest = lab.findLast((e) => e.isNew) ?? lab[lab.length - 1];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -68,23 +73,63 @@ export default function Home() {
       <JsonLd data={jsonLd} />
       <SiteHeader />
       <ScrollMemory />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-12 pb-16 sm:px-6 sm:pt-16">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-16 pb-16 sm:px-6 sm:pt-20">
         {/* Says plainly what the page is, for people and for the search and
-            answer engines that quote it. */}
-        <div className="mb-12">
-          <p className="text-sm font-medium text-muted">
-            ui lab <span className="text-border">/</span> by xevrion
-          </p>
-          <h1 className="mt-3 max-w-2xl text-3xl leading-[1.15] font-semibold tracking-tight text-balance sm:text-[40px]">
-            Things I made because I liked how they felt
+            answer engines that quote it. It sits on the same dotted stage
+            the demos do, fading out before the grid starts. */}
+        <section className="relative isolate mb-16 flex flex-col items-center text-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 -top-24 -z-10 h-[440px] bg-[radial-gradient(color-mix(in_oklab,var(--foreground)_11%,transparent)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_50%_55%_at_50%_40%,black,transparent)]"
+          />
+          {/* Points at the latest thing, so the top of the page changes
+              whenever something new lands. */}
+          <Link
+            href={labPath(latest.slug)}
+            className="group/latest flex h-8 items-center gap-2 rounded-full bg-background pr-3 pl-1 text-[13px] text-muted shadow-[inset_0_0_0_1px_var(--border)] outline-hidden transition-[color,scale] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+          >
+            <span className="flex h-6 items-center rounded-full bg-foreground px-2 text-[12px] font-medium text-background">
+              New
+            </span>
+            <span className="font-medium text-foreground">{latest.name}</span>
+            <Arrow
+              direction="right"
+              className="size-3 transition-[translate] duration-150 ease-out group-hover/latest:translate-x-0.5 motion-reduce:transition-none"
+            />
+          </Link>
+          <h1 className="mt-6 max-w-2xl text-[34px] leading-[1.1] font-semibold tracking-tight text-balance sm:text-[46px]">
+            Things I made because I liked how they{" "}
+            <span className="relative inline-block">
+              felt
+              <Underline />
+            </span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-pretty text-muted">
-            Not a library, just a lab. Small interaction
-            experiments I built in React while learning motion and detail.
-            Each one has a live demo and its source, if you want to see how
-            it works.
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-pretty text-muted">
+            Not a library, just a lab. Small interaction experiments I built
+            in React while learning motion and detail, each with a live demo
+            and its source.
           </p>
-        </div>
+          <div className="mt-8 flex items-center gap-2">
+            <a
+              href="#lab"
+              className="flex h-10 items-center rounded-full bg-foreground px-5 text-sm font-medium text-background outline-hidden transition-[scale,opacity] duration-150 ease-out hover:opacity-90 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+            >
+              Browse the lab
+            </a>
+            <a
+              href={site.repo}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-10 items-center gap-2 rounded-full bg-surface px-4 text-sm font-medium text-foreground shadow-[inset_0_0_0_1px_var(--border)] outline-hidden transition-[scale,background-color] duration-150 ease-out hover:bg-background focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-foreground active:scale-[0.96]"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden className="size-4" fill="currentColor">
+                <path d={siGithub.path} />
+              </svg>
+              Source
+            </a>
+          </div>
+        </section>
+        <div id="lab" className="scroll-mt-20" />
         <LabSearch
           categories={categories}
           entries={shown.map(({ name, description, keywords, category }) => ({

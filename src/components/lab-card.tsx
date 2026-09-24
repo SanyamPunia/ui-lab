@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PreviewPlayContext } from "@/lab/preview-play";
 
 // An index card that tells its preview when it's hovered or focused, so the
@@ -14,13 +14,29 @@ export function LabCard({
   children: React.ReactNode;
 }) {
   const [play, setPlay] = useState(false);
+  const ref = useRef<HTMLLIElement>(null);
+
+  // Phones have no hover, so there a card plays whenever it's mostly on
+  // screen: scrolling the index brings each one to life as it arrives. A
+  // phone screen fits two or three cards, so only those few ever run.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !matchMedia("(hover: none)").matches) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setPlay(entry.isIntersecting),
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
     <li
+      ref={ref}
       className={className}
-      // Touch has no hover, and a tap opens the component anyway.
+      // Touch is handled by the observer above; a tap opens the piece.
       onPointerEnter={(e) => e.pointerType !== "touch" && setPlay(true)}
-      onPointerLeave={() => setPlay(false)}
+      onPointerLeave={(e) => e.pointerType !== "touch" && setPlay(false)}
       onFocus={() => setPlay(true)}
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) setPlay(false);

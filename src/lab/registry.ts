@@ -1557,6 +1557,25 @@ export const lab: LabEntry[] = [
     keywords: "logos brands orbit landing trusted by stack integrations 3d",
     previewScale: 0.5,
   },
+  {
+    slug: "now-playing",
+    isNew: true,
+    name: "Now playing",
+    category: "cards",
+    description: "A listening-to pill whose record slides out from behind the cover and spins while it plays.",
+    keywords: "spotify music now playing vinyl record equalizer portfolio status",
+    previewScale: 0.95,
+  },
+  {
+    slug: "uptime-bar",
+    isNew: true,
+    name: "Uptime bar",
+    category: "data",
+    description:
+      "Point at any day and the row's own caption tells you what happened.",
+    keywords: "uptime status page incidents monitoring history tooltip",
+    previewScale: 0.65,
+  },
   // new-component:entries
 ];
 

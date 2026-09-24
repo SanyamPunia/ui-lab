@@ -47,7 +47,7 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
       <button
         ref={buttonRef}
         type="button"
-        aria-label="All components"
+        aria-label="Everything in the lab"
         aria-expanded={open}
         onClick={() => setOpen(true)}
         className="-ml-2 grid size-9 touch-manipulation place-items-center rounded-full text-muted outline-hidden transition-[color,scale] duration-150 ease-out hover:text-foreground focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground active:scale-[0.96] lg:hidden"
@@ -79,7 +79,7 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
               ref={panelRef}
               role="dialog"
               aria-modal
-              aria-label="All components"
+              aria-label="Everything in the lab"
               tabIndex={-1}
               className="absolute inset-y-0 left-0 flex w-[min(300px,85vw)] flex-col bg-background shadow-raised outline-hidden"
               initial={reduceMotion ? { opacity: 0 } : { x: "-100%" }}
