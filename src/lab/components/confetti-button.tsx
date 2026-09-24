@@ -471,6 +471,9 @@ export function ConfettiButton({
           }}
           onPointerUp={() => release()}
           onPointerCancel={cancel}
+          // A long press is the whole point here; Android would otherwise
+          // answer it with a context menu and cancel the charge.
+          onContextMenu={(e) => e.preventDefault()}
           onKeyDown={(e) => {
             if ((e.key === " " || e.key === "Enter") && !e.repeat) {
               e.preventDefault();

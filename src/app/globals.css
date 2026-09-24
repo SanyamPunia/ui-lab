@@ -66,3 +66,18 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* Many experiments here are press-and-hold. On a phone, a long press on a
+   control would otherwise select its label and pop the text callout or
+   context menu over it. Layered as base, so any utility can still opt a
+   control back in. */
+@layer base {
+  button,
+  [role="button"],
+  [role="slider"],
+  [role="switch"] {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
